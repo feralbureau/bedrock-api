@@ -1,0 +1,520 @@
+// bedrock_service.proto — unified grpc schema for music aggregation.
+// normalizes fields from spotify, yandex, vk, deezer, soundcloud, youtube.
+
+syntax = "proto3";
+
+package bedrock;
+
+option go_package = "./bedrock";
+
+// every track/album/artist/playlist carries its origin so clients can route stream requests back to the correct provider.
+enum Platform {
+  PLATFORM_UNSPECIFIED = 0;
+  PLATFORM_SPOTIFY     = 1;
+  PLATFORM_YANDEX      = 2;
+  PLATFORM_VK          = 3;
+  PLATFORM_DEEZER      = 4;
+  PLATFORM_SOUNDCLOUD  = 5;
+  PLATFORM_YOUTUBE     = 6;
+}
+
+// coarse result status — clients know if payload is complete or partial (one or more providers failed).
+enum ResponseStatus {
+  STATUS_OK      = 0; // all requested providers responded
+  STATUS_PARTIAL = 1; // some providers failed, results still returned
+  STATUS_ERROR   = 2; // fatal error, no results
+}
+
+// lyrics provider that returned the text.
+enum LyricsSource {
+  LYRICS_SOURCE_UNSPECIFIED = 0;
+  LYRICS_SOURCE_LRCLIB      = 1; // synced lrc lyrics (lrclib.net)
+  LYRICS_SOURCE_GENIUS      = 2; // plain-text lyrics (genius.com)
+}
+
+// health state of a downstream dependency.
+enum ServiceHealth {
+  HEALTH_UNKNOWN  = 0;
+  HEALTH_OK       = 1;
+  HEALTH_DEGRADED = 2; // reachable but returning errors / low results
+  HEALTH_DOWN     = 3; // unreachable / timed out
+}
+
+// artist is embedded in track/album, also returned standalone.
+message Artist {
+  // stable, namespaced identifier: "<platform>:<native_id>"
+  // e.g. "spotify:4Z8W4fKeB5YxbusRsdQVPb"
+  string id = 1;
+
+  string name = 2;
+
+  // best-available square image url (normalised from picture_xl / picture_big / picture_medium / avatar_url / image / cover.uri / thumbnails[0])
+  string image_url = 3;
+
+  // comma-separated genres when available (yandex: artist.genres, deezer: genres.data[].name, spotify: genres[])
+  repeated string genres = 4;
+
+  // follower / fan count when available (deezer: nb_fan, spotify: followers.total)
+  int64 followers = 5;
+
+  // deep-link to artist page on originating platform
+  string external_url = 6;
+
+  Platform source = 7;
+}
+
+// track is the central message. normalised from platform-specific keys:
+// title <- title / name / track_name
+// artist <- artist / artists[].name / user.username (soundcloud)
+// album_title <- album / album.title / album.name
+// cover_url <- coverart / cover_uri / artwork_url / album.cover_xl / album.images[0].url / thumbnails[best]
+// duration_ms <- durationms / duration_ms / duration*1000 (when stored as s)
+// preview_url <- previewurl / preview_url / preview
+// external_url <- externalurl / external_urls.spotify / permalink_url / link
+// platform_id <- spotifyid / yandexid / vkid / dezerid / youtubeid / id
+message Track {
+  // namespaced id: "<platform>:<native_id>"
+  string id = 1;
+
+  string title = 2;
+
+  // flattened artist string for fast display ("artist a, artist b")
+  string artist = 3;
+
+  // structured artists list when provider returns multiple artists
+  repeated Artist artists = 4;
+
+  string album_title = 5;
+  string cover_url   = 6;
+
+  // duration in milliseconds (canonical form, normalised from 3 different formats in python)
+  int32 duration_ms = 7;
+
+  // 30-second preview clip url (spotify preview_url, deezer preview)
+  string preview_url = 8;
+
+  // external link to track on originating platform
+  string external_url = 9;
+
+  // whether full audio can be streamed (soundcloud: streamable flag)
+  bool is_streamable = 10;
+
+  // popularity score 0-100 when available (spotify: popularity)
+  int32 popularity = 11;
+
+  // genre tag when available (soundcloud: genre)
+  string genre = 12;
+
+  Platform source = 13;
+
+  // raw, unnamespaced identifier on originating platform
+  string platform_id = 14;
+}
+
+// album
+message Album {
+  // namespaced id: "<platform>:<native_id>"
+  string id = 1;
+
+  string title  = 2;
+
+  // flattened artist string for fast display
+  string artist = 3;
+
+  repeated Artist artists = 4;
+
+  // best available cover (cover_xl / cover_big / images[0].url / cover_uri / thumbnails[best])
+  string cover_url = 5;
+
+  int32 total_tracks = 6;
+
+  // iso-8601 date string or year — kept as string because providers return inconsistent formats ("2023", "2023-06", "2023-06-15")
+  string release_date = 7;
+
+  string external_url = 8;
+
+  // album type: "album", "single", "ep", "compilation" (youtube music: type)
+  string album_type = 9;
+
+  Platform source    = 10;
+  string platform_id = 11;
+}
+
+// playlist
+message Playlist {
+  // namespaced id: "<platform>:<native_id>"
+  string id = 1;
+
+  string title       = 2;
+  string description = 3;
+  string cover_url   = 4;
+  int32  total_tracks = 5;
+
+  // owner display name (playlist author / curator)
+  string owner = 6;
+
+  string external_url = 7;
+  Platform source     = 8;
+  string platform_id  = 9;
+}
+
+// provider-level error detail. returned in every response so clients know which platforms failed without aborting the entire request (partial content pattern).
+message ProviderError {
+  Platform platform = 1;
+  string   message  = 2;
+}
+
+// lyrics
+message LyricsLine {
+  // start time in milliseconds (only when synced == true)
+  int32  time_ms = 1;
+  string text    = 2;
+}
+
+message LyricsRequest {
+  // option a: resolve via namespaced track id (e.g. "spotify:4Z8W4fKeB5YxbusRsdQVPb")
+  string track_id = 1;
+
+  // option b: supply metadata directly (used when track_id is unknown)
+  string title    = 2;
+  string artist   = 3;
+
+  // track duration in seconds — improves lrclib matching accuracy. mirrors python get_track_lyrics(title, artist, duration).
+  int32  duration_s = 4;
+
+  // preferred lyrics source; LYRICS_SOURCE_UNSPECIFIED means "best available"
+  LyricsSource preferred_source = 5;
+}
+
+message LyricsResponse {
+  // plain-text lyrics (always populated when found)
+  string lyrics = 1;
+
+  // structured, time-stamped lines (populated only when synced == true)
+  repeated LyricsLine synced_lines = 2;
+
+  // true when synced_lines is populated (lrclib path)
+  bool synced = 3;
+
+  LyricsSource source = 4;
+
+  // resolved / confirmed title and artist from the lyrics provider
+  string resolved_title  = 5;
+  string resolved_artist = 6;
+
+  // confidence score 0.0-1.0 (genius: similarity_ratio; lrclib: fixed 0.9)
+  float similarity = 7;
+
+  ResponseStatus status = 8;
+  string         error  = 9;
+}
+
+// listening statistics
+message ListeningEvent {
+  string id        = 1; // uuid assigned at write time
+  string user_id   = 2;
+  string track_id  = 3; // namespaced: "<platform>:<native_id>"
+  string title     = 4;
+  string artist    = 5;
+  string artist_id = 6; // optional, namespaced
+  int32  duration_s = 7;
+  Platform source  = 8;
+  bool   is_public = 9;
+  // iso-8601 utc timestamp string
+  string created_at = 10;
+}
+
+// RecordPlay — called by client after user has streamed a track. mirrors python StatsCollector.track_stream() + ListeningStatCreate model.
+message RecordPlayRequest {
+  string   track_id   = 1; // namespaced: "<platform>:<native_id>"
+  string   title      = 2;
+  string   artist     = 3;
+  string   artist_id  = 4; // optional
+  int32    duration_s = 5;
+  Platform source     = 6;
+  bool     is_public  = 7;
+}
+
+message RecordPlayResponse {
+  // server-assigned event id (uuid)
+  string         event_id = 1;
+  ResponseStatus status   = 2;
+  string         error    = 3;
+}
+
+// GetListeningHistory — personal listening history for authenticated user. mirrors python /stats/me/get endpoint.
+message ListeningHistoryRequest {
+  // max events to return (default 100, max 500)
+  int32 limit  = 1;
+  // zero-based page offset
+  int32 offset = 2;
+  // if true, include private events (only allowed for own history)
+  bool  include_private = 3;
+}
+
+message ListeningHistoryResponse {
+  repeated ListeningEvent events = 1;
+  int32          total           = 2;
+  ResponseStatus status          = 3;
+  string         error           = 4;
+}
+
+// popular charts
+message PopularRequest {
+  // max items to return (default 20, max 100)
+  int32 limit = 1;
+}
+
+// ranked track entry in popular-tracks chart. normalised from python PopularTrack + metadata overlay.
+message PopularTrackItem {
+  // full track message when metadata was resolved, otherwise only title / artist / play_count are guaranteed
+  Track track      = 1;
+  int32 play_count = 2;
+}
+
+message PopularTracksResponse {
+  repeated PopularTrackItem items = 1;
+  ResponseStatus status           = 2;
+  string         error            = 3;
+}
+
+// ranked artist entry in popular-artists chart. normalised from python PopularArtist + metadata overlay.
+message PopularArtistItem {
+  string artist_name = 1;
+  int32  play_count  = 2;
+  // best available cover taken from one of the artist's tracks
+  string cover_url   = 3;
+  string external_url = 4;
+}
+
+message PopularArtistsResponse {
+  repeated PopularArtistItem items = 1;
+  ResponseStatus status            = 2;
+  string         error             = 3;
+}
+
+// playlist import
+message ImportPlaylistRequest {
+  // raw playlist / album url from any supported platform.
+  // examples:
+  //   https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M
+  //   https://music.yandex.ru/users/ya.playlist/playlists/1000
+  //   https://soundcloud.com/artist/sets/my-set
+  //   https://www.deezer.com/en/playlist/908622995
+  //   https://vk.com/music/playlist/-2000479201_3479201
+  //   https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG
+  string url = 1;
+
+  // optional: override the resolved platform (rarely needed)
+  Platform platform_hint = 2;
+}
+
+message ImportPlaylistResponse {
+  // resolved playlist metadata
+  Playlist playlist = 1;
+
+  // all tracks in the playlist, in order
+  repeated Track tracks = 2;
+
+  // platform that served the import
+  Platform source = 3;
+
+  // native playlist id on originating platform
+  string platform_playlist_id = 4;
+
+  ResponseStatus status = 5;
+  string         error  = 6;
+}
+
+// service health / status
+message DependencyStatus {
+  string        name    = 1; // e.g. "spotify", "vk", "lrclib", "auth"
+  ServiceHealth health  = 2;
+  // human-readable detail: "ok", "no_results", "error: ..." etc.
+  string        detail  = 3;
+  // round-trip latency in milliseconds when probe succeeded
+  int32         latency_ms = 4;
+}
+
+message ServiceStatusRequest {
+  // if true, perform live health probes instead of returning cached state. live probes are more accurate but add ~5s of latency.
+  bool force_refresh = 1;
+}
+
+message ServiceStatusResponse {
+  repeated DependencyStatus dependencies = 1;
+
+  // iso-8601 utc timestamp of when status was last measured
+  string checked_at = 2;
+
+  ResponseStatus status = 3;
+  string         error  = 4;
+}
+
+// search
+message SearchRequest {
+  // free-text search query
+  string query = 1;
+
+  // maximum results to return per provider (default: 20, max: 50)
+  int32 limit = 2;
+
+  // zero-based page offset for pagination (default: 0)
+  int32 offset = 3;
+
+  // if non-empty, restrict aggregation to these platforms only. if empty, all available platforms are queried in parallel.
+  repeated Platform platforms = 4;
+}
+
+message SearchTracksResponse {
+  repeated Track         tracks = 1;
+  ResponseStatus         status = 2;
+  repeated ProviderError errors = 3;
+}
+
+message SearchAlbumsResponse {
+  repeated Album         albums = 1;
+  ResponseStatus         status = 2;
+  repeated ProviderError errors = 3;
+}
+
+message SearchArtistsResponse {
+  repeated Artist        artists = 1;
+  ResponseStatus         status  = 2;
+  repeated ProviderError errors  = 3;
+}
+
+message SearchPlaylistsResponse {
+  repeated Playlist      playlists = 1;
+  ResponseStatus         status    = 2;
+  repeated ProviderError errors    = 3;
+}
+
+// get single item
+message GetTrackRequest {
+  // namespaced id: "<platform>:<native_id>"
+  string track_id = 1;
+}
+
+message GetTrackResponse {
+  Track          track  = 1;
+  ResponseStatus status = 2;
+  string         error  = 3;
+}
+
+message GetAlbumRequest {
+  string album_id = 1;
+}
+
+message GetAlbumResponse {
+  Album          album  = 1;
+  repeated Track tracks = 2;
+  ResponseStatus status = 3;
+  string         error  = 4;
+}
+
+message GetArtistRequest {
+  string artist_id = 1;
+}
+
+message GetArtistResponse {
+  Artist         artist     = 1;
+  repeated Track top_tracks = 2;
+  repeated Album albums     = 3;
+  ResponseStatus status     = 4;
+  string         error      = 5;
+}
+
+message GetPlaylistRequest {
+  string playlist_id = 1;
+}
+
+message GetPlaylistResponse {
+  Playlist       playlist = 1;
+  repeated Track tracks   = 2;
+  ResponseStatus status   = 3;
+  string         error    = 4;
+}
+
+// stream url
+message GetStreamURLRequest {
+  // namespaced track id: "<platform>:<native_id>"
+  string track_id = 1;
+
+  // optional preferred audio format hint ("mp3", "aac", "opus")
+  string preferred_format = 2;
+}
+
+message GetStreamURLResponse {
+  string stream_url = 1;
+
+  // platform that ultimately served the stream (may differ from requested platform when fallback is used)
+  Platform source = 2;
+
+  // "audio_stream" | "audio_preview" | "hls"
+  string stream_type = 3;
+
+  // mime type when known ("audio/mpeg", "audio/ogg", etc.)
+  string content_type = 4;
+
+  // true when url was obtained via cross-platform fallback (e.g. spotify -> soundcloud). mirrors python stream.fallback_from logic.
+  bool   is_fallback      = 5;
+  string fallback_from    = 6; // original platform name when is_fallback == true
+
+  ResponseStatus status = 7;
+  string         error  = 8;
+}
+
+// similar tracks
+message GetSimilarTracksRequest {
+  string track_id = 1;
+  int32  limit    = 2; // default: 20
+}
+
+message GetSimilarTracksResponse {
+  repeated Track         tracks = 1;
+  ResponseStatus         status = 2;
+  repeated ProviderError errors = 3;
+}
+
+// service definition
+service BedrockService {
+
+  // search: fans out to all (or selected) platforms in parallel, merges results.
+  // if one provider fails, STATUS_PARTIAL is returned with ProviderErrors.
+  rpc SearchTracks    (SearchRequest) returns (SearchTracksResponse);
+  rpc SearchAlbums    (SearchRequest) returns (SearchAlbumsResponse);
+  rpc SearchArtists   (SearchRequest) returns (SearchArtistsResponse);
+  rpc SearchPlaylists (SearchRequest) returns (SearchPlaylistsResponse);
+
+  // get single item
+  rpc GetTrack    (GetTrackRequest)    returns (GetTrackResponse);
+  rpc GetAlbum    (GetAlbumRequest)    returns (GetAlbumResponse);
+  rpc GetArtist   (GetArtistRequest)   returns (GetArtistResponse);
+  rpc GetPlaylist (GetPlaylistRequest) returns (GetPlaylistResponse);
+
+  // stream: returns direct audio url, applies provider fallback logic (e.g. spotify -> soundcloud -> vk).
+  rpc GetStreamURL (GetStreamURLRequest) returns (GetStreamURLResponse);
+
+  // recommendations
+  rpc GetSimilarTracks (GetSimilarTracksRequest) returns (GetSimilarTracksResponse);
+
+  // lyrics: fetches from lrclib (synced) and/or genius (plain-text) in parallel, returns best match. mirrors python get_track_lyrics() fan-out.
+  rpc GetLyrics (LyricsRequest) returns (LyricsResponse);
+
+  // listening statistics: record play event (call after user has streamed track). uses redis dedup (5 min window) to avoid double-counting.
+  rpc RecordPlay (RecordPlayRequest) returns (RecordPlayResponse);
+
+  // retrieve personal listening history for authenticated user.
+  rpc GetListeningHistory (ListeningHistoryRequest) returns (ListeningHistoryResponse);
+
+  // charts: aggregate play counts across all users. metadata enriched in parallel with 3s per-track timeout (mirrors python get_popular_tracks logic).
+  rpc GetPopularTracks  (PopularRequest) returns (PopularTracksResponse);
+  rpc GetPopularArtists (PopularRequest) returns (PopularArtistsResponse);
+
+  // playlist import: resolves public playlist url from any supported platform, returns full ordered track listing. 120s timeout internally.
+  rpc ImportPlaylist (ImportPlaylistRequest) returns (ImportPlaylistResponse);
+
+  // health / observability: returns live or cached health probes for every downstream dependency (platforms, lyrics providers, auth). mirrors python get /metrics/status.
+  rpc GetServiceStatus (ServiceStatusRequest) returns (ServiceStatusResponse);
+}
