@@ -6,7 +6,7 @@
      elements in a dark aesthetic. -->
 <img src="https://via.placeholder.com/1200x400.png?text=Bedrock+API+Banner" alt="Bedrock Banner" width="100%">
 
-# 🎵 Bedrock-API
+# Bedrock-API
 
 ### your unified gateway to the world's music.
 
@@ -17,13 +17,13 @@
 
 > **Note:** Replace `OWNER` and `REPO` in the badge links above with your GitHub username and repository name.
 
-[Documentation](#-documentation) • [Installation](#-installation) • [Telegram Channel](https://t.me/placeholder) • [Discord](#-discord)
+[Documentation](#documentation) • [Installation](#installation) • [Telegram Channel](https://t.me/placeholder) • [Discord](#discord)
 
 ---
 
 </div>
 
-## 🚀 What is Bedrock?
+## What is Bedrock?
 
 **Bedrock-API** is the engine under the hood of the Bedrock music app. It's a high-performance gRPC server that talks to multiple music platforms at once, so you don't have to.
 
@@ -31,16 +31,16 @@ Instead of juggling different APIs for Spotify, SoundCloud, and Deezer, Bedrock 
 
 Oh, and it includes a built-in **HTTP Streaming Proxy** that handles seeking and caching, so you get a smooth listening experience regardless of the source.
 
-## ✨ Key Features
+## Key Features
 
-- 🔗 **Multi-Provider Aggregation**: Search and fetch tracks, albums, artists, and playlists from Spotify, SoundCloud, Deezer, and more.
-- 🌉 **Cross-Platform Bridge**: Automatically resolve non-streamable tracks (Spotify/Deezer) to playable SoundCloud streams.
-- 🔊 **Built-in Streaming Proxy**: High-performance HTTP proxy with support for range requests and true `io.Copy` streaming.
-- 📜 **Lyrics Integration**: Synced and plain-text lyrics via LrcLib and Genius.
-- ⚡ **Concurrent Performance**: Fans out requests to providers in parallel using Go's high-concurrency primitives.
-- 🛡️ **Normalized Schema**: Unified gRPC/Protobuf models for all music entities, regardless of source.
+- **Multi-Provider Aggregation**: Search and fetch tracks, albums, artists, and playlists from Spotify, SoundCloud, Deezer, and more.
+- **Cross-Platform Bridge**: Automatically resolve non-streamable tracks (Spotify/Deezer) to playable SoundCloud streams.
+- **Built-in Streaming Proxy**: High-performance HTTP proxy with support for range requests and true `io.Copy` streaming.
+- **Lyrics Integration**: Synced and plain-text lyrics via LrcLib and Genius.
+- **Concurrent Performance**: Fans out requests to providers in parallel using Go's high-concurrency primitives.
+- **Normalized Schema**: Unified gRPC/Protobuf models for all music entities, regardless of source.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 <div align="center">
 
@@ -51,7 +51,7 @@ Oh, and it includes a built-in **HTTP Streaming Proxy** that handles seeking and
 
 </div>
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -91,7 +91,7 @@ docker build -t bedrock-api .
 docker run -p 50052:50052 -p 8080:8080 --env-file .env bedrock-api
 ```
 
-## 📐 Architecture
+## Architecture
 
 Bedrock is designed to be highly modular. Each provider (Spotify, SoundCloud, etc.) is implemented as a separate adapter that satisfies a common interface.
 
@@ -106,7 +106,7 @@ graph TD
     Proxy[HTTP Proxy :8080] --> Resolver
 ```
 
-## 📊 Stats
+## Stats
 
 <div align="center">
 
@@ -117,7 +117,7 @@ graph TD
 
 </div>
 
-## 📜 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
