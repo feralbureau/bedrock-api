@@ -119,6 +119,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ![Footer](./assets/footer.png)
 
-**Bedrock** — The foundation of your music experience.
-
 </div>
