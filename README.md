@@ -36,7 +36,7 @@ It includes a built-in **HTTP Streaming Proxy** that handles seeking and caching
 
 ## Tech Stack
 
-<div align="center">
+<div>
 
 ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
 ![gRPC](https://img.shields.io/badge/gRPC-%234285F4.svg?style=for-the-badge&logo=grpc&logoColor=white)
