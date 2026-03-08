@@ -205,6 +205,7 @@ func withProviderTimeout(parent context.Context) (context.Context, context.Cance
 
 type bedrockServer struct {
 	pb.UnimplementedBedrockServiceServer
+	lyrics *lrcClient
 }
 
 // search tracks: fan out to providers in parallel and merge results.
@@ -794,38 +795,46 @@ func (s *bedrockServer) GetSimilarTracks(ctx context.Context, req *pb.GetSimilar
 }
 
 // get lyrics: need either track_id or title+artist.
+// if track_id is given, fetches metadata first to get duration for better matching.
 func (s *bedrockServer) GetLyrics(ctx context.Context, req *pb.LyricsRequest) (*pb.LyricsResponse, error) {
-	// validate input
-	if req.GetTrackId() == "" && strings.TrimSpace(req.GetTitle()) == "" {
-		return nil, status.Error(codes.InvalidArgument, "either track_id or title+artist must be provided")
-	}
+	title := strings.TrimSpace(req.GetTitle())
+	artist := strings.TrimSpace(req.GetArtist())
+	durationS := int(req.GetDurationS())
 
-	// resolve display fields (stub echoes supplied values)
-	resolvedTitle := strings.TrimSpace(req.GetTitle())
-	resolvedArtist := strings.TrimSpace(req.GetArtist())
+	// if track_id provided, fetch metadata
 	if req.GetTrackId() != "" {
-		// todo: fetch track to overlay title/artist
-		log.Printf("GetLyrics: resolving via track_id=%q", req.GetTrackId())
-		if resolvedTitle == "" {
-			resolvedTitle = req.GetTrackId()
+		tResp, err := s.GetTrack(ctx, &pb.GetTrackRequest{TrackId: req.GetTrackId()})
+		if err == nil && tResp.GetStatus() == pb.ResponseStatus_STATUS_OK {
+			tr := tResp.GetTrack()
+			if title == "" {
+				title = tr.GetTitle()
+			}
+			if artist == "" {
+				artist = tr.GetArtist()
+			}
+			if durationS == 0 {
+				durationS = int(tr.GetDurationMs() / 1000)
+			}
 		}
 	}
 
-	log.Printf("GetLyrics: title=%q artist=%q duration_s=%d source=%s",
-		resolvedTitle, resolvedArtist, req.GetDurationS(), req.GetPreferredSource())
+	if title == "" || artist == "" {
+		return nil, status.Error(codes.InvalidArgument, "could not resolve title/artist for lyrics")
+	}
 
-	// todo: fan out to lyric sources concurrently
-	return &pb.LyricsResponse{
-		Lyrics:         "",
-		SyncedLines:    nil,
-		Synced:         false,
-		Source:         pb.LyricsSource_LYRICS_SOURCE_UNSPECIFIED,
-		ResolvedTitle:  resolvedTitle,
-		ResolvedArtist: resolvedArtist,
-		Similarity:     0,
-		Status:         pb.ResponseStatus_STATUS_OK,
-		Error:          "",
-	}, nil
+	log.Printf("GetLyrics: title=%q artist=%q duration=%ds", title, artist, durationS)
+
+	resp, err := s.lyrics.getLyrics(ctx, title, artist, durationS)
+	if err != nil {
+		log.Printf("GetLyrics error: %v", err)
+		return &pb.LyricsResponse{
+			Status: pb.ResponseStatus_STATUS_ERROR,
+			Error:  err.Error(),
+			Type:   pb.LyricsType_LYRICS_TYPE_NONE,
+		}, nil
+	}
+
+	return resp, nil
 }
 
 // record play: logs a play event. event id generated server-side.
@@ -1126,7 +1135,9 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterBedrockServiceServer(grpcServer, &bedrockServer{})
+	pb.RegisterBedrockServiceServer(grpcServer, &bedrockServer{
+		lyrics: newLrcClient(),
+	})
 
 	log.Printf("bedrock: grpc server listening on %s", addr)
 	if err := grpcServer.Serve(lis); err != nil {
