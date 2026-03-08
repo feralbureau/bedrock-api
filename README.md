@@ -6,10 +6,10 @@
 
 ### your unified gateway to the world's music.
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/OWNER/REPO?style=for-the-badge&logo=go&color=00ADD8)](https://go.dev/)
-[![License](https://img.shields.io/github/license/OWNER/REPO?style=for-the-badge&color=yellow)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/OWNER/REPO?style=for-the-badge&color=blue)](https://github.com/OWNER/REPO/stargazers)
-[![Repo Size](https://img.shields.io/github/repo-size/OWNER/REPO?style=for-the-badge&color=brightgreen)](https://github.com/jumpfool/bedrock-api)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/jumpfool/bedrock-api?style=for-the-badge&logo=go&color=00ADD8)](https://go.dev/)
+[![License](https://img.shields.io/github/license/jumpfool/bedrock-api?style=for-the-badge&color=yellow)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/jumpfool/bedrock-api?style=for-the-badge&color=blue)](https://github.com/jumpfool/bedrock-api/stargazers)
+[![Repo Size](https://img.shields.io/github/repo-size/jumpfool/bedrock-api?style=for-the-badge&color=brightgreen)](https://github.com/jumpfool/bedrock-api)
 
 [Documentation](#documentation) • [Installation](#installation) • [Telegram Channel](https://t.me/bedrock_app)
 
