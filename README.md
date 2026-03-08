@@ -1,10 +1,6 @@
 <div align="center">
 
-<!-- Replace the source of this image with your final banner.
-     Design Suggestion: A wide, high-contrast banner (1200x400) featuring
-     the Bedrock logo and maybe some abstract waveforms or music-themed
-     elements in a dark aesthetic. -->
-<img src="https://via.placeholder.com/1200x400.png?text=Bedrock+API+Banner" alt="Bedrock Banner" width="100%">
+![Banner](./assets/banner.png)
 
 # Bedrock-API
 
@@ -13,11 +9,9 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/OWNER/REPO?style=for-the-badge&logo=go&color=00ADD8)](https://go.dev/)
 [![License](https://img.shields.io/github/license/OWNER/REPO?style=for-the-badge&color=yellow)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/OWNER/REPO?style=for-the-badge&color=blue)](https://github.com/OWNER/REPO/stargazers)
-[![Repo Size](https://img.shields.io/github/repo-size/OWNER/REPO?style=for-the-badge&color=brightgreen)](https://github.com/OWNER/REPO)
+[![Repo Size](https://img.shields.io/github/repo-size/OWNER/REPO?style=for-the-badge&color=brightgreen)](https://github.com/jumpfool/bedrock-api)
 
-> **Note:** Replace `OWNER` and `REPO` in the badge links above with your GitHub username and repository name.
-
-[Documentation](#documentation) • [Installation](#installation) • [Telegram Channel](https://t.me/placeholder) • [Discord](#discord)
+[Documentation](#documentation) • [Installation](#installation) • [Telegram Channel](https://t.me/bedrock_app)
 
 ---
 
