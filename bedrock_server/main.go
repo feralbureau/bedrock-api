@@ -22,6 +22,7 @@ import (
 	pb "example/grpc/bedrock"
 	"example/grpc/providers"
 	"example/grpc/pkg/token"
+	"example/grpc/server/middleware"
 	"example/grpc/store"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -1001,7 +1002,7 @@ func (s *bedrockServer) ImportPlaylist(ctx context.Context, req *pb.ImportPlayli
 		}, nil
 	}
 
-	// stub providers return nil вЂ” return empty but valid response
+	// stub providers return nil - return empty but valid response
 	if playlist == nil {
 		playlist = &pb.Playlist{
 			Source: plat,
@@ -1028,7 +1029,7 @@ func (s *bedrockServer) GetServiceStatus(ctx context.Context, req *pb.ServiceSta
 
 	if !req.GetForceRefresh() {
 		// todo: return cached status
-		log.Printf("GetServiceStatus: cache miss вЂ” falling through to live probe")
+		log.Printf("GetServiceStatus: cache miss - falling through to live probe")
 	}
 
 	// build probe targets: one per provider + lyrics sources
@@ -1059,7 +1060,7 @@ func (s *bedrockServer) GetServiceStatus(ctx context.Context, req *pb.ServiceSta
 
 			// todo: replace with real lightweight probe per dependency
 			health := pb.ServiceHealth_HEALTH_OK
-			detail := "ok (stub вЂ” no real probe implemented)"
+			detail := "ok (stub - no real probe implemented)"
 			latencyMs := int32(time.Since(start).Milliseconds())
 
 			deps[i] = &pb.DependencyStatus{
@@ -1120,7 +1121,7 @@ func loadDotEnv() {
 		}
 	}
 
-	log.Printf("bedrock: no .env file found in %v вЂ” relying on OS environment", unique)
+	log.Printf("bedrock: no .env file found in %v - relying on OS environment", unique)
 }
 
 func main() {
@@ -1159,12 +1160,24 @@ func main() {
 		log.Fatalf("bedrock: failed to listen on %s: %v", addr, err)
 	}
 
-	grpcServer := grpc.NewServer()
-
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		log.Fatal("bedrock: JWT_SECRET environment variable is not set")
 	}
+
+	// public methods bypass JWT check — everything else requires a valid Bearer access token.
+	publicMethods := map[string]bool{
+		"/bedrock.BedrockService/Register":     true,
+		"/bedrock.BedrockService/Login":         true,
+		"/bedrock.BedrockService/RefreshToken":  true,
+	}
+
+	authInterceptor := middleware.NewAuthInterceptor(newJWTManager(jwtSecret), publicMethods)
+
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()),
+	)
 
 	pb.RegisterBedrockServiceServer(grpcServer, &bedrockServer{
 		lyrics:         newLrcClient(),
