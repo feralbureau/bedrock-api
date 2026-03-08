@@ -100,15 +100,6 @@ graph TD
     Proxy[HTTP Proxy :8080] --> Resolver
 ```
 
-## Stats
-
-<div align="center">
-
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=jumpfool&show_icons=true&theme=tokyonight)
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=jumpfool&layout=compact&theme=tokyonight)
-
-</div>
-
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
