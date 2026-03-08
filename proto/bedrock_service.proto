@@ -32,6 +32,12 @@ enum LyricsSource {
   LYRICS_SOURCE_GENIUS      = 2; // plain-text lyrics (genius.com)
 }
 
+enum LyricsType {
+  LYRICS_TYPE_NONE   = 0;
+  LYRICS_TYPE_PLAIN  = 1;
+  LYRICS_TYPE_SYNCED = 2;
+}
+
 // health state of a downstream dependency.
 enum ServiceHealth {
   HEALTH_UNKNOWN  = 0;
@@ -207,6 +213,8 @@ message LyricsResponse {
 
   ResponseStatus status = 8;
   string         error  = 9;
+
+  LyricsType type = 10;
 }
 
 // listening statistics
