@@ -19,11 +19,11 @@
 
 ## What is Bedrock?
 
-**Bedrock-API** is the engine under the hood of the Bedrock music app. It's a high-performance gRPC server that talks to multiple music platforms at once, so you don't have to.
+**Bedrock-API** is the engine under the hood of the Bedrock streaming app. It's a high-performance gRPC server that talks to multiple music platforms at once, so you don't have to.
 
-Instead of juggling different APIs for Spotify, SoundCloud, and Deezer, Bedrock gives you one clean, normalized interface. It handles the heavy lifting—parallel searches, metadata normalization, and even "bridging" non-streamable tracks by finding playable alternatives on other platforms automatically.
+Instead of juggling different APIs for Spotify, SoundCloud, and Deezer, Bedrock gives you one clean, normalized interface. It handles the heavy lifting parallel searches, metadata normalization, and even "bridging" non-streamable tracks by finding playable alternatives on other platforms automatically.
 
-Oh, and it includes a built-in **HTTP Streaming Proxy** that handles seeking and caching, so you get a smooth listening experience regardless of the source.
+It includes a built-in **HTTP Streaming Proxy** that handles seeking and caching, so you can use stream/cover urls regardless of the country you live in.
 
 ## Key Features
 
@@ -104,10 +104,8 @@ graph TD
 
 <div align="center">
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=YOUR_USERNAME&show_icons=true&theme=tokyonight)
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=YOUR_USERNAME&layout=compact&theme=tokyonight)
-
-> Replace `YOUR_USERNAME` in the URLs above to show your actual stats.
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=jumpfool&show_icons=true&theme=tokyonight)
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=jumpfool&layout=compact&theme=tokyonight)
 
 </div>
 
@@ -119,11 +117,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <div align="center">
 
-<!-- Replace with your final footer image.
-     Design Suggestion: A smaller mascot or logo (200x200) with a
-     "Made with ❤️ by Bedrock Contributors" text. -->
-<img src="https://via.placeholder.com/200x200.png?text=Bedrock+Logo" alt="Bedrock Logo" width="100px">
+![Footer](./assets/footer.png)
 
-**Bedrock-API** — The foundation of your music experience.
+**Bedrock** — The foundation of your music experience.
 
 </div>
