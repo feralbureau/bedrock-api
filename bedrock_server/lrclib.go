@@ -106,7 +106,7 @@ func (c *lrcClient) fetchExact(ctx context.Context, title, artist string, durati
 
 // fetchSearch calls /api/search and picks best result based on string similarity
 func (c *lrcClient) fetchSearch(ctx context.Context, title, artist string, durationS int) (*lrcTrack, float64, error) {
-	// First pass: search by artist and title
+	// first pass: search by artist and title
 	q := fmt.Sprintf("%s %s", artist, title)
 	track, sim, err := c.doSearchWithQuery(ctx, q, title, artist, durationS, true)
 	if err != nil {
@@ -116,7 +116,7 @@ func (c *lrcClient) fetchSearch(ctx context.Context, title, artist string, durat
 		return track, sim, nil
 	}
 
-	// Second pass: fallback to searching just by title
+	// second pass: fallback to searching just by title
 	if artist != "" {
 		track, sim, err = c.doSearchWithQuery(ctx, title, title, artist, durationS, false)
 		if err != nil {
@@ -183,7 +183,7 @@ func (c *lrcClient) doSearchWithQuery(ctx context.Context, query, reqTitle, reqA
 			simTitle = simOrig
 		}
 		
-		// If the requested title is fully contained in the track name, bump to 0.8
+		// if the requested title is fully contained in the track name, bump to 0.8
 		if len(reqTitle) > 3 && strings.Contains(strings.ToLower(t.TrackName), strings.ToLower(reqTitle)) {
 			if simTitle < 0.8 {
 				simTitle = 0.8
@@ -199,7 +199,7 @@ func (c *lrcClient) doSearchWithQuery(ctx context.Context, query, reqTitle, reqA
 		if isFullSearch {
 			sim = (simTitle + simArtist) / 2.0
 		} else {
-			// Fallback by title: title similarity is primary, artist is bonus
+			// fallback by title: title similarity is primary, artist is bonus
 			sim = (simTitle*0.8 + simArtist*0.2)
 		}
 
@@ -208,24 +208,24 @@ func (c *lrcClient) doSearchWithQuery(ctx context.Context, query, reqTitle, reqA
 			diff := math.Abs(t.Duration - float64(durationS))
 			if diff <= 5 {
 				durationMatch = true
-				sim += 0.1 // Bonus for matching duration
+				sim += 0.1 // bonus for matching duration
 			} else {
-				sim -= 0.3 // Strong penalty for mismatching duration
+				sim -= 0.3 // strong penalty for mismatching duration
 			}
 		} else {
-			durationMatch = true // Ignore duration check if not provided
+			durationMatch = true // ignore duration check if not provided
 		}
 
 		if sim > bestSim {
 			if isFullSearch {
-				// Regular search: Need decent text match. 
-				// If duration matches, text match can be slightly lower.
+				// regular search: need decent text match. 
+				// if duration matches, text match can be slightly lower.
 				if sim >= 0.85 || (sim >= 0.65 && durationMatch) {
 					bestSim = sim
 					bestTrack = t
 				}
 			} else {
-				// Fallback search (title only): Duration MUST match if duration was requested. Text MUST match reasonably well.
+				// fallback search (title only): duration must match if duration was requested. text must match reasonably well.
 				if durationMatch && simTitle >= 0.85 {
 					bestSim = sim
 					bestTrack = t

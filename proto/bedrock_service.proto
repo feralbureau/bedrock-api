@@ -525,4 +525,37 @@ service BedrockService {
 
   // health / observability: returns live or cached health probes for every downstream dependency (platforms, lyrics providers, auth). mirrors python get /metrics/status.
   rpc GetServiceStatus (ServiceStatusRequest) returns (ServiceStatusResponse);
+
+  // authentication
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+}
+
+// Authentication Messages
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message RegisterResponse {
+  string user_id = 1;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
 }

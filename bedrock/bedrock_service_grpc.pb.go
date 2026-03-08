@@ -5,7 +5,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.0
-// source: proto/bedrock_service.proto
+// source: bedrock_service.proto
 
 package bedrock
 
@@ -39,6 +39,9 @@ const (
 	BedrockService_GetPopularArtists_FullMethodName   = "/bedrock.BedrockService/GetPopularArtists"
 	BedrockService_ImportPlaylist_FullMethodName      = "/bedrock.BedrockService/ImportPlaylist"
 	BedrockService_GetServiceStatus_FullMethodName    = "/bedrock.BedrockService/GetServiceStatus"
+	BedrockService_Register_FullMethodName            = "/bedrock.BedrockService/Register"
+	BedrockService_Login_FullMethodName               = "/bedrock.BedrockService/Login"
+	BedrockService_RefreshToken_FullMethodName        = "/bedrock.BedrockService/RefreshToken"
 )
 
 // BedrockServiceClient is the client API for BedrockService service.
@@ -75,6 +78,10 @@ type BedrockServiceClient interface {
 	ImportPlaylist(ctx context.Context, in *ImportPlaylistRequest, opts ...grpc.CallOption) (*ImportPlaylistResponse, error)
 	// health / observability: returns live or cached health probes for every downstream dependency (platforms, lyrics providers, auth). mirrors python get /metrics/status.
 	GetServiceStatus(ctx context.Context, in *ServiceStatusRequest, opts ...grpc.CallOption) (*ServiceStatusResponse, error)
+	// authentication
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
 }
 
 type bedrockServiceClient struct {
@@ -255,6 +262,36 @@ func (c *bedrockServiceClient) GetServiceStatus(ctx context.Context, in *Service
 	return out, nil
 }
 
+func (c *bedrockServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, BedrockService_Register_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bedrockServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, BedrockService_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bedrockServiceClient) RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RefreshTokenResponse)
+	err := c.cc.Invoke(ctx, BedrockService_RefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BedrockServiceServer is the server API for BedrockService service.
 // All implementations must embed UnimplementedBedrockServiceServer
 // for forward compatibility.
@@ -289,6 +326,10 @@ type BedrockServiceServer interface {
 	ImportPlaylist(context.Context, *ImportPlaylistRequest) (*ImportPlaylistResponse, error)
 	// health / observability: returns live or cached health probes for every downstream dependency (platforms, lyrics providers, auth). mirrors python get /metrics/status.
 	GetServiceStatus(context.Context, *ServiceStatusRequest) (*ServiceStatusResponse, error)
+	// authentication
+	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	mustEmbedUnimplementedBedrockServiceServer()
 }
 
@@ -349,6 +390,15 @@ func (UnimplementedBedrockServiceServer) ImportPlaylist(context.Context, *Import
 }
 func (UnimplementedBedrockServiceServer) GetServiceStatus(context.Context, *ServiceStatusRequest) (*ServiceStatusResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetServiceStatus not implemented")
+}
+func (UnimplementedBedrockServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedBedrockServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedBedrockServiceServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedBedrockServiceServer) mustEmbedUnimplementedBedrockServiceServer() {}
 func (UnimplementedBedrockServiceServer) testEmbeddedByValue()                        {}
@@ -677,6 +727,60 @@ func _BedrockService_GetServiceStatus_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BedrockService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BedrockServiceServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BedrockService_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BedrockServiceServer).Register(ctx, req.(*RegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BedrockService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BedrockServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BedrockService_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BedrockServiceServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BedrockService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BedrockServiceServer).RefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BedrockService_RefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BedrockServiceServer).RefreshToken(ctx, req.(*RefreshTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BedrockService_ServiceDesc is the grpc.ServiceDesc for BedrockService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -752,7 +856,19 @@ var BedrockService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetServiceStatus",
 			Handler:    _BedrockService_GetServiceStatus_Handler,
 		},
+		{
+			MethodName: "Register",
+			Handler:    _BedrockService_Register_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _BedrockService_Login_Handler,
+		},
+		{
+			MethodName: "RefreshToken",
+			Handler:    _BedrockService_RefreshToken_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/bedrock_service.proto",
+	Metadata: "bedrock_service.proto",
 }

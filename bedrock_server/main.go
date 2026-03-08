@@ -1,4 +1,4 @@
-﻿// package main: simple bedrock grpc server.
+// package main: simple bedrock grpc server.
 // searches fan out to providers in parallel using goroutines + waitgroups.
 // provider failures are collected and returned as partial results.
 // provider adapters are stubs here; swap in real http/sdk calls when ready.
@@ -21,7 +21,10 @@ import (
 
 	pb "example/grpc/bedrock"
 	"example/grpc/providers"
+	"example/grpc/pkg/token"
+	"example/grpc/store"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -205,7 +208,10 @@ func withProviderTimeout(parent context.Context) (context.Context, context.Cance
 
 type bedrockServer struct {
 	pb.UnimplementedBedrockServiceServer
-	lyrics *lrcClient
+	lyrics         *lrcClient
+	userStore      store.UserStore
+	jwtManager     *token.JWTManager
+	refreshManager *token.JWTManager
 }
 
 // search tracks: fan out to providers in parallel and merge results.
@@ -1122,6 +1128,25 @@ func main() {
 
 	loadDotEnv()
 
+	ctx := context.Background()
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Fatal("bedrock: DATABASE_URL environment variable is not set")
+	}
+
+	// Initialize the connection pool
+	dbPool, err := pgxpool.New(ctx, dbURL)
+	if err != nil {
+		log.Fatalf("bedrock: failed to connect to database: %v", err)
+	}
+	defer dbPool.Close()
+
+	// Verify the connection
+	if err := dbPool.Ping(ctx); err != nil {
+		log.Fatalf("bedrock: failed to ping database: %v", err)
+	}
+	log.Println("bedrock: successfully connected to the database")
+
 	// init providers after env is loaded
 	initProviders()
 
@@ -1135,8 +1160,17 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("bedrock: JWT_SECRET environment variable is not set")
+	}
+
 	pb.RegisterBedrockServiceServer(grpcServer, &bedrockServer{
-		lyrics: newLrcClient(),
+		lyrics:         newLrcClient(),
+		userStore:      store.NewUserStore(dbPool),
+		jwtManager:     newJWTManager(jwtSecret),
+		refreshManager: newRefreshManager(jwtSecret),
 	})
 
 	log.Printf("bedrock: grpc server listening on %s", addr)

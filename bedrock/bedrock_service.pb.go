@@ -5,7 +5,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.0
-// source: proto/bedrock_service.proto
+// source: bedrock_service.proto
 
 package bedrock
 
@@ -70,11 +70,11 @@ func (x Platform) String() string {
 }
 
 func (Platform) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_bedrock_service_proto_enumTypes[0].Descriptor()
+	return file_bedrock_service_proto_enumTypes[0].Descriptor()
 }
 
 func (Platform) Type() protoreflect.EnumType {
-	return &file_proto_bedrock_service_proto_enumTypes[0]
+	return &file_bedrock_service_proto_enumTypes[0]
 }
 
 func (x Platform) Number() protoreflect.EnumNumber {
@@ -83,7 +83,7 @@ func (x Platform) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Platform.Descriptor instead.
 func (Platform) EnumDescriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{0}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{0}
 }
 
 // coarse result status — clients know if payload is complete or partial (one or more providers failed).
@@ -120,11 +120,11 @@ func (x ResponseStatus) String() string {
 }
 
 func (ResponseStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_bedrock_service_proto_enumTypes[1].Descriptor()
+	return file_bedrock_service_proto_enumTypes[1].Descriptor()
 }
 
 func (ResponseStatus) Type() protoreflect.EnumType {
-	return &file_proto_bedrock_service_proto_enumTypes[1]
+	return &file_bedrock_service_proto_enumTypes[1]
 }
 
 func (x ResponseStatus) Number() protoreflect.EnumNumber {
@@ -133,7 +133,7 @@ func (x ResponseStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ResponseStatus.Descriptor instead.
 func (ResponseStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{1}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{1}
 }
 
 // lyrics provider that returned the text.
@@ -170,11 +170,11 @@ func (x LyricsSource) String() string {
 }
 
 func (LyricsSource) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_bedrock_service_proto_enumTypes[2].Descriptor()
+	return file_bedrock_service_proto_enumTypes[2].Descriptor()
 }
 
 func (LyricsSource) Type() protoreflect.EnumType {
-	return &file_proto_bedrock_service_proto_enumTypes[2]
+	return &file_bedrock_service_proto_enumTypes[2]
 }
 
 func (x LyricsSource) Number() protoreflect.EnumNumber {
@@ -183,7 +183,7 @@ func (x LyricsSource) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LyricsSource.Descriptor instead.
 func (LyricsSource) EnumDescriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{2}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{2}
 }
 
 type LyricsType int32
@@ -219,11 +219,11 @@ func (x LyricsType) String() string {
 }
 
 func (LyricsType) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_bedrock_service_proto_enumTypes[3].Descriptor()
+	return file_bedrock_service_proto_enumTypes[3].Descriptor()
 }
 
 func (LyricsType) Type() protoreflect.EnumType {
-	return &file_proto_bedrock_service_proto_enumTypes[3]
+	return &file_bedrock_service_proto_enumTypes[3]
 }
 
 func (x LyricsType) Number() protoreflect.EnumNumber {
@@ -232,7 +232,7 @@ func (x LyricsType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LyricsType.Descriptor instead.
 func (LyricsType) EnumDescriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{3}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{3}
 }
 
 // health state of a downstream dependency.
@@ -272,11 +272,11 @@ func (x ServiceHealth) String() string {
 }
 
 func (ServiceHealth) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_bedrock_service_proto_enumTypes[4].Descriptor()
+	return file_bedrock_service_proto_enumTypes[4].Descriptor()
 }
 
 func (ServiceHealth) Type() protoreflect.EnumType {
-	return &file_proto_bedrock_service_proto_enumTypes[4]
+	return &file_bedrock_service_proto_enumTypes[4]
 }
 
 func (x ServiceHealth) Number() protoreflect.EnumNumber {
@@ -285,7 +285,7 @@ func (x ServiceHealth) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ServiceHealth.Descriptor instead.
 func (ServiceHealth) EnumDescriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{4}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{4}
 }
 
 // artist is embedded in track/album, also returned standalone.
@@ -310,7 +310,7 @@ type Artist struct {
 
 func (x *Artist) Reset() {
 	*x = Artist{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[0]
+	mi := &file_bedrock_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -322,7 +322,7 @@ func (x *Artist) String() string {
 func (*Artist) ProtoMessage() {}
 
 func (x *Artist) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[0]
+	mi := &file_bedrock_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -335,7 +335,7 @@ func (x *Artist) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Artist.ProtoReflect.Descriptor instead.
 func (*Artist) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{0}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Artist) GetId() string {
@@ -428,7 +428,7 @@ type Track struct {
 
 func (x *Track) Reset() {
 	*x = Track{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[1]
+	mi := &file_bedrock_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -440,7 +440,7 @@ func (x *Track) String() string {
 func (*Track) ProtoMessage() {}
 
 func (x *Track) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[1]
+	mi := &file_bedrock_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -453,7 +453,7 @@ func (x *Track) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Track.ProtoReflect.Descriptor instead.
 func (*Track) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{1}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Track) GetId() string {
@@ -579,7 +579,7 @@ type Album struct {
 
 func (x *Album) Reset() {
 	*x = Album{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[2]
+	mi := &file_bedrock_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -591,7 +591,7 @@ func (x *Album) String() string {
 func (*Album) ProtoMessage() {}
 
 func (x *Album) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[2]
+	mi := &file_bedrock_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -604,7 +604,7 @@ func (x *Album) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Album.ProtoReflect.Descriptor instead.
 func (*Album) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{2}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Album) GetId() string {
@@ -704,7 +704,7 @@ type Playlist struct {
 
 func (x *Playlist) Reset() {
 	*x = Playlist{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[3]
+	mi := &file_bedrock_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -716,7 +716,7 @@ func (x *Playlist) String() string {
 func (*Playlist) ProtoMessage() {}
 
 func (x *Playlist) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[3]
+	mi := &file_bedrock_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -729,7 +729,7 @@ func (x *Playlist) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Playlist.ProtoReflect.Descriptor instead.
 func (*Playlist) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{3}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Playlist) GetId() string {
@@ -806,7 +806,7 @@ type ProviderError struct {
 
 func (x *ProviderError) Reset() {
 	*x = ProviderError{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[4]
+	mi := &file_bedrock_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -818,7 +818,7 @@ func (x *ProviderError) String() string {
 func (*ProviderError) ProtoMessage() {}
 
 func (x *ProviderError) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[4]
+	mi := &file_bedrock_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -831,7 +831,7 @@ func (x *ProviderError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderError.ProtoReflect.Descriptor instead.
 func (*ProviderError) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{4}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ProviderError) GetPlatform() Platform {
@@ -860,7 +860,7 @@ type LyricsLine struct {
 
 func (x *LyricsLine) Reset() {
 	*x = LyricsLine{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[5]
+	mi := &file_bedrock_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -872,7 +872,7 @@ func (x *LyricsLine) String() string {
 func (*LyricsLine) ProtoMessage() {}
 
 func (x *LyricsLine) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[5]
+	mi := &file_bedrock_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -885,7 +885,7 @@ func (x *LyricsLine) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LyricsLine.ProtoReflect.Descriptor instead.
 func (*LyricsLine) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{5}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *LyricsLine) GetTimeMs() int32 {
@@ -919,7 +919,7 @@ type LyricsRequest struct {
 
 func (x *LyricsRequest) Reset() {
 	*x = LyricsRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[6]
+	mi := &file_bedrock_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -931,7 +931,7 @@ func (x *LyricsRequest) String() string {
 func (*LyricsRequest) ProtoMessage() {}
 
 func (x *LyricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[6]
+	mi := &file_bedrock_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -944,7 +944,7 @@ func (x *LyricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LyricsRequest.ProtoReflect.Descriptor instead.
 func (*LyricsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{6}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *LyricsRequest) GetTrackId() string {
@@ -1005,7 +1005,7 @@ type LyricsResponse struct {
 
 func (x *LyricsResponse) Reset() {
 	*x = LyricsResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[7]
+	mi := &file_bedrock_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1017,7 +1017,7 @@ func (x *LyricsResponse) String() string {
 func (*LyricsResponse) ProtoMessage() {}
 
 func (x *LyricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[7]
+	mi := &file_bedrock_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1030,7 +1030,7 @@ func (x *LyricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LyricsResponse.ProtoReflect.Descriptor instead.
 func (*LyricsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{7}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LyricsResponse) GetLyrics() string {
@@ -1123,7 +1123,7 @@ type ListeningEvent struct {
 
 func (x *ListeningEvent) Reset() {
 	*x = ListeningEvent{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[8]
+	mi := &file_bedrock_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1135,7 +1135,7 @@ func (x *ListeningEvent) String() string {
 func (*ListeningEvent) ProtoMessage() {}
 
 func (x *ListeningEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[8]
+	mi := &file_bedrock_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1148,7 +1148,7 @@ func (x *ListeningEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListeningEvent.ProtoReflect.Descriptor instead.
 func (*ListeningEvent) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{8}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListeningEvent) GetId() string {
@@ -1237,7 +1237,7 @@ type RecordPlayRequest struct {
 
 func (x *RecordPlayRequest) Reset() {
 	*x = RecordPlayRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[9]
+	mi := &file_bedrock_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1249,7 +1249,7 @@ func (x *RecordPlayRequest) String() string {
 func (*RecordPlayRequest) ProtoMessage() {}
 
 func (x *RecordPlayRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[9]
+	mi := &file_bedrock_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1262,7 +1262,7 @@ func (x *RecordPlayRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordPlayRequest.ProtoReflect.Descriptor instead.
 func (*RecordPlayRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{9}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *RecordPlayRequest) GetTrackId() string {
@@ -1326,7 +1326,7 @@ type RecordPlayResponse struct {
 
 func (x *RecordPlayResponse) Reset() {
 	*x = RecordPlayResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[10]
+	mi := &file_bedrock_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1338,7 +1338,7 @@ func (x *RecordPlayResponse) String() string {
 func (*RecordPlayResponse) ProtoMessage() {}
 
 func (x *RecordPlayResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[10]
+	mi := &file_bedrock_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1351,7 +1351,7 @@ func (x *RecordPlayResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordPlayResponse.ProtoReflect.Descriptor instead.
 func (*RecordPlayResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{10}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *RecordPlayResponse) GetEventId() string {
@@ -1390,7 +1390,7 @@ type ListeningHistoryRequest struct {
 
 func (x *ListeningHistoryRequest) Reset() {
 	*x = ListeningHistoryRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[11]
+	mi := &file_bedrock_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1402,7 +1402,7 @@ func (x *ListeningHistoryRequest) String() string {
 func (*ListeningHistoryRequest) ProtoMessage() {}
 
 func (x *ListeningHistoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[11]
+	mi := &file_bedrock_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1415,7 +1415,7 @@ func (x *ListeningHistoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListeningHistoryRequest.ProtoReflect.Descriptor instead.
 func (*ListeningHistoryRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{11}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListeningHistoryRequest) GetLimit() int32 {
@@ -1451,7 +1451,7 @@ type ListeningHistoryResponse struct {
 
 func (x *ListeningHistoryResponse) Reset() {
 	*x = ListeningHistoryResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[12]
+	mi := &file_bedrock_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1463,7 +1463,7 @@ func (x *ListeningHistoryResponse) String() string {
 func (*ListeningHistoryResponse) ProtoMessage() {}
 
 func (x *ListeningHistoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[12]
+	mi := &file_bedrock_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1476,7 +1476,7 @@ func (x *ListeningHistoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListeningHistoryResponse.ProtoReflect.Descriptor instead.
 func (*ListeningHistoryResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{12}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ListeningHistoryResponse) GetEvents() []*ListeningEvent {
@@ -1518,7 +1518,7 @@ type PopularRequest struct {
 
 func (x *PopularRequest) Reset() {
 	*x = PopularRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[13]
+	mi := &file_bedrock_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1530,7 +1530,7 @@ func (x *PopularRequest) String() string {
 func (*PopularRequest) ProtoMessage() {}
 
 func (x *PopularRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[13]
+	mi := &file_bedrock_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1543,7 +1543,7 @@ func (x *PopularRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PopularRequest.ProtoReflect.Descriptor instead.
 func (*PopularRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{13}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PopularRequest) GetLimit() int32 {
@@ -1565,7 +1565,7 @@ type PopularTrackItem struct {
 
 func (x *PopularTrackItem) Reset() {
 	*x = PopularTrackItem{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[14]
+	mi := &file_bedrock_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1577,7 +1577,7 @@ func (x *PopularTrackItem) String() string {
 func (*PopularTrackItem) ProtoMessage() {}
 
 func (x *PopularTrackItem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[14]
+	mi := &file_bedrock_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1590,7 +1590,7 @@ func (x *PopularTrackItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PopularTrackItem.ProtoReflect.Descriptor instead.
 func (*PopularTrackItem) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{14}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PopularTrackItem) GetTrack() *Track {
@@ -1618,7 +1618,7 @@ type PopularTracksResponse struct {
 
 func (x *PopularTracksResponse) Reset() {
 	*x = PopularTracksResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[15]
+	mi := &file_bedrock_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1630,7 +1630,7 @@ func (x *PopularTracksResponse) String() string {
 func (*PopularTracksResponse) ProtoMessage() {}
 
 func (x *PopularTracksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[15]
+	mi := &file_bedrock_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1643,7 +1643,7 @@ func (x *PopularTracksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PopularTracksResponse.ProtoReflect.Descriptor instead.
 func (*PopularTracksResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{15}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PopularTracksResponse) GetItems() []*PopularTrackItem {
@@ -1681,7 +1681,7 @@ type PopularArtistItem struct {
 
 func (x *PopularArtistItem) Reset() {
 	*x = PopularArtistItem{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[16]
+	mi := &file_bedrock_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1693,7 +1693,7 @@ func (x *PopularArtistItem) String() string {
 func (*PopularArtistItem) ProtoMessage() {}
 
 func (x *PopularArtistItem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[16]
+	mi := &file_bedrock_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1706,7 +1706,7 @@ func (x *PopularArtistItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PopularArtistItem.ProtoReflect.Descriptor instead.
 func (*PopularArtistItem) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{16}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *PopularArtistItem) GetArtistName() string {
@@ -1748,7 +1748,7 @@ type PopularArtistsResponse struct {
 
 func (x *PopularArtistsResponse) Reset() {
 	*x = PopularArtistsResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[17]
+	mi := &file_bedrock_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1760,7 +1760,7 @@ func (x *PopularArtistsResponse) String() string {
 func (*PopularArtistsResponse) ProtoMessage() {}
 
 func (x *PopularArtistsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[17]
+	mi := &file_bedrock_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1773,7 +1773,7 @@ func (x *PopularArtistsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PopularArtistsResponse.ProtoReflect.Descriptor instead.
 func (*PopularArtistsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{17}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PopularArtistsResponse) GetItems() []*PopularArtistItem {
@@ -1818,7 +1818,7 @@ type ImportPlaylistRequest struct {
 
 func (x *ImportPlaylistRequest) Reset() {
 	*x = ImportPlaylistRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[18]
+	mi := &file_bedrock_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1830,7 +1830,7 @@ func (x *ImportPlaylistRequest) String() string {
 func (*ImportPlaylistRequest) ProtoMessage() {}
 
 func (x *ImportPlaylistRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[18]
+	mi := &file_bedrock_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1843,7 +1843,7 @@ func (x *ImportPlaylistRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportPlaylistRequest.ProtoReflect.Descriptor instead.
 func (*ImportPlaylistRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{18}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ImportPlaylistRequest) GetUrl() string {
@@ -1878,7 +1878,7 @@ type ImportPlaylistResponse struct {
 
 func (x *ImportPlaylistResponse) Reset() {
 	*x = ImportPlaylistResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[19]
+	mi := &file_bedrock_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1890,7 +1890,7 @@ func (x *ImportPlaylistResponse) String() string {
 func (*ImportPlaylistResponse) ProtoMessage() {}
 
 func (x *ImportPlaylistResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[19]
+	mi := &file_bedrock_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1903,7 +1903,7 @@ func (x *ImportPlaylistResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportPlaylistResponse.ProtoReflect.Descriptor instead.
 func (*ImportPlaylistResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{19}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ImportPlaylistResponse) GetPlaylist() *Playlist {
@@ -1963,7 +1963,7 @@ type DependencyStatus struct {
 
 func (x *DependencyStatus) Reset() {
 	*x = DependencyStatus{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[20]
+	mi := &file_bedrock_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1975,7 +1975,7 @@ func (x *DependencyStatus) String() string {
 func (*DependencyStatus) ProtoMessage() {}
 
 func (x *DependencyStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[20]
+	mi := &file_bedrock_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1988,7 +1988,7 @@ func (x *DependencyStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DependencyStatus.ProtoReflect.Descriptor instead.
 func (*DependencyStatus) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{20}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DependencyStatus) GetName() string {
@@ -2029,7 +2029,7 @@ type ServiceStatusRequest struct {
 
 func (x *ServiceStatusRequest) Reset() {
 	*x = ServiceStatusRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[21]
+	mi := &file_bedrock_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2041,7 +2041,7 @@ func (x *ServiceStatusRequest) String() string {
 func (*ServiceStatusRequest) ProtoMessage() {}
 
 func (x *ServiceStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[21]
+	mi := &file_bedrock_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2054,7 +2054,7 @@ func (x *ServiceStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServiceStatusRequest.ProtoReflect.Descriptor instead.
 func (*ServiceStatusRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{21}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ServiceStatusRequest) GetForceRefresh() bool {
@@ -2077,7 +2077,7 @@ type ServiceStatusResponse struct {
 
 func (x *ServiceStatusResponse) Reset() {
 	*x = ServiceStatusResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[22]
+	mi := &file_bedrock_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2089,7 +2089,7 @@ func (x *ServiceStatusResponse) String() string {
 func (*ServiceStatusResponse) ProtoMessage() {}
 
 func (x *ServiceStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[22]
+	mi := &file_bedrock_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2102,7 +2102,7 @@ func (x *ServiceStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServiceStatusResponse.ProtoReflect.Descriptor instead.
 func (*ServiceStatusResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{22}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ServiceStatusResponse) GetDependencies() []*DependencyStatus {
@@ -2150,7 +2150,7 @@ type SearchRequest struct {
 
 func (x *SearchRequest) Reset() {
 	*x = SearchRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[23]
+	mi := &file_bedrock_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2162,7 +2162,7 @@ func (x *SearchRequest) String() string {
 func (*SearchRequest) ProtoMessage() {}
 
 func (x *SearchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[23]
+	mi := &file_bedrock_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2175,7 +2175,7 @@ func (x *SearchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchRequest.ProtoReflect.Descriptor instead.
 func (*SearchRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{23}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SearchRequest) GetQuery() string {
@@ -2217,7 +2217,7 @@ type SearchTracksResponse struct {
 
 func (x *SearchTracksResponse) Reset() {
 	*x = SearchTracksResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[24]
+	mi := &file_bedrock_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2229,7 +2229,7 @@ func (x *SearchTracksResponse) String() string {
 func (*SearchTracksResponse) ProtoMessage() {}
 
 func (x *SearchTracksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[24]
+	mi := &file_bedrock_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2242,7 +2242,7 @@ func (x *SearchTracksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTracksResponse.ProtoReflect.Descriptor instead.
 func (*SearchTracksResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{24}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *SearchTracksResponse) GetTracks() []*Track {
@@ -2277,7 +2277,7 @@ type SearchAlbumsResponse struct {
 
 func (x *SearchAlbumsResponse) Reset() {
 	*x = SearchAlbumsResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[25]
+	mi := &file_bedrock_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2289,7 +2289,7 @@ func (x *SearchAlbumsResponse) String() string {
 func (*SearchAlbumsResponse) ProtoMessage() {}
 
 func (x *SearchAlbumsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[25]
+	mi := &file_bedrock_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2302,7 +2302,7 @@ func (x *SearchAlbumsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAlbumsResponse.ProtoReflect.Descriptor instead.
 func (*SearchAlbumsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{25}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *SearchAlbumsResponse) GetAlbums() []*Album {
@@ -2337,7 +2337,7 @@ type SearchArtistsResponse struct {
 
 func (x *SearchArtistsResponse) Reset() {
 	*x = SearchArtistsResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[26]
+	mi := &file_bedrock_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2349,7 +2349,7 @@ func (x *SearchArtistsResponse) String() string {
 func (*SearchArtistsResponse) ProtoMessage() {}
 
 func (x *SearchArtistsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[26]
+	mi := &file_bedrock_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2362,7 +2362,7 @@ func (x *SearchArtistsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchArtistsResponse.ProtoReflect.Descriptor instead.
 func (*SearchArtistsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{26}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *SearchArtistsResponse) GetArtists() []*Artist {
@@ -2397,7 +2397,7 @@ type SearchPlaylistsResponse struct {
 
 func (x *SearchPlaylistsResponse) Reset() {
 	*x = SearchPlaylistsResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[27]
+	mi := &file_bedrock_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2409,7 +2409,7 @@ func (x *SearchPlaylistsResponse) String() string {
 func (*SearchPlaylistsResponse) ProtoMessage() {}
 
 func (x *SearchPlaylistsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[27]
+	mi := &file_bedrock_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2422,7 +2422,7 @@ func (x *SearchPlaylistsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPlaylistsResponse.ProtoReflect.Descriptor instead.
 func (*SearchPlaylistsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{27}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *SearchPlaylistsResponse) GetPlaylists() []*Playlist {
@@ -2457,7 +2457,7 @@ type GetTrackRequest struct {
 
 func (x *GetTrackRequest) Reset() {
 	*x = GetTrackRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[28]
+	mi := &file_bedrock_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2469,7 +2469,7 @@ func (x *GetTrackRequest) String() string {
 func (*GetTrackRequest) ProtoMessage() {}
 
 func (x *GetTrackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[28]
+	mi := &file_bedrock_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2482,7 +2482,7 @@ func (x *GetTrackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTrackRequest.ProtoReflect.Descriptor instead.
 func (*GetTrackRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{28}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetTrackRequest) GetTrackId() string {
@@ -2503,7 +2503,7 @@ type GetTrackResponse struct {
 
 func (x *GetTrackResponse) Reset() {
 	*x = GetTrackResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[29]
+	mi := &file_bedrock_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2515,7 +2515,7 @@ func (x *GetTrackResponse) String() string {
 func (*GetTrackResponse) ProtoMessage() {}
 
 func (x *GetTrackResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[29]
+	mi := &file_bedrock_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2528,7 +2528,7 @@ func (x *GetTrackResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTrackResponse.ProtoReflect.Descriptor instead.
 func (*GetTrackResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{29}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *GetTrackResponse) GetTrack() *Track {
@@ -2561,7 +2561,7 @@ type GetAlbumRequest struct {
 
 func (x *GetAlbumRequest) Reset() {
 	*x = GetAlbumRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[30]
+	mi := &file_bedrock_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2573,7 +2573,7 @@ func (x *GetAlbumRequest) String() string {
 func (*GetAlbumRequest) ProtoMessage() {}
 
 func (x *GetAlbumRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[30]
+	mi := &file_bedrock_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2586,7 +2586,7 @@ func (x *GetAlbumRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAlbumRequest.ProtoReflect.Descriptor instead.
 func (*GetAlbumRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{30}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *GetAlbumRequest) GetAlbumId() string {
@@ -2608,7 +2608,7 @@ type GetAlbumResponse struct {
 
 func (x *GetAlbumResponse) Reset() {
 	*x = GetAlbumResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[31]
+	mi := &file_bedrock_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2620,7 +2620,7 @@ func (x *GetAlbumResponse) String() string {
 func (*GetAlbumResponse) ProtoMessage() {}
 
 func (x *GetAlbumResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[31]
+	mi := &file_bedrock_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2633,7 +2633,7 @@ func (x *GetAlbumResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAlbumResponse.ProtoReflect.Descriptor instead.
 func (*GetAlbumResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{31}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *GetAlbumResponse) GetAlbum() *Album {
@@ -2673,7 +2673,7 @@ type GetArtistRequest struct {
 
 func (x *GetArtistRequest) Reset() {
 	*x = GetArtistRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[32]
+	mi := &file_bedrock_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2685,7 +2685,7 @@ func (x *GetArtistRequest) String() string {
 func (*GetArtistRequest) ProtoMessage() {}
 
 func (x *GetArtistRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[32]
+	mi := &file_bedrock_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2698,7 +2698,7 @@ func (x *GetArtistRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArtistRequest.ProtoReflect.Descriptor instead.
 func (*GetArtistRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{32}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *GetArtistRequest) GetArtistId() string {
@@ -2721,7 +2721,7 @@ type GetArtistResponse struct {
 
 func (x *GetArtistResponse) Reset() {
 	*x = GetArtistResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[33]
+	mi := &file_bedrock_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2733,7 +2733,7 @@ func (x *GetArtistResponse) String() string {
 func (*GetArtistResponse) ProtoMessage() {}
 
 func (x *GetArtistResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[33]
+	mi := &file_bedrock_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2746,7 +2746,7 @@ func (x *GetArtistResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArtistResponse.ProtoReflect.Descriptor instead.
 func (*GetArtistResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{33}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *GetArtistResponse) GetArtist() *Artist {
@@ -2793,7 +2793,7 @@ type GetPlaylistRequest struct {
 
 func (x *GetPlaylistRequest) Reset() {
 	*x = GetPlaylistRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[34]
+	mi := &file_bedrock_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2805,7 +2805,7 @@ func (x *GetPlaylistRequest) String() string {
 func (*GetPlaylistRequest) ProtoMessage() {}
 
 func (x *GetPlaylistRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[34]
+	mi := &file_bedrock_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2818,7 +2818,7 @@ func (x *GetPlaylistRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlaylistRequest.ProtoReflect.Descriptor instead.
 func (*GetPlaylistRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{34}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *GetPlaylistRequest) GetPlaylistId() string {
@@ -2840,7 +2840,7 @@ type GetPlaylistResponse struct {
 
 func (x *GetPlaylistResponse) Reset() {
 	*x = GetPlaylistResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[35]
+	mi := &file_bedrock_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2852,7 +2852,7 @@ func (x *GetPlaylistResponse) String() string {
 func (*GetPlaylistResponse) ProtoMessage() {}
 
 func (x *GetPlaylistResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[35]
+	mi := &file_bedrock_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2865,7 +2865,7 @@ func (x *GetPlaylistResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlaylistResponse.ProtoReflect.Descriptor instead.
 func (*GetPlaylistResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{35}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *GetPlaylistResponse) GetPlaylist() *Playlist {
@@ -2909,7 +2909,7 @@ type GetStreamURLRequest struct {
 
 func (x *GetStreamURLRequest) Reset() {
 	*x = GetStreamURLRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[36]
+	mi := &file_bedrock_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2921,7 +2921,7 @@ func (x *GetStreamURLRequest) String() string {
 func (*GetStreamURLRequest) ProtoMessage() {}
 
 func (x *GetStreamURLRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[36]
+	mi := &file_bedrock_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2934,7 +2934,7 @@ func (x *GetStreamURLRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStreamURLRequest.ProtoReflect.Descriptor instead.
 func (*GetStreamURLRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{36}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *GetStreamURLRequest) GetTrackId() string {
@@ -2971,7 +2971,7 @@ type GetStreamURLResponse struct {
 
 func (x *GetStreamURLResponse) Reset() {
 	*x = GetStreamURLResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[37]
+	mi := &file_bedrock_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2983,7 +2983,7 @@ func (x *GetStreamURLResponse) String() string {
 func (*GetStreamURLResponse) ProtoMessage() {}
 
 func (x *GetStreamURLResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[37]
+	mi := &file_bedrock_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2996,7 +2996,7 @@ func (x *GetStreamURLResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStreamURLResponse.ProtoReflect.Descriptor instead.
 func (*GetStreamURLResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{37}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *GetStreamURLResponse) GetStreamUrl() string {
@@ -3066,7 +3066,7 @@ type GetSimilarTracksRequest struct {
 
 func (x *GetSimilarTracksRequest) Reset() {
 	*x = GetSimilarTracksRequest{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[38]
+	mi := &file_bedrock_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3078,7 +3078,7 @@ func (x *GetSimilarTracksRequest) String() string {
 func (*GetSimilarTracksRequest) ProtoMessage() {}
 
 func (x *GetSimilarTracksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[38]
+	mi := &file_bedrock_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3091,7 +3091,7 @@ func (x *GetSimilarTracksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSimilarTracksRequest.ProtoReflect.Descriptor instead.
 func (*GetSimilarTracksRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{38}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *GetSimilarTracksRequest) GetTrackId() string {
@@ -3119,7 +3119,7 @@ type GetSimilarTracksResponse struct {
 
 func (x *GetSimilarTracksResponse) Reset() {
 	*x = GetSimilarTracksResponse{}
-	mi := &file_proto_bedrock_service_proto_msgTypes[39]
+	mi := &file_bedrock_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3131,7 +3131,7 @@ func (x *GetSimilarTracksResponse) String() string {
 func (*GetSimilarTracksResponse) ProtoMessage() {}
 
 func (x *GetSimilarTracksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bedrock_service_proto_msgTypes[39]
+	mi := &file_bedrock_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3144,7 +3144,7 @@ func (x *GetSimilarTracksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSimilarTracksResponse.ProtoReflect.Descriptor instead.
 func (*GetSimilarTracksResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bedrock_service_proto_rawDescGZIP(), []int{39}
+	return file_bedrock_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *GetSimilarTracksResponse) GetTracks() []*Track {
@@ -3168,11 +3168,300 @@ func (x *GetSimilarTracksResponse) GetErrors() []*ProviderError {
 	return nil
 }
 
-var File_proto_bedrock_service_proto protoreflect.FileDescriptor
+// Authentication Messages
+type RegisterRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
 
-const file_proto_bedrock_service_proto_rawDesc = "" +
+func (x *RegisterRequest) Reset() {
+	*x = RegisterRequest{}
+	mi := &file_bedrock_service_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterRequest) ProtoMessage() {}
+
+func (x *RegisterRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_bedrock_service_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterRequest.ProtoReflect.Descriptor instead.
+func (*RegisterRequest) Descriptor() ([]byte, []int) {
+	return file_bedrock_service_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *RegisterRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *RegisterRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type RegisterResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterResponse) Reset() {
+	*x = RegisterResponse{}
+	mi := &file_bedrock_service_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterResponse) ProtoMessage() {}
+
+func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_bedrock_service_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterResponse.ProtoReflect.Descriptor instead.
+func (*RegisterResponse) Descriptor() ([]byte, []int) {
+	return file_bedrock_service_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *RegisterResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type LoginRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginRequest) Reset() {
+	*x = LoginRequest{}
+	mi := &file_bedrock_service_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginRequest) ProtoMessage() {}
+
+func (x *LoginRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_bedrock_service_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
+func (*LoginRequest) Descriptor() ([]byte, []int) {
+	return file_bedrock_service_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *LoginRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type LoginResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginResponse) Reset() {
+	*x = LoginResponse{}
+	mi := &file_bedrock_service_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginResponse) ProtoMessage() {}
+
+func (x *LoginResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_bedrock_service_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
+func (*LoginResponse) Descriptor() ([]byte, []int) {
+	return file_bedrock_service_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *LoginResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *LoginResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RefreshTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenRequest) Reset() {
+	*x = RefreshTokenRequest{}
+	mi := &file_bedrock_service_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenRequest) ProtoMessage() {}
+
+func (x *RefreshTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_bedrock_service_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenRequest.ProtoReflect.Descriptor instead.
+func (*RefreshTokenRequest) Descriptor() ([]byte, []int) {
+	return file_bedrock_service_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *RefreshTokenRequest) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RefreshTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenResponse) Reset() {
+	*x = RefreshTokenResponse{}
+	mi := &file_bedrock_service_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenResponse) ProtoMessage() {}
+
+func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_bedrock_service_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenResponse.ProtoReflect.Descriptor instead.
+func (*RefreshTokenResponse) Descriptor() ([]byte, []int) {
+	return file_bedrock_service_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *RefreshTokenResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+var File_bedrock_service_proto protoreflect.FileDescriptor
+
+const file_bedrock_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/bedrock_service.proto\x12\abedrock\"\xcd\x01\n" +
+	"\x15bedrock_service.proto\x12\abedrock\"\xcd\x01\n" +
 	"\x06Artist\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
@@ -3410,7 +3699,22 @@ const file_proto_bedrock_service_proto_rawDesc = "" +
 	"\x18GetSimilarTracksResponse\x12&\n" +
 	"\x06tracks\x18\x01 \x03(\v2\x0e.bedrock.TrackR\x06tracks\x12/\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x17.bedrock.ResponseStatusR\x06status\x12.\n" +
-	"\x06errors\x18\x03 \x03(\v2\x16.bedrock.ProviderErrorR\x06errors*\xa4\x01\n" +
+	"\x06errors\x18\x03 \x03(\v2\x16.bedrock.ProviderErrorR\x06errors\"C\n" +
+	"\x0fRegisterRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"+\n" +
+	"\x10RegisterResponse\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"@\n" +
+	"\fLoginRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"W\n" +
+	"\rLoginResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\":\n" +
+	"\x13RefreshTokenRequest\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"9\n" +
+	"\x14RefreshTokenResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken*\xa4\x01\n" +
 	"\bPlatform\x12\x18\n" +
 	"\x14PLATFORM_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10PLATFORM_SPOTIFY\x10\x01\x12\x13\n" +
@@ -3436,8 +3740,7 @@ const file_proto_bedrock_service_proto_rawDesc = "" +
 	"\x0eHEALTH_UNKNOWN\x10\x00\x12\r\n" +
 	"\tHEALTH_OK\x10\x01\x12\x13\n" +
 	"\x0fHEALTH_DEGRADED\x10\x02\x12\x0f\n" +
-	"\vHEALTH_DOWN\x10\x032\x8d\n" +
-	"\n" +
+	"\vHEALTH_DOWN\x10\x032\xd3\v\n" +
 	"\x0eBedrockService\x12E\n" +
 	"\fSearchTracks\x12\x16.bedrock.SearchRequest\x1a\x1d.bedrock.SearchTracksResponse\x12E\n" +
 	"\fSearchAlbums\x12\x16.bedrock.SearchRequest\x1a\x1d.bedrock.SearchAlbumsResponse\x12G\n" +
@@ -3456,23 +3759,26 @@ const file_proto_bedrock_service_proto_rawDesc = "" +
 	"\x10GetPopularTracks\x12\x17.bedrock.PopularRequest\x1a\x1e.bedrock.PopularTracksResponse\x12M\n" +
 	"\x11GetPopularArtists\x12\x17.bedrock.PopularRequest\x1a\x1f.bedrock.PopularArtistsResponse\x12Q\n" +
 	"\x0eImportPlaylist\x12\x1e.bedrock.ImportPlaylistRequest\x1a\x1f.bedrock.ImportPlaylistResponse\x12Q\n" +
-	"\x10GetServiceStatus\x12\x1d.bedrock.ServiceStatusRequest\x1a\x1e.bedrock.ServiceStatusResponseB\vZ\t./bedrockb\x06proto3"
+	"\x10GetServiceStatus\x12\x1d.bedrock.ServiceStatusRequest\x1a\x1e.bedrock.ServiceStatusResponse\x12?\n" +
+	"\bRegister\x12\x18.bedrock.RegisterRequest\x1a\x19.bedrock.RegisterResponse\x126\n" +
+	"\x05Login\x12\x15.bedrock.LoginRequest\x1a\x16.bedrock.LoginResponse\x12K\n" +
+	"\fRefreshToken\x12\x1c.bedrock.RefreshTokenRequest\x1a\x1d.bedrock.RefreshTokenResponseB\vZ\t./bedrockb\x06proto3"
 
 var (
-	file_proto_bedrock_service_proto_rawDescOnce sync.Once
-	file_proto_bedrock_service_proto_rawDescData []byte
+	file_bedrock_service_proto_rawDescOnce sync.Once
+	file_bedrock_service_proto_rawDescData []byte
 )
 
-func file_proto_bedrock_service_proto_rawDescGZIP() []byte {
-	file_proto_bedrock_service_proto_rawDescOnce.Do(func() {
-		file_proto_bedrock_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_bedrock_service_proto_rawDesc), len(file_proto_bedrock_service_proto_rawDesc)))
+func file_bedrock_service_proto_rawDescGZIP() []byte {
+	file_bedrock_service_proto_rawDescOnce.Do(func() {
+		file_bedrock_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_bedrock_service_proto_rawDesc), len(file_bedrock_service_proto_rawDesc)))
 	})
-	return file_proto_bedrock_service_proto_rawDescData
+	return file_bedrock_service_proto_rawDescData
 }
 
-var file_proto_bedrock_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_proto_bedrock_service_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
-var file_proto_bedrock_service_proto_goTypes = []any{
+var file_bedrock_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_bedrock_service_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
+var file_bedrock_service_proto_goTypes = []any{
 	(Platform)(0),                    // 0: bedrock.Platform
 	(ResponseStatus)(0),              // 1: bedrock.ResponseStatus
 	(LyricsSource)(0),                // 2: bedrock.LyricsSource
@@ -3518,8 +3824,14 @@ var file_proto_bedrock_service_proto_goTypes = []any{
 	(*GetStreamURLResponse)(nil),     // 42: bedrock.GetStreamURLResponse
 	(*GetSimilarTracksRequest)(nil),  // 43: bedrock.GetSimilarTracksRequest
 	(*GetSimilarTracksResponse)(nil), // 44: bedrock.GetSimilarTracksResponse
+	(*RegisterRequest)(nil),          // 45: bedrock.RegisterRequest
+	(*RegisterResponse)(nil),         // 46: bedrock.RegisterResponse
+	(*LoginRequest)(nil),             // 47: bedrock.LoginRequest
+	(*LoginResponse)(nil),            // 48: bedrock.LoginResponse
+	(*RefreshTokenRequest)(nil),      // 49: bedrock.RefreshTokenRequest
+	(*RefreshTokenResponse)(nil),     // 50: bedrock.RefreshTokenResponse
 }
-var file_proto_bedrock_service_proto_depIdxs = []int32{
+var file_bedrock_service_proto_depIdxs = []int32{
 	0,  // 0: bedrock.Artist.source:type_name -> bedrock.Platform
 	5,  // 1: bedrock.Track.artists:type_name -> bedrock.Artist
 	0,  // 2: bedrock.Track.source:type_name -> bedrock.Platform
@@ -3597,51 +3909,57 @@ var file_proto_bedrock_service_proto_depIdxs = []int32{
 	18, // 74: bedrock.BedrockService.GetPopularArtists:input_type -> bedrock.PopularRequest
 	23, // 75: bedrock.BedrockService.ImportPlaylist:input_type -> bedrock.ImportPlaylistRequest
 	26, // 76: bedrock.BedrockService.GetServiceStatus:input_type -> bedrock.ServiceStatusRequest
-	29, // 77: bedrock.BedrockService.SearchTracks:output_type -> bedrock.SearchTracksResponse
-	30, // 78: bedrock.BedrockService.SearchAlbums:output_type -> bedrock.SearchAlbumsResponse
-	31, // 79: bedrock.BedrockService.SearchArtists:output_type -> bedrock.SearchArtistsResponse
-	32, // 80: bedrock.BedrockService.SearchPlaylists:output_type -> bedrock.SearchPlaylistsResponse
-	34, // 81: bedrock.BedrockService.GetTrack:output_type -> bedrock.GetTrackResponse
-	36, // 82: bedrock.BedrockService.GetAlbum:output_type -> bedrock.GetAlbumResponse
-	38, // 83: bedrock.BedrockService.GetArtist:output_type -> bedrock.GetArtistResponse
-	40, // 84: bedrock.BedrockService.GetPlaylist:output_type -> bedrock.GetPlaylistResponse
-	42, // 85: bedrock.BedrockService.GetStreamURL:output_type -> bedrock.GetStreamURLResponse
-	44, // 86: bedrock.BedrockService.GetSimilarTracks:output_type -> bedrock.GetSimilarTracksResponse
-	12, // 87: bedrock.BedrockService.GetLyrics:output_type -> bedrock.LyricsResponse
-	15, // 88: bedrock.BedrockService.RecordPlay:output_type -> bedrock.RecordPlayResponse
-	17, // 89: bedrock.BedrockService.GetListeningHistory:output_type -> bedrock.ListeningHistoryResponse
-	20, // 90: bedrock.BedrockService.GetPopularTracks:output_type -> bedrock.PopularTracksResponse
-	22, // 91: bedrock.BedrockService.GetPopularArtists:output_type -> bedrock.PopularArtistsResponse
-	24, // 92: bedrock.BedrockService.ImportPlaylist:output_type -> bedrock.ImportPlaylistResponse
-	27, // 93: bedrock.BedrockService.GetServiceStatus:output_type -> bedrock.ServiceStatusResponse
-	77, // [77:94] is the sub-list for method output_type
-	60, // [60:77] is the sub-list for method input_type
+	45, // 77: bedrock.BedrockService.Register:input_type -> bedrock.RegisterRequest
+	47, // 78: bedrock.BedrockService.Login:input_type -> bedrock.LoginRequest
+	49, // 79: bedrock.BedrockService.RefreshToken:input_type -> bedrock.RefreshTokenRequest
+	29, // 80: bedrock.BedrockService.SearchTracks:output_type -> bedrock.SearchTracksResponse
+	30, // 81: bedrock.BedrockService.SearchAlbums:output_type -> bedrock.SearchAlbumsResponse
+	31, // 82: bedrock.BedrockService.SearchArtists:output_type -> bedrock.SearchArtistsResponse
+	32, // 83: bedrock.BedrockService.SearchPlaylists:output_type -> bedrock.SearchPlaylistsResponse
+	34, // 84: bedrock.BedrockService.GetTrack:output_type -> bedrock.GetTrackResponse
+	36, // 85: bedrock.BedrockService.GetAlbum:output_type -> bedrock.GetAlbumResponse
+	38, // 86: bedrock.BedrockService.GetArtist:output_type -> bedrock.GetArtistResponse
+	40, // 87: bedrock.BedrockService.GetPlaylist:output_type -> bedrock.GetPlaylistResponse
+	42, // 88: bedrock.BedrockService.GetStreamURL:output_type -> bedrock.GetStreamURLResponse
+	44, // 89: bedrock.BedrockService.GetSimilarTracks:output_type -> bedrock.GetSimilarTracksResponse
+	12, // 90: bedrock.BedrockService.GetLyrics:output_type -> bedrock.LyricsResponse
+	15, // 91: bedrock.BedrockService.RecordPlay:output_type -> bedrock.RecordPlayResponse
+	17, // 92: bedrock.BedrockService.GetListeningHistory:output_type -> bedrock.ListeningHistoryResponse
+	20, // 93: bedrock.BedrockService.GetPopularTracks:output_type -> bedrock.PopularTracksResponse
+	22, // 94: bedrock.BedrockService.GetPopularArtists:output_type -> bedrock.PopularArtistsResponse
+	24, // 95: bedrock.BedrockService.ImportPlaylist:output_type -> bedrock.ImportPlaylistResponse
+	27, // 96: bedrock.BedrockService.GetServiceStatus:output_type -> bedrock.ServiceStatusResponse
+	46, // 97: bedrock.BedrockService.Register:output_type -> bedrock.RegisterResponse
+	48, // 98: bedrock.BedrockService.Login:output_type -> bedrock.LoginResponse
+	50, // 99: bedrock.BedrockService.RefreshToken:output_type -> bedrock.RefreshTokenResponse
+	80, // [80:100] is the sub-list for method output_type
+	60, // [60:80] is the sub-list for method input_type
 	60, // [60:60] is the sub-list for extension type_name
 	60, // [60:60] is the sub-list for extension extendee
 	0,  // [0:60] is the sub-list for field type_name
 }
 
-func init() { file_proto_bedrock_service_proto_init() }
-func file_proto_bedrock_service_proto_init() {
-	if File_proto_bedrock_service_proto != nil {
+func init() { file_bedrock_service_proto_init() }
+func file_bedrock_service_proto_init() {
+	if File_bedrock_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_bedrock_service_proto_rawDesc), len(file_proto_bedrock_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_bedrock_service_proto_rawDesc), len(file_bedrock_service_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   40,
+			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_bedrock_service_proto_goTypes,
-		DependencyIndexes: file_proto_bedrock_service_proto_depIdxs,
-		EnumInfos:         file_proto_bedrock_service_proto_enumTypes,
-		MessageInfos:      file_proto_bedrock_service_proto_msgTypes,
+		GoTypes:           file_bedrock_service_proto_goTypes,
+		DependencyIndexes: file_bedrock_service_proto_depIdxs,
+		EnumInfos:         file_bedrock_service_proto_enumTypes,
+		MessageInfos:      file_bedrock_service_proto_msgTypes,
 	}.Build()
-	File_proto_bedrock_service_proto = out.File
-	file_proto_bedrock_service_proto_goTypes = nil
-	file_proto_bedrock_service_proto_depIdxs = nil
+	File_bedrock_service_proto = out.File
+	file_bedrock_service_proto_goTypes = nil
+	file_bedrock_service_proto_depIdxs = nil
 }
