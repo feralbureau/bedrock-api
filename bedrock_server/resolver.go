@@ -173,6 +173,32 @@ func resolveDeezerViaSoundCloud(ctx context.Context, deezerNativeID, preferredFo
 	return streamResp, nil
 }
 
+// resolveCoverURL fetches the raw cover image url for a given service and native id.
+// tries track metadata first, then album.
+func resolveCoverURL(ctx context.Context, service, nativeID string) (string, error) {
+	plat, _ := parsePlatformID(service + ":" + nativeID)
+	p, ok := providerMap[plat]
+	if !ok {
+		return "", fmt.Errorf("resolver: unknown platform %q", service)
+	}
+
+	log.Printf("[resolver] resolve cover | service=%s id=%s", service, nativeID)
+
+	// first try as a track
+	track, err := p.GetTrack(ctx, nativeID)
+	if err == nil && track != nil && track.GetCoverUrl() != "" {
+		return track.GetCoverUrl(), nil
+	}
+
+	// then try as an album
+	album, _, err := p.GetAlbum(ctx, nativeID)
+	if err == nil && album != nil && album.GetCoverUrl() != "" {
+		return album.GetCoverUrl(), nil
+	}
+
+	return "", fmt.Errorf("resolver: could not resolve cover for %s:%s", service, nativeID)
+}
+
 // spotify -> soundcloud bridge
 // flow: fetch spotify metadata, build cleaned query, search soundcloud, resolve stream
 func resolveSpotifyViaSoundCloud(ctx context.Context, spotifyNativeID, preferredFormat string) (*pb.GetStreamURLResponse, error) {
