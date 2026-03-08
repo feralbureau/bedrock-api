@@ -29,6 +29,8 @@ import (
 )
 
 var port = flag.Int("port", 50052, "bedrock grpc port")
+var proxyAddr = flag.String("proxy-addr", ":8080", "bedrock proxy addr")
+var proxyHost = flag.String("proxy-host", "localhost:8080", "bedrock proxy host for rewriting")
 
 // trackProvider is the provider interface for a platform
 type trackProvider interface {
@@ -250,7 +252,10 @@ func (s *bedrockServer) SearchTracks(ctx context.Context, req *pb.SearchRequest)
 	var tracks []*pb.Track
 	var provErrs []*pb.ProviderError
 	for _, r := range results {
-		tracks = append(tracks, r.tracks...)
+		for _, t := range r.tracks {
+			rewriteTrack(t, *proxyHost)
+			tracks = append(tracks, t)
+		}
 		if r.err != nil {
 			provErrs = append(provErrs, r.err)
 		}
@@ -302,7 +307,10 @@ func (s *bedrockServer) SearchAlbums(ctx context.Context, req *pb.SearchRequest)
 	var albums []*pb.Album
 	var provErrs []*pb.ProviderError
 	for _, r := range results {
-		albums = append(albums, r.albums...)
+		for _, a := range r.albums {
+			rewriteAlbum(a, nil, *proxyHost)
+			albums = append(albums, a)
+		}
 		if r.err != nil {
 			provErrs = append(provErrs, r.err)
 		}
@@ -360,6 +368,10 @@ func (s *bedrockServer) SearchArtists(ctx context.Context, req *pb.SearchRequest
 		}
 	}
 
+	for _, art := range artists {
+		rewriteArtist(art, *proxyHost)
+	}
+
 	return &pb.SearchArtistsResponse{
 		Artists: artists,
 		Status:  responseStatus(provErrs),
@@ -406,7 +418,10 @@ func (s *bedrockServer) SearchPlaylists(ctx context.Context, req *pb.SearchReque
 	var playlists []*pb.Playlist
 	var provErrs []*pb.ProviderError
 	for _, r := range results {
-		playlists = append(playlists, r.playlists...)
+		for _, pl := range r.playlists {
+			rewritePlaylist(pl, nil, *proxyHost)
+			playlists = append(playlists, pl)
+		}
 		if r.err != nil {
 			provErrs = append(provErrs, r.err)
 		}
@@ -452,6 +467,8 @@ func (s *bedrockServer) GetTrack(ctx context.Context, req *pb.GetTrackRequest) (
 		}, nil
 	}
 
+	rewriteTrack(track, *proxyHost)
+
 	return &pb.GetTrackResponse{
 		Track:  track,
 		Status: pb.ResponseStatus_STATUS_OK,
@@ -491,6 +508,8 @@ func (s *bedrockServer) GetAlbum(ctx context.Context, req *pb.GetAlbumRequest) (
 		}, nil
 	}
 
+	rewriteAlbum(album, tracks, *proxyHost)
+
 	return &pb.GetAlbumResponse{
 		Album:  album,
 		Tracks: tracks,
@@ -529,6 +548,14 @@ func (s *bedrockServer) GetArtist(ctx context.Context, req *pb.GetArtistRequest)
 			Status: pb.ResponseStatus_STATUS_ERROR,
 			Error:  "artist not found",
 		}, nil
+	}
+
+	rewriteArtist(artist, *proxyHost)
+	for _, t := range topTracks {
+		rewriteTrack(t, *proxyHost)
+	}
+	for _, a := range albums {
+		rewriteAlbum(a, nil, *proxyHost)
 	}
 
 	return &pb.GetArtistResponse{
@@ -572,6 +599,8 @@ func (s *bedrockServer) GetPlaylist(ctx context.Context, req *pb.GetPlaylistRequ
 		}, nil
 	}
 
+	rewritePlaylist(playlist, tracks, *proxyHost)
+
 	return &pb.GetPlaylistResponse{
 		Playlist: playlist,
 		Tracks:   tracks,
@@ -614,6 +643,10 @@ func (s *bedrockServer) GetStreamURL(ctx context.Context, req *pb.GetStreamURLRe
 			}, nil
 		}
 
+		service := strings.ToLower(strings.TrimPrefix(pb.Platform_name[int32(plat)], "PLATFORM_"))
+		_, nativeID := parsePlatformID(trackID)
+		resp.StreamUrl = fmt.Sprintf("http://%s/stream/%s/%s", *proxyHost, service, nativeID)
+
 		resp.Status = pb.ResponseStatus_STATUS_OK
 		return resp, nil
 	}
@@ -649,6 +682,9 @@ func (s *bedrockServer) GetStreamURL(ctx context.Context, req *pb.GetStreamURLRe
 			Error:  "no streamable source found",
 		}, nil
 	}
+
+	service := strings.ToLower(strings.TrimPrefix(pb.Platform_name[int32(plat)], "PLATFORM_"))
+	resp.StreamUrl = fmt.Sprintf("http://%s/stream/%s/%s", *proxyHost, service, nativeID)
 
 	resp.Status = pb.ResponseStatus_STATUS_OK
 	return resp, nil
@@ -726,9 +762,18 @@ func (s *bedrockServer) GetSimilarTracks(ctx context.Context, req *pb.GetSimilar
 	wg.Wait()
 
 	allTracks := make([]*pb.Track, 0, limit)
-	allTracks = append(allTracks, primaryTracks...)
+	for _, t := range primaryTracks {
+		rewriteTrack(t, *proxyHost)
+		allTracks = append(allTracks, t)
+	}
 	for _, r := range secResults {
-		allTracks = append(allTracks, r.tracks...)
+		for _, t := range r.tracks {
+			rewriteTrack(t, *proxyHost)
+			allTracks = append(allTracks, t)
+			if len(allTracks) >= limit {
+				break
+			}
+		}
 		if r.err != nil {
 			provErrs = append(provErrs, r.err)
 		}
@@ -948,6 +993,8 @@ func (s *bedrockServer) ImportPlaylist(ctx context.Context, req *pb.ImportPlayli
 		}
 	}
 
+	rewritePlaylist(playlist, tracks, *proxyHost)
+
 	return &pb.ImportPlaylistResponse{
 		Playlist:           playlist,
 		Tracks:             tracks,
@@ -1068,6 +1115,9 @@ func main() {
 
 	// init providers after env is loaded
 	initProviders()
+
+	// start proxy server in background
+	go startProxyServer(*proxyAddr)
 
 	addr := fmt.Sprintf(":%d", *port)
 	lis, err := net.Listen("tcp", addr)

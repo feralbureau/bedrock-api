@@ -1,0 +1,10 @@
+2026/03/08 11:46:48 bedrock: loaded environment from "bedrock_server/.env"
+2026/03/08 11:46:48 [spotify] provider enabled
+2026/03/08 11:46:48 [proxy] server listening on :8080
+2026/03/08 11:46:48 bedrock: grpc server listening on :50052
+2026/03/08 11:46:50 [resolver] soundcloud direct -> id="123" format=""
+2026/03/08 11:46:51 [soundcloud] client_id validated: 1IzwHiVxвЂ¦
+2026/03/08 11:46:51 [proxy] stream resolve error: resolver: soundcloud getstreamurl id="123": GetStreamURL fetch track 123: soundcloud: not found (404)
+2026/03/08 11:46:51 [resolver] resolve cover | service=soundcloud id=123
+2026/03/08 11:46:52 [soundcloud] GetAlbum 123: set is not flagged as album (is_album=false playlist_type=""), returning anyway
+2026/03/08 11:46:52 [proxy] cover resolve error: resolver: could not resolve cover for soundcloud:123
