@@ -5,7 +5,6 @@
 package main
 
 import (
-	"reflect"
 	"testing"
 
 	pb "example/grpc/bedrock"
@@ -78,7 +77,7 @@ func TestMapToResponse(t *testing.T) {
 			SyncedLyrics: "[00:01.00] Line 1",
 			PlainLyrics:  "Line 1",
 		}
-		got := client.mapToResponse(track)
+		got := client.mapToResponse(track, 1.0)
 
 		if got.Synced != true {
 			t.Errorf("expected Synced=true")
@@ -96,7 +95,7 @@ func TestMapToResponse(t *testing.T) {
 			ArtistName:  "Artist",
 			PlainLyrics: "Line 1\nLine 2",
 		}
-		got := client.mapToResponse(track)
+		got := client.mapToResponse(track, 1.0)
 
 		if got.Synced != false {
 			t.Errorf("expected Synced=false")
