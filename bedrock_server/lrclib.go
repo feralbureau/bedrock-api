@@ -255,32 +255,41 @@ func stringSimilarity(a, b string) float64 {
 		return 0.0
 	}
 
-	d := make([][]int, len(a)+1)
-	for i := range d {
-		d[i] = make([]int, len(b)+1)
-		d[i][0] = i
+	// ensure a is the longer string to minimize space usage
+	if len(a) < len(b) {
+		a, b = b, a
 	}
-	for j := range d[0] {
-		d[0][j] = j
+
+	n, m := len(a), len(b)
+	// iterative levenshtein with O(m) space to reduce allocations from O(n) to O(1)
+	row := make([]int, m+1)
+	for j := 0; j <= m; j++ {
+		row[j] = j
 	}
-	for i := 1; i <= len(a); i++ {
-		for j := 1; j <= len(b); j++ {
+
+	for i := 1; i <= n; i++ {
+		prev := i - 1
+		row[0] = i
+		for j := 1; j <= m; j++ {
+			old := row[j]
 			cost := 1
 			if a[i-1] == b[j-1] {
 				cost = 0
 			}
-			min := d[i-1][j] + 1
-			if d[i][j-1]+1 < min {
-				min = d[i][j-1] + 1
+			// find min of (top, left, top-left)
+			min := row[j] + 1
+			if row[j-1]+1 < min {
+				min = row[j-1] + 1
 			}
-			if d[i-1][j-1]+cost < min {
-				min = d[i-1][j-1] + cost
+			if prev+cost < min {
+				min = prev + cost
 			}
-			d[i][j] = min
+			row[j] = min
+			prev = old
 		}
 	}
-	maxLen := math.Max(float64(len(a)), float64(len(b)))
-	return 1.0 - float64(d[len(a)][len(b)])/maxLen
+
+	return 1.0 - float64(row[m])/float64(n)
 }
 
 // mapToResponse converts lrc data to grpc response
