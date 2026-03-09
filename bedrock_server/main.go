@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"net"
 	"net/url"
 	"os"
@@ -210,6 +211,7 @@ func withProviderTimeout(parent context.Context) (context.Context, context.Cance
 type bedrockServer struct {
 	pb.UnimplementedBedrockServiceServer
 	lyrics         *lrcClient
+	genius         *geniusClient
 	userStore      store.UserStore
 	jwtManager     *token.JWTManager
 	refreshManager *token.JWTManager
@@ -831,17 +833,58 @@ func (s *bedrockServer) GetLyrics(ctx context.Context, req *pb.LyricsRequest) (*
 
 	log.Printf("GetLyrics: title=%q artist=%q duration=%ds", title, artist, durationS)
 
-	resp, err := s.lyrics.getLyrics(ctx, title, artist, durationS)
-	if err != nil {
-		log.Printf("GetLyrics error: %v", err)
-		return &pb.LyricsResponse{
-			Status: pb.ResponseStatus_STATUS_ERROR,
-			Error:  err.Error(),
-			Type:   pb.LyricsType_LYRICS_TYPE_NONE,
-		}, nil
+	// fan out to providers in parallel
+	var wg sync.WaitGroup
+	var lrcResp *pb.LyricsResponse
+	var genResp *pb.LyricsResponse
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		lrc, err := s.lyrics.getLyrics(ctx, title, artist, durationS)
+		if err != nil {
+			log.Printf("lrclib error: %v", err)
+			return
+		}
+		lrcResp = lrc
+	}()
+
+	if s.genius != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			gen, err := s.genius.getLyrics(ctx, title, artist)
+			if err != nil {
+				log.Printf("genius error: %v", err)
+				return
+			}
+			genResp = gen
+		}()
 	}
 
-	return resp, nil
+	wg.Wait()
+
+	// priority logic:
+	// 1. synced lrclib
+	// 2. genius plain
+	// 3. plain lrclib
+
+	if lrcResp != nil && lrcResp.Synced && lrcResp.Type == pb.LyricsType_LYRICS_TYPE_SYNCED {
+		return lrcResp, nil
+	}
+
+	if genResp != nil && genResp.Type == pb.LyricsType_LYRICS_TYPE_PLAIN && genResp.Lyrics != "" {
+		return genResp, nil
+	}
+
+	if lrcResp != nil && lrcResp.Type != pb.LyricsType_LYRICS_TYPE_NONE {
+		return lrcResp, nil
+	}
+
+	return &pb.LyricsResponse{
+		Type:   pb.LyricsType_LYRICS_TYPE_NONE,
+		Status: pb.ResponseStatus_STATUS_OK,
+	}, nil
 }
 
 // record play: logs a play event. event id generated server-side.
@@ -1058,9 +1101,37 @@ func (s *bedrockServer) GetServiceStatus(ctx context.Context, req *pb.ServiceSta
 			defer wg.Done()
 			start := time.Now()
 
-			// todo: replace with real lightweight probe per dependency
+			// real probe for lyrics providers
 			health := pb.ServiceHealth_HEALTH_OK
-			detail := "ok (stub - no real probe implemented)"
+			detail := "ok"
+
+			if t.name == "lrclib" {
+				req, _ := http.NewRequestWithContext(ctx, "GET", "https://lrclib.net/api/get?artist_name=Radiohead&track_name=Creep", nil)
+				resp, err := s.lyrics.http.Do(req)
+				if err != nil || resp.StatusCode != 200 {
+					health = pb.ServiceHealth_HEALTH_DOWN
+					detail = "unreachable"
+				} else {
+					resp.Body.Close()
+				}
+			} else if t.name == "genius" {
+				if s.genius == nil {
+					health = pb.ServiceHealth_HEALTH_DOWN
+					detail = "disabled (missing token)"
+				} else {
+					// lightweight genius search probe
+					_, err := s.genius.client.Search("Radiohead Creep")
+					if err != nil {
+						health = pb.ServiceHealth_HEALTH_DOWN
+						detail = err.Error()
+					}
+				}
+			} else {
+				// todo: replace with real lightweight probe per dependency
+				health = pb.ServiceHealth_HEALTH_OK
+				detail = "ok (stub - no real probe implemented)"
+			}
+
 			latencyMs := int32(time.Since(start).Milliseconds())
 
 			deps[i] = &pb.DependencyStatus{
@@ -1135,14 +1206,14 @@ func main() {
 		log.Fatal("bedrock: DATABASE_URL environment variable is not set")
 	}
 
-	// Initialize the connection pool
+	// initialize the connection pool
 	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
 		log.Fatalf("bedrock: failed to connect to database: %v", err)
 	}
 	defer dbPool.Close()
 
-	// Verify the connection
+	// verify the connection
 	if err := dbPool.Ping(ctx); err != nil {
 		log.Fatalf("bedrock: failed to ping database: %v", err)
 	}
@@ -1179,8 +1250,18 @@ func main() {
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 
+	geniusToken := os.Getenv("GENIUS_ACCESS_TOKEN")
+	var genius *geniusClient
+	if geniusToken != "" {
+		log.Printf("bedrock: genius lyrics enabled")
+		genius = newGeniusClient(geniusToken)
+	} else {
+		log.Printf("bedrock: genius lyrics disabled (missing token)")
+	}
+
 	pb.RegisterBedrockServiceServer(grpcServer, &bedrockServer{
 		lyrics:         newLrcClient(),
+		genius:         genius,
 		userStore:      store.NewUserStore(dbPool),
 		jwtManager:     newJWTManager(jwtSecret),
 		refreshManager: newRefreshManager(jwtSecret),
