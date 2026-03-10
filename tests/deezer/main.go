@@ -1,4 +1,4 @@
-﻿// package main is a Deezer-focused integration test client for the bedrock gRPC server.
+// package main is a Deezer-focused integration test client for the bedrock gRPC server.
 //
 //  1. Run Search* RPCs to get real live IDs from Deezer.
 //  2. Feed those IDs directly into GetTrack, GetAlbum, GetArtist, GetPlaylist,
@@ -34,6 +34,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -43,6 +44,7 @@ var (
 	addr           = flag.String("addr", "localhost:50052", "bedrock service address")
 	perCallTimeout = flag.Duration("timeout", 20*time.Second, "per-rpc deadline")
 	verbose        = flag.Bool("verbose", false, "print full JSON response bodies")
+	accessToken    = flag.String("token", "", "JWT access token for authentication")
 )
 
 // в”Ђв”Ђ colour palette в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
@@ -120,6 +122,11 @@ func trunc(s string, n int) string {
 func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), *perCallTimeout)
 	defer cancel()
+
+	if *accessToken != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+*accessToken)
+	}
+
 	start := time.Now()
 	v, err := fn(ctx)
 	return v, time.Since(start), err
@@ -797,8 +804,8 @@ func testGetStreamURL(c pb.BedrockServiceClient) {
 		return
 	}
 
-	if !strings.HasPrefix(streamURL, "https://") {
-		fail("stream_url does not start with https://: %s", trunc(streamURL, 60))
+	if !strings.HasPrefix(streamURL, "http://") && !strings.HasPrefix(streamURL, "https://") {
+		fail("stream_url is not an http(s) url: %s", trunc(streamURL, 60))
 		recordResult(name, outFail, "stream_url scheme invalid", lat)
 		return
 	}

@@ -1,0 +1,78 @@
+{
+  "adBreakHeartbeatParams": "Q0FBJTNE",
+  "playabilityStatus": {
+    "contextParams": "Q0FFU0FnZ0I=",
+    "errorScreen": {
+      "playerErrorMessageRenderer": {
+        "icon": {
+          "iconType": "ERROR_OUTLINE"
+        },
+        "proceedButton": {
+          "buttonRenderer": {
+            "command": {
+              "clickTrackingParams": "CAEQ8FsiEwjdvfnYm5aTAxVWQnoFHfObAnPKAQQOXxK9",
+              "signalAction": {
+                "signal": "RELOAD_PAGE"
+              }
+            },
+            "isDisabled": false,
+            "text": {
+              "runs": [
+                {
+                  "text": "Reload"
+                }
+              ]
+            },
+            "trackingParams": "CAEQ8FsiEwjdvfnYm5aTAxVWQnoFHfObAnM="
+          }
+        },
+        "reason": {
+          "runs": [
+            {
+              "text": "The page needs to be reloaded."
+            }
+          ]
+        },
+        "thumbnail": {
+          "thumbnails": [
+            {
+              "height": 100,
+              "url": "//s.ytimg.com/yts/img/meh7-vflGevej7.png",
+              "width": 140
+            }
+          ]
+        }
+      }
+    },
+    "reason": "The page needs to be reloaded.",
+    "skip": {
+      "playabilityErrorSkipConfig": {
+        "skipOnPlayabilityError": false
+      }
+    },
+    "status": "UNPLAYABLE"
+  },
+  "trackingParams": "CAAQu2kiEwjdvfnYm5aTAxVWQnoFHfObAnM=",
+  "videoDetails": {
+    "allowRatings": true,
+    "channelId": "UCuAXFkgsw1L7xaCfnd5JJOw",
+    "isCrawlable": true,
+    "isLiveContent": false,
+    "isOwnerViewing": false,
+    "isPrivate": false,
+    "isTvfilmVideo": false,
+    "isUnpluggedCorpus": false,
+    "lengthSeconds": "213",
+    "musicVideoType": "MUSIC_VIDEO_TYPE_OMV",
+    "thumbnail": {
+      "thumbnails": [
+        {
+          "height": 360,
+          "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+          "width": 480
+        }
+      ]
+    },
+    "videoId": "dQw4w9WgXcQ"
+  }
+}

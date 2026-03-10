@@ -61,6 +61,14 @@ func getSpotifyProvider() (trackProvider, error) {
 	return p, nil
 }
 
+func getYouTubeProvider() (trackProvider, error) {
+	p, ok := providerMap[pb.Platform_PLATFORM_YOUTUBE]
+	if !ok {
+		return nil, fmt.Errorf("youtube provider not registered")
+	}
+	return p, nil
+}
+
 // resolveStreamURL decides how to get a playable url for a namespaced track id.
 // supported bridges:
 // - soundcloud:* -> direct soundcloud
@@ -78,6 +86,9 @@ func resolveStreamURL(ctx context.Context, trackID, preferredFormat string) (*pb
 
 	case pb.Platform_PLATFORM_DEEZER:
 		return resolveDeezerViaSoundCloud(ctx, nativeID, preferredFormat)
+
+	case pb.Platform_PLATFORM_YOUTUBE:
+		return resolveYouTubeDirect(ctx, nativeID, preferredFormat)
 
 	default:
 		return nil, fmt.Errorf("stream resolution not supported for platform %q in track_id %q",
@@ -270,4 +281,27 @@ func resolveSpotifyViaSoundCloud(ctx context.Context, spotifyNativeID, preferred
 	streamResp.FallbackFrom = pb.Platform_name[int32(pb.Platform_PLATFORM_SPOTIFY)]
 
 	return streamResp, nil
+}
+
+func resolveYouTubeDirect(ctx context.Context, nativeID, preferredFormat string) (*pb.GetStreamURLResponse, error) {
+	p, err := getYouTubeProvider()
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("[resolver] youtube innertube | video_id=%q format=%q", nativeID, preferredFormat)
+
+	resp, err := p.GetStreamURL(ctx, nativeID, preferredFormat)
+	if err != nil {
+		log.Printf("[resolver] youtube innertube failed | video_id=%q: %v", nativeID, err)
+		return nil, fmt.Errorf("resolver: youtube getstreamurl id=%q: %w", nativeID, err)
+	}
+
+	if resp.GetSource() == pb.Platform_PLATFORM_YOUTUBE {
+		log.Printf("[resolver] youtube innertube ok | video_id=%q url=%.60s…", nativeID, resp.GetStreamUrl())
+	} else {
+		log.Printf("[resolver] youtube unexpected fallback | video_id=%q source=%v", nativeID, resp.GetSource())
+	}
+
+	return resp, nil
 }

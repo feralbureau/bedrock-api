@@ -125,13 +125,24 @@ func initProviders() {
 		spotifyProvider = sp
 	}
 
+	// youtube needs innertube client. if init fails, use stub so other providers keep working.
+	var youtubeProvider trackProvider
+	yt, ytErr := providers.NewYouTubeProvider()
+	if ytErr != nil {
+		log.Printf("[youtube] provider disabled: %v", ytErr)
+		youtubeProvider = &stubProvider{platform: pb.Platform_PLATFORM_YOUTUBE}
+	} else {
+		log.Printf("[youtube] provider enabled")
+		youtubeProvider = yt
+	}
+
 	allProviders = []trackProvider{
 		spotifyProvider,
 		&stubProvider{platform: pb.Platform_PLATFORM_YANDEX},
 		&stubProvider{platform: pb.Platform_PLATFORM_VK},
 		providers.NewDeezerProvider(),
 		providers.NewSoundCloudProvider(),
-		&stubProvider{platform: pb.Platform_PLATFORM_YOUTUBE},
+		youtubeProvider,
 	}
 	providerMap = make(map[pb.Platform]trackProvider, len(allProviders))
 	for _, p := range allProviders {
@@ -625,16 +636,16 @@ func (s *bedrockServer) GetStreamURL(ctx context.Context, req *pb.GetStreamURLRe
 	trackID := req.GetTrackId()
 	preferredFormat := req.GetPreferredFormat()
 
-	// bridge path: spotify/soundcloud/deezer use resolver bridge
+	// bridge/resolution path
 	plat, _ := parsePlatformID(trackID)
 	switch plat {
-	case pb.Platform_PLATFORM_SOUNDCLOUD, pb.Platform_PLATFORM_SPOTIFY, pb.Platform_PLATFORM_DEEZER:
-		// bridge may do multiple network calls; give more time
+	case pb.Platform_PLATFORM_SOUNDCLOUD, pb.Platform_PLATFORM_SPOTIFY, pb.Platform_PLATFORM_DEEZER, pb.Platform_PLATFORM_YOUTUBE:
+		// resolution may do multiple network calls; give more time
 		bridgeTimeout := providerTimeout * 3
 		bCtx, cancel := context.WithTimeout(ctx, bridgeTimeout)
 		defer cancel()
 
-		log.Printf("[GetStreamURL] bridge path | track_id=%q format=%q", trackID, preferredFormat)
+		log.Printf("[GetStreamURL] resolve path | track_id=%q format=%q", trackID, preferredFormat)
 
 		resp, err := resolveStreamURL(bCtx, trackID, preferredFormat)
 		if err != nil {
