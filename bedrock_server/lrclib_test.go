@@ -108,3 +108,12 @@ func TestMapToResponse(t *testing.T) {
 		}
 	})
 }
+
+func BenchmarkStringSimilarity(b *testing.B) {
+	s1 := "The Quick Brown Fox Jumps Over The Lazy Dog"
+	s2 := "The Quirk Brown Fox Jumps Over The Lazy Log"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = stringSimilarity(s1, s2)
+	}
+}
