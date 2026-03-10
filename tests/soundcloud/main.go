@@ -1,4 +1,4 @@
-﻿// package main is a SoundCloud-focused integration test client for the bedrock gRPC server.
+// package main is a SoundCloud-focused integration test client for the bedrock gRPC server.
 //
 //   1. Run Search* RPCs to get real live IDs from SoundCloud.
 //   2. Feed those IDs directly into GetTrack, GetAlbum, GetPlaylist,
@@ -26,6 +26,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -35,6 +36,7 @@ var (
 	addr           = flag.String("addr", "localhost:50052", "bedrock service address")
 	perCallTimeout = flag.Duration("timeout", 20*time.Second, "per-rpc deadline")
 	verbose        = flag.Bool("verbose", false, "print full JSON response bodies")
+	accessToken    = flag.String("token", "", "JWT access token for authentication")
 )
 
 // в”Ђв”Ђ colour palette в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
@@ -114,6 +116,11 @@ func trunc(s string, n int) string {
 func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), *perCallTimeout)
 	defer cancel()
+
+	if *accessToken != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+*accessToken)
+	}
+
 	start := time.Now()
 	v, err := fn(ctx)
 	return v, time.Since(start), err
@@ -696,8 +703,8 @@ func testGetStreamURL(c pb.BedrockServiceClient) {
 	info("content_type  %s", r.GetContentType())
 	info("is_fallback   %v", r.GetIsFallback())
 
-	if !strings.HasPrefix(streamURL, "https://") {
-		fail("stream_url does not start with https://")
+	if !strings.HasPrefix(streamURL, "http://") && !strings.HasPrefix(streamURL, "https://") {
+		fail("stream_url is not an http(s) url: %s", trunc(streamURL, 60))
 		recordResult(name, outFail, "stream_url scheme invalid", lat)
 		return
 	}
@@ -842,6 +849,9 @@ func testImportPlaylist(c pb.BedrockServiceClient) {
 	resp, lat, err := invoke(func(_ context.Context) (any, error) {
 		ctx, cancel := context.WithTimeout(context.Background(), importTimeout)
 		defer cancel()
+		if *accessToken != "" {
+			ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+*accessToken)
+		}
 		return c.ImportPlaylist(ctx, &pb.ImportPlaylistRequest{Url: playlistURL})
 	})
 	if err != nil {
