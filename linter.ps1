@@ -5,7 +5,7 @@ param(
 $badPatterns = @(
     "// ===",        # decors
     "/\* ---",       # blocks
-    "// [A-Z]",      # uppercase neuroslop 
+    "// [A-Z]"       # uppercase neuroslop 
 )
 
 # исключаем сгенерированное говно

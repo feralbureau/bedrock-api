@@ -182,7 +182,7 @@ func (p *YouTubeProvider) Platform() pb.Platform {
 	return pb.Platform_PLATFORM_YOUTUBE
 }
 
-// ID helpers 
+// id helpers 
 
 func ytNamespacedID(videoID string) string {
 	return "youtube:" + videoID
@@ -192,7 +192,7 @@ func ytStripPrefix(id string) string {
 	return strings.TrimPrefix(id, "youtube:")
 }
 
-// InnerTube response parsing helpers 
+// innerTube response parsing helpers 
 //
 // innertube returns deeply nested map[string]interface{} responses
 // these helpers safely navigate the structure to extract the fields we need without panicking on missing keys

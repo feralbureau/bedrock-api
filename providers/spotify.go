@@ -23,7 +23,7 @@ import (
 	spotapi "github.com/spotapi/spotapi-go/pkg/spotapi"
 )
 
-// SpotifyProvider 
+// spotifyProvider 
 
 // spotify provider implements trackProvider via feralbureau/spotify-wrapper.
 type SpotifyProvider struct {
@@ -44,7 +44,7 @@ func (p *SpotifyProvider) Platform() pb.Platform {
 	return pb.Platform_PLATFORM_SPOTIFY
 }
 
-// ID helpers 
+// id helpers 
 
 // spNS returns a fully-namespaced Spotify ID, e.g. "spotify:track:<id>".
 func spNS(kind, id string) string { return "spotify:" + kind + ":" + id }
@@ -63,7 +63,7 @@ func spBare(id string) string {
 	}
 }
 
-// Mapping helpers 
+// mapping helpers 
 
 func mapWrapperTrack(t spotapi.Track) *pb.Track {
 	artists := make([]*pb.Artist, 0, len(t.Artists))
@@ -126,7 +126,7 @@ func mapWrapperPlaylist(pl spotapi.Playlist) *pb.Playlist {
 	}
 }
 
-// Search 
+// search 
 
 func (p *SpotifyProvider) SearchTracks(_ context.Context, query string, limit int) ([]*pb.Track, error) {
 	if strings.TrimSpace(query) == "" {
@@ -202,7 +202,7 @@ func (p *SpotifyProvider) SearchPlaylists(_ context.Context, query string, limit
 	return out, nil
 }
 
-// Get single items 
+// get single items 
 
 func (p *SpotifyProvider) GetTrack(_ context.Context, platformID string) (*pb.Track, error) {
 	id := spBare(platformID)
@@ -308,7 +308,7 @@ func (p *SpotifyProvider) GetPlaylist(_ context.Context, platformID string) (*pb
 	return pbPlaylist, tracks, nil
 }
 
-// Stream 
+// stream 
 
 // getstreamurl always returns status error because spotify has no public stream.
 // the resolver routes spotify tracks through soundcloud metadata.
@@ -320,7 +320,7 @@ func (p *SpotifyProvider) GetStreamURL(_ context.Context, _ string, _ string) (*
 	}, nil
 }
 
-// Similar tracks 
+// similar tracks 
 
 // getsimilartracks resolves the seed then searches artist plus title for related tracks while skipping the seed itself.
 func (p *SpotifyProvider) GetSimilarTracks(ctx context.Context, platformID string, limit int) ([]*pb.Track, error) {
