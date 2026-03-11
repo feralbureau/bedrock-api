@@ -1,0 +1,3 @@
+[submodule "spotify-wrapper"]
+	path = spotify-wrapper
+	url = https://github.com/feralbureau/spotify-wrapper.git
