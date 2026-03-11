@@ -19,12 +19,7 @@
 //	go run ./tests/youtube/main.go -verbose
 //
 // Integration test (requires running bedrock server):
-//
-//	By default this test is skipped if YOUTUBE_INTEGRATION_TEST=1 is not set.
-//	To enable:
-//	  $env:YOUTUBE_INTEGRATION_TEST="1"; go run ./tests/youtube/main.go
-//	  # or on Linux/Mac:
-//	  YOUTUBE_INTEGRATION_TEST=1 go run ./tests/youtube/main.go
+//	Ensure the bedrock gRPC service is available (no extra env vars required).
 package main
 
 import (
@@ -908,14 +903,6 @@ func printSummary() {
 
 func main() {
 	flag.Parse()
-
-	// Skip unless explicitly enabled via env var
-	if os.Getenv("YOUTUBE_INTEGRATION_TEST") != "1" {
-		fmt.Printf("%s[youtube] Integration test skipped.%s\n", cYellow, cReset)
-		fmt.Printf("  Set YOUTUBE_INTEGRATION_TEST=1 to enable.\n")
-		fmt.Printf("  Example: $env:YOUTUBE_INTEGRATION_TEST=\"1\"; go run ./tests/youtube/main.go\n")
-		os.Exit(0)
-	}
 
 	fmt.Printf("%s%s═══ YOUTUBE MUSIC INTEGRATION TEST ═══%s\n", cBold, cCyan, cReset)
 	fmt.Printf("  target: %s\n", *addr)
