@@ -34,7 +34,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// ── cli flags ────────────────────────────────────────────────────────
+// cli flags
 
 var (
 	addr           = flag.String("addr", "localhost:50052", "bedrock service address")
@@ -46,7 +46,7 @@ var (
 	suitesFlag     = flag.String("suites", "youtube,spotify,deezer,soundcloud", "comma-separated list of suites to run")
 )
 
-// ── colour palette ───────────────────────────────────────────────────
+// colour palette
 
 const (
 	cReset  = "\033[0m"
@@ -58,10 +58,9 @@ const (
 	cGray   = "\033[90m"
 )
 
-// ── auto-auth ────────────────────────────────────────────────────────
+// auto-auth
 
-// autoAuth registers a fresh test user and logs in, returning the access token.
-// if registration fails (e.g. email already exists) it falls through to login.
+// autoAuth registers a test user and logs in. falls back to login if already exists.
 func autoAuth() string {
 	conn, err := grpc.NewClient(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -107,7 +106,7 @@ func autoAuth() string {
 	return token
 }
 
-// ── sub-test runner ──────────────────────────────────────────────────
+// sub-test runner
 
 type suiteResult struct {
 	name    string
@@ -156,7 +155,7 @@ func runSuite(name, pkg, token string, extraEnv []string) suiteResult {
 	}
 }
 
-// ── main ─────────────────────────────────────────────────────────────
+// main entry point
 
 func main() {
 	rand.Seed(time.Now().UnixNano()) //nolint:staticcheck
@@ -195,7 +194,7 @@ func main() {
 		results = append(results, r)
 	}
 
-	// aggregated summary
+	// print summary
 	fmt.Printf("\n%s%s═══ SUITE SUMMARY ═══%s\n", cBold, cCyan, cReset)
 	allPass := true
 	for _, r := range results {

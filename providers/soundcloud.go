@@ -159,7 +159,7 @@ func (m *clientIDManager) get(ctx context.Context, client *http.Client) (string,
 	}
 	m.mu.RUnlock()
 
-	// write lock вЂ” avoid thundering herd on cold start
+	// write lock to avoid thundering herd on cold start
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -173,7 +173,7 @@ func (m *clientIDManager) get(ctx context.Context, client *http.Client) (string,
 	for _, id := range m.all {
 		if m.probe(ctx, client, id) {
 			m.working = id
-			log.Printf("[soundcloud] client_id validated: %.8sвЂ¦", id)
+			   log.Printf("[soundcloud] client_id validated: %.8s...", id)
 			return id, nil
 		}
 	}
@@ -215,12 +215,10 @@ func (m *clientIDManager) probe(ctx context.Context, client *http.Client, id str
 }
 
 type SoundCloudProvider struct {
-	// apiClient is used for all JSON API calls (api-v2.soundcloud.com).
-	// explicitly in doRequest, rather than silently following them.
+	// api client for all json api calls
 	apiClient *http.Client
 
-	// streamClient is used exclusively for transcoding resolution.
-	// redirect (HTTPв†’HTTPS or CDN edge hops), so this client follows them.
+	// stream client for transcoding resolution, follows redirects
 	streamClient *http.Client
 
 	ids *clientIDManager
@@ -365,7 +363,7 @@ func (p *SoundCloudProvider) resolveTranscoding(ctx context.Context, transcoding
 
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated:
-		// expected вЂ” fall through to decode
+		// expected, fall through to decode
 	case http.StatusNotFound:
 		resp.Body.Close()
 		return "", ErrSCNotFound
@@ -397,8 +395,7 @@ func decodeJSON(resp *http.Response, dst any) error {
 	return nil
 }
 
-// artworkURL replaces any known sc size marker with the requested size.
-// falls back to raw if no marker is found.
+// replace any known sc size marker with requested size, fallback to raw
 func artworkURL(raw, size string) string {
 	if raw == "" {
 		return ""
@@ -414,7 +411,7 @@ func artworkURL(raw, size string) string {
 	return raw
 }
 
-// coverFromTrack prefers track artwork; falls back to user avatar
+// prefer track artwork, fallback to user avatar
 func coverFromTrack(t *scTrack) string {
 	if t.ArtworkURL != "" {
 		return artworkURL(t.ArtworkURL, "t500x500")
@@ -516,9 +513,7 @@ func mapPlaylistToAlbum(pl *scPlaylist) *pb.Album {
 	}
 }
 
-// fetchTrackByID fetches a single track using the V2 /tracks?ids= endpoint.
-//
-// index [0]. An empty array means the track does not exist (в†’ ErrSCNotFound).
+// fetch a single track using v2 /tracks?ids= endpoint, index 0. empty array means not found (errscnotfound)
 func (p *SoundCloudProvider) fetchTrackByID(ctx context.Context, nativeID string) (*scTrack, error) {
 	resp, err := p.doRequest(ctx, scAPIV2Base+"/tracks", url.Values{"ids": {nativeID}})
 	if err != nil {
@@ -769,10 +764,7 @@ func (p *SoundCloudProvider) GetArtist(ctx context.Context, platformID string) (
 	return mapUser(ur.user), tr.tracks, nil, nil
 }
 
-// resolvePlaylistByURL resolves a full SoundCloud permalink URL to an scPlaylist
-// using the SC V2 /resolve endpoint.  /resolve accepts any soundcloud.com URL and
-// returns the full resource object вЂ” same shape as /playlists/{id} вЂ” so we can
-// decode straight into scPlaylist without a second round-trip.
+// resolve a full soundcloud permalink url to an scplaylist using v2 /resolve endpoint, returns full resource object so we can decode straight into scplaylist
 func (p *SoundCloudProvider) resolvePlaylistByURL(ctx context.Context, rawURL string) (*scPlaylist, error) {
 	resp, err := p.doRequest(ctx, scAPIV2Base+"/resolve", url.Values{"url": {rawURL}})
 	if err != nil {
@@ -789,7 +781,7 @@ func (p *SoundCloudProvider) resolvePlaylistByURL(ctx context.Context, rawURL st
 }
 
 func (p *SoundCloudProvider) GetPlaylist(ctx context.Context, platformID string) (*pb.Playlist, []*pb.Track, error) {
-	// numeric native ID (stripPrefix would corrupt https://... в†’ //...).
+	// numeric native id (stripprefix would corrupt https url to //...)
 	if strings.HasPrefix(platformID, "http://") || strings.HasPrefix(platformID, "https://") {
 		pl, err := p.resolvePlaylistByURL(ctx, platformID)
 		if err != nil {
@@ -825,14 +817,7 @@ func (p *SoundCloudProvider) GetPlaylist(ctx context.Context, platformID string)
 	return mapPlaylist(&pl), tracks, nil
 }
 
-//
-//  1. Fetch full track metadata from api-v2 to get media.transcodings list.
-//  2. Pick the best transcoding entry (progressive MP3 preferred; HLS fallback).
-//  3. Call resolveTranscoding вЂ” it hits the pre-signed transcoding URL with
-//     only client_id appended (preserving Track-Authorization) and returns
-//     the `url` field from the JSON response.
-//
-// appends app_version/app_locale which corrupt pre-signed transcoding URLs.
+// fetch full track metadata from api-v2 to get media.transcodings, pick best transcoding (progressive mp3 preferred, hls fallback), call resolvetranscoding with only client_id appended, returns url field from json
 func (p *SoundCloudProvider) GetStreamURL(ctx context.Context, platformID string, preferredFormat string) (*pb.GetStreamURLResponse, error) {
 	nativeID := stripPrefix(platformID)
 
@@ -907,10 +892,7 @@ func (p *SoundCloudProvider) GetSimilarTracks(ctx context.Context, platformID st
 	return tracks, nil
 }
 
-// hydratePlaylistTracks fills in id-only track stubs via /tracks?ids=...
-// sc returns only the first ~5 tracks as full objects in a playlist response;
-// the rest arrive as {id: 123} with no other fields.
-// order is reconstructed from the original playlist stub list.
+// fill in id-only track stubs via /tracks?ids=...; sc returns only first ~5 tracks as full objects, rest as {id: 123}; order is reconstructed from original playlist stub
 func (p *SoundCloudProvider) hydratePlaylistTracks(ctx context.Context, pl *scPlaylist) ([]*pb.Track, error) {
 	if len(pl.Tracks) == 0 {
 		return nil, nil
@@ -961,9 +943,7 @@ func (p *SoundCloudProvider) hydratePlaylistTracks(ctx context.Context, pl *scPl
 	return result, nil
 }
 
-// selectTranscoding picks the best transcoding url.
-// hls priority:     opus > aac > mp3, fallback progressive
-// default priority: progressive, fallback hls mp3 > aac > opus
+// pick the best transcoding url, hls priority: opus > aac > mp3, fallback progressive; default: progressive, fallback hls mp3 > aac > opus
 func selectTranscoding(ts []scTranscoding, preferHLS bool) (string, string, string) {
 	if preferHLS {
 		for _, codec := range []string{"opus", "aac", "mp3"} {

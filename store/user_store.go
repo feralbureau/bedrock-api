@@ -47,8 +47,8 @@ func (s *pgUserStore) Save(ctx context.Context, user *User) error {
 
 // find retrieves a user by their email address.
 func (s *pgUserStore) Find(ctx context.Context, email string) (*User, error) {
-	// Cast uuid and timestamptz columns to text so pgx v5 can scan them into
-	// plain Go strings without requiring pgtype.UUID / pgtype.Timestamptz.
+	// cast uuid and timestamptz columns to text so pgx v5 can scan them into
+	// plain go strings without requiring pgtype.uuid / pgtype.timestamptz.
 	query := `
 		SELECT id::text, email, password_hash, role, created_at::text
 		FROM users

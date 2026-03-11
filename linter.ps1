@@ -5,7 +5,8 @@ param(
 $badPatterns = @(
     "// ===",        # decors
     "/\* ---",       # blocks
-    "// [A-Z]"       # Uppercase start (Case Sensitive!)
+    "// [A-Z]",      # uppercase neuroslop
+    "Ђ"          # idk how it appeared in codebase  
 )
 
 # исключаем сгенерированное говно

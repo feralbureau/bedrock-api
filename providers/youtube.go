@@ -1,21 +1,12 @@
 package providers
 
-// youtube.go — YouTube Music provider for the bedrock gRPC aggregator.
+// youtube.go — youtube music provider for the bedrock gRPC aggregator.
 //
-// Uses the InnerTube API via github.com/wslyyy/youtube-go to search
-// YouTube Music and retrieve track/album/artist/playlist metadata.
+// uses the innertube api via github.com/wslyyy/youtube-go for metadata.
+// auth stays unauthenticated unless YOUTUBE_COOKIES is supplied for age-locked content.
+// streaming: innertube has drm, so getstreamurl falls back to soundcloud like the spotify/deezer bridge.
 //
-// Auth: unauthenticated by default. Optional cookie string can be
-// passed via YOUTUBE_COOKIES env var for age-restricted content.
-//
-// Streaming: YouTube does not expose direct audio streams via InnerTube
-// without DRM/signature decryption. GetStreamURL returns an error so the
-// server bridge can route to SoundCloud for playback, matching the
-// Spotify/Deezer pattern.
-//
-// The InnerTube API returns deeply nested, untyped JSON. The parsing
-// helpers below extract only the fields we need for the aggregator
-// Track/Album/Artist/Playlist model.
+// the innertube api returns deeply nested maps; the helpers pull the fields we need for tracks, albums, artists, and playlists.
 
 import (
 	"context"
@@ -45,8 +36,8 @@ var (
 
 const (
 	ytHTTPTimeout = 12 * time.Second
-	// YouTube Music search filter params (base64-encoded protobuf).
-	// EgWKAQIIAQ== = filter for songs only
+	// youtube music search filter params (base64-encoded protobuf).
+	// egwkaqiiaq== filters to songs only
 	ytParamsSongs = "EgWKAQIIAQ%3D%3D"
 )
 
@@ -61,9 +52,7 @@ type ytStreamClient struct {
 }
 
 // player makes an Innertube /player call with the client-appropriate body.
-// Pre-populating context.client before Contextualise runs means the library
-// will preserve our extra fields (androidSdkVersion, osVersion, etc.) while
-// still injecting clientName/clientVersion on top.
+// pre-populating context.client before contextualise runs keeps our extra fields while still letting the library inject clientName/clientVersion.
 func (sc *ytStreamClient) player(videoID string) (map[string]interface{}, error) {
 	body := map[string]interface{}{
 		"videoId": videoID,
@@ -84,10 +73,9 @@ func (sc *ytStreamClient) player(videoID string) (map[string]interface{}, error)
 }
 
 // buildStreamPool returns the ordered client fallback chain used by GetStreamURL.
-// Clients earlier in the list are tried first; formats that only carry a
-// signatureCipher are skipped (JS deobfuscation is not available server-side).
-//
-// Order mirrors Metrolist's STREAM_FALLBACK_CLIENTS approach, adapted for Go:
+// clients earlier in the list are tried first; formats with signatureCipher are skipped because we cannot run js deobfuscation.
+
+// order mirrors metrolist's stream_fallback_clients approach, adapted for go:
 //  1. TVHTML5_SIMPLY_EMBEDDED_PLAYER – embedded-player bypass for age-restricted content
 //  2. TVHTML5 (v7.20260213)          – TV client with PoToken support
 //  3. ANDROID_VR 1.43.32            – non-adaptive bitrate, avoids audio stuttering
@@ -158,15 +146,15 @@ func buildStreamPool(httpClient *http.Client) []ytStreamClient {
 
 type YouTubeProvider struct {
 	mu         sync.Mutex
-	client     *innertube.InnerTube // WEB_REMIX for search/browse
+	client     *innertube.InnerTube // web_remix for search/browse
 	streamPool []ytStreamClient     // ordered fallback chain for streaming
 }
 
-// NewYouTubeProvider creates a YouTube Music provider using InnerTube.
+// new youtube provider creates an innertube client.
 func NewYouTubeProvider() (*YouTubeProvider, error) {
 	httpClient := &http.Client{Timeout: ytHTTPTimeout}
 
-	// WEB_REMIX (ID=67, v1.20260213) is the YouTube Music web client for search/browse.
+	// web_remix (id=67, v1.20260213) is the youtube music web client for search and browse.
 	mainCtx := innertube.ClientContext{
 		ClientName:    "WEB_REMIX",
 		ClientVersion: "1.20260213.01.00",
@@ -204,9 +192,8 @@ func ytStripPrefix(id string) string {
 
 // ── InnerTube response parsing helpers ──────────────────────────────
 //
-// InnerTube returns deeply nested map[string]interface{} responses.
-// These helpers safely navigate the structure to extract the fields
-// we need without panicking on missing keys.
+// innertube returns deeply nested map[string]interface{} responses.
+// these helpers safely navigate the structure to extract the fields we need without panicking on missing keys.
 
 // safeStr extracts a string from a nested map path.
 func safeStr(m map[string]interface{}, keys ...string) string {
@@ -409,7 +396,7 @@ func extractThumbnailURL(m map[string]interface{}, key string) string {
 	last := thumbs[len(thumbs)-1]
 	if tm, ok := last.(map[string]interface{}); ok {
 		url := safeStr(tm, "url")
-		// InnerTube sometimes returns protocol-relative URLs
+		// innertube sometimes returns protocol-relative urls
 		if strings.HasPrefix(url, "//") {
 			url = "https:" + url
 		}
@@ -445,14 +432,14 @@ func parseDurationText(s string) int32 {
 // ── Search response parsers ─────────────────────────────────────────
 
 // parseSearchTracksFromShelf extracts tracks from YouTube Music search response.
-// The response structure is:
+// the response structure is:
 // contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content
 //   .sectionListRenderer.contents[].musicShelfRenderer.contents[]
 //     .musicResponsiveListItemRenderer
 func (p *YouTubeProvider) parseSearchTracks(data map[string]interface{}, limit int) []*pb.Track {
 	var tracks []*pb.Track
 
-	// Navigate to the shelf contents
+	// navigate to the shelf contents
 	contents := p.findMusicShelfContents(data)
 	if contents == nil {
 		// try alternate path for non-music search
@@ -478,7 +465,7 @@ func (p *YouTubeProvider) parseSearchTracks(data map[string]interface{}, limit i
 
 // findMusicShelfContents navigates to musicShelfRenderer contents.
 func (p *YouTubeProvider) findMusicShelfContents(data map[string]interface{}) []interface{} {
-	// Path 1: tabbedSearchResultsRenderer (YouTube Music)
+	// path 1: tabbedSearchResultsRenderer (youtube music)
 	tabs := safeSlice(data, "contents", "tabbedSearchResultsRenderer", "tabs")
 	if len(tabs) > 0 {
 		tab0 := safeMap(tabs[0].(map[string]interface{}), "tabRenderer", "content", "sectionListRenderer")
@@ -495,7 +482,7 @@ func (p *YouTubeProvider) findMusicShelfContents(data map[string]interface{}) []
 		}
 	}
 
-	// Path 2: sectionListRenderer directly
+	// path 2: sectionListRenderer directly
 	sections := safeSlice(data, "contents", "sectionListRenderer", "contents")
 	for _, sec := range sections {
 		if sm, ok := sec.(map[string]interface{}); ok {
@@ -550,7 +537,7 @@ func (p *YouTubeProvider) parseMusicListItem(item map[string]interface{}) *pb.Tr
 		}
 	}
 	if videoID == "" {
-		// Try flexColumns navigation endpoint
+		// try flexColumns navigation endpoint
 		cols := safeSlice(renderer, "flexColumns")
 		if len(cols) > 0 {
 			col0 := cols[0]
@@ -845,7 +832,7 @@ func (p *YouTubeProvider) SearchAlbums(_ context.Context, query string, limit in
 		limit = 20
 	}
 
-	// YouTube Music album search filter: EgWKAQIYAQ==
+	// youtube music album search filter: EgWKAQIYAQ==
 	albumParams := "EgWKAQIYAQ%3D%3D"
 	data, err := p.client.Search(&query, &albumParams, nil)
 	if err != nil {
@@ -945,7 +932,7 @@ func (p *YouTubeProvider) SearchArtists(_ context.Context, query string, limit i
 		limit = 20
 	}
 
-	// YouTube Music artist filter: EgWKAQIgAQ==
+	// youtube music artist filter: EgWKAQIgAQ==
 	artistParams := "EgWKAQIgAQ%3D%3D"
 	data, err := p.client.Search(&query, &artistParams, nil)
 	if err != nil {
@@ -1029,7 +1016,7 @@ func (p *YouTubeProvider) SearchPlaylists(_ context.Context, query string, limit
 		limit = 20
 	}
 
-	// YouTube Music playlist filter: EgWKAQIoAQ==
+	// youtube music playlist filter: EgWKAQIoAQ==
 	playlistParams := "EgWKAQIoAQ%3D%3D"
 	data, err := p.client.Search(&query, &playlistParams, nil)
 	if err != nil {
@@ -1467,7 +1454,7 @@ func itagFromFormat(fm map[string]interface{}) int {
 // player response.  Formats that only carry a signatureCipher are skipped
 // because Go has no access to YouTube's obfuscated JS player.
 //
-// Itag priority (audio-only first, then muxed fallbacks):
+// itag priority (audio-only first, then muxed fallbacks):
 //
 //	251 – opus 160 kbps   140 – m4a AAC 128 kbps
 //	250 – opus  70 kbps   249 – opus  50 kbps
@@ -1483,7 +1470,7 @@ func extractBestAudioURL(data map[string]interface{}) (url string, itag int) {
 	muxed := safeSlice(sd, "formats")
 	all := append(adaptive, muxed...)
 
-	// Index only formats that carry a direct URL (skip cipher-only).
+	// index only formats that carry a direct url (skip cipher-only).
 	byItag := make(map[int]string, len(all))
 	for _, f := range all {
 		fm, ok := f.(map[string]interface{})
@@ -1504,20 +1491,19 @@ func extractBestAudioURL(data map[string]interface{}) (url string, itag int) {
 			return u, want
 		}
 	}
-	// Fallback: any direct URL.
+	// fallback: any direct url.
 	for t, u := range byItag {
 		return u, t
 	}
 	return "", 0
 }
 
-// GetStreamURL resolves a direct audio playback URL for a YouTube video using
-// a multi-client fallback chain.  Each client in the pool is tried in order;
+// getstreamurl resolves a direct audio playback url for a youtube video using
+// a multi-client fallback chain. each client in the pool is tried in order;
 // the first one that returns at least one format with a direct (non-ciphered)
-// URL wins.
+// url wins.
 //
-// Fallback chain: TVHTML5_SIMPLY_EMBEDDED_PLAYER → TVHTML5 →
-// ANDROID_VR (1.43 / 1.61) → ANDROID → IOS → WEB
+// fallback chain: TVHTML5_SIMPLY_EMBEDDED_PLAYER, TVHTML5, ANDROID_VR (1.43 / 1.61), ANDROID, IOS, WEB
 func (p *YouTubeProvider) GetStreamURL(ctx context.Context, platformID string, _ string) (*pb.GetStreamURLResponse, error) {
 	videoID := ytStripPrefix(platformID)
 
@@ -1543,16 +1529,14 @@ func (p *YouTubeProvider) GetStreamURL(ctx context.Context, platformID string, _
 	return nil, ErrYTNoStream
 }
 
-// GetSimilarTracks uses the "Next" endpoint with a YTM radio playlist (RDAMVM{id})
-// to get a full queue of related tracks. without a playlistId the queue is empty.
+// getsimilartracks uses the "Next" endpoint with a ytm radio playlist (RDAMVM{id}) to get a full queue of related tracks without a playlistId.
 func (p *YouTubeProvider) GetSimilarTracks(ctx context.Context, platformID string, limit int) ([]*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)
 	if limit <= 0 {
 		limit = 20
 	}
 
-	// RDAMVM{videoId} is the youtube music auto-radio mix based on a track.
-	// passing it as playlistId causes innertube to populate the up-next queue.
+	// rdamvm{videoId} is the youtube music auto-radio mix based on a track and populates the up-next queue.
 	radioID := "RDAMVM" + videoID
 	data, err := p.client.Next(&videoID, &radioID, nil, nil, nil)
 	if err != nil {

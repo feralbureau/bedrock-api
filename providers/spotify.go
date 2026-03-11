@@ -1,11 +1,9 @@
-﻿// Package providers — Spotify provider backed by the spotify-wrapper submodule.
+﻿// spotify provider backed by the spotify-wrapper submodule.
 //
-// Uses the private Spotify partner API (GraphQL) via the feralbureau/spotify-wrapper
-// submodule (at bedrock-api/spotify-wrapper).  No SPOTIFY_CLIENT_ID /
-// SPOTIFY_CLIENT_SECRET required — auth is handled transparently via the same
-// session / TOTP flow the web player uses.
+// uses the private spotify partner api via feralbureau/spotify-wrapper.
+// auth flows through the wrapper session/totp flow so client secrets stay hidden.
 //
-// Methods supported:
+// supported methods:
 //   - SearchTracks, GetTrack
 //   - SearchArtists, GetArtist   (top-tracks via SearchTracks)
 //   - GetAlbum  (partner API, full track list with cover/artist filled in)
@@ -27,14 +25,13 @@ import (
 
 // ── SpotifyProvider ────────────────────────────────────────────────────────
 
-// SpotifyProvider implements the trackProvider interface for Spotify using the
-// feralbureau/spotify-wrapper submodule.
+// spotify provider implements trackProvider via feralbureau/spotify-wrapper.
 type SpotifyProvider struct {
 	c *spotapi.Client
 }
 
-// NewSpotifyProvider initialises the TLS-fingerprinted Spotify client.
-// No environment variables are required.
+// new spotify provider boots the tls-fingerprinted client.
+// no other env vars are needed.
 func NewSpotifyProvider() (*SpotifyProvider, error) {
 	c, err := spotapi.NewClient("en")
 	if err != nil {
@@ -54,7 +51,7 @@ func spNS(kind, id string) string { return "spotify:" + kind + ":" + id }
 
 // spBare strips any "spotify:<kind>:" prefix and returns the raw ID.
 func spBare(id string) string {
-	// Handle "spotify:track:xxx", "spotify:xxx", or bare id.
+	// handle spotify:track:xxx, spotify:xxx, or bare ids.
 	parts := strings.SplitN(id, ":", 3)
 	switch len(parts) {
 	case 3:
@@ -149,7 +146,7 @@ func (p *SpotifyProvider) SearchTracks(_ context.Context, query string, limit in
 	return out, nil
 }
 
-// SearchAlbums searches via the Spotify partner API searchV2.albumsV2.
+// search albums hits searchv2.albumsv2 on the partner api.
 func (p *SpotifyProvider) SearchAlbums(_ context.Context, query string, limit int) ([]*pb.Album, error) {
 	if strings.TrimSpace(query) == "" {
 		return nil, nil
@@ -186,7 +183,7 @@ func (p *SpotifyProvider) SearchArtists(_ context.Context, query string, limit i
 	return out, nil
 }
 
-// SearchPlaylists searches via the Spotify partner API searchV2.playlists.
+// search playlists hits searchv2.playlists on the partner api.
 func (p *SpotifyProvider) SearchPlaylists(_ context.Context, query string, limit int) ([]*pb.Playlist, error) {
 	if strings.TrimSpace(query) == "" {
 		return nil, nil
@@ -251,8 +248,8 @@ func (p *SpotifyProvider) GetArtist(_ context.Context, platformID string) (*pb.A
 	}
 	pbArtist := mapWrapperArtist(*artist)
 
-	// Top tracks — use SearchTracks with the artist name as the query.
-	// The partner API has no explicit artist-top-tracks endpoint.
+	// top tracks reuse search tracks on the artist name query.
+	// the partner api has no artist-top-tracks endpoint.
 	var pbTracks []*pb.Track
 	if artist.Name != "" {
 		tracks, tErr := p.c.SearchTracks(artist.Name, 10, 0)
@@ -313,8 +310,8 @@ func (p *SpotifyProvider) GetPlaylist(_ context.Context, platformID string) (*pb
 
 // ── Stream ─────────────────────────────────────────────────────────────────
 
-// GetStreamURL always returns STATUS_ERROR — Spotify has no public audio stream.
-// The resolver bridges Spotify tracks through SoundCloud using the track metadata.
+// getstreamurl always returns status error because spotify has no public stream.
+// the resolver routes spotify tracks through soundcloud metadata.
 func (p *SpotifyProvider) GetStreamURL(_ context.Context, _ string, _ string) (*pb.GetStreamURLResponse, error) {
 	return &pb.GetStreamURLResponse{
 		Source: pb.Platform_PLATFORM_SPOTIFY,
@@ -325,8 +322,7 @@ func (p *SpotifyProvider) GetStreamURL(_ context.Context, _ string, _ string) (*
 
 // ── Similar tracks ─────────────────────────────────────────────────────────
 
-// GetSimilarTracks resolves the seed track, then searches "<artist> <title>" to
-// find related tracks, deduplicating the seed itself from the results.
+// getsimilartracks resolves the seed then searches artist plus title for related tracks while skipping the seed itself.
 func (p *SpotifyProvider) GetSimilarTracks(ctx context.Context, platformID string, limit int) ([]*pb.Track, error) {
 	if limit <= 0 {
 		limit = 20

@@ -15,7 +15,7 @@ import (
 	"example/grpc/util"
 )
 
-// Register creates a new user account and returns the user_id.
+// register adds a user and returns the user id.
 func (s *bedrockServer) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	if req.GetEmail() == "" || req.GetPassword() == "" {
 		return nil, status.Error(codes.InvalidArgument, "email and password are required")
@@ -51,7 +51,7 @@ func (s *bedrockServer) Register(ctx context.Context, req *pb.RegisterRequest) (
 	return &pb.RegisterResponse{UserId: user.ID}, nil
 }
 
-// Login verifies credentials and returns signed access + refresh tokens.
+// login checks credentials and returns access and refresh tokens.
 func (s *bedrockServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	if req.GetEmail() == "" || req.GetPassword() == "" {
 		return nil, status.Error(codes.InvalidArgument, "email and password are required")
@@ -86,7 +86,7 @@ func (s *bedrockServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Lo
 	}, nil
 }
 
-// RefreshToken validates a refresh token and issues a new access token.
+// refresh token swaps a valid refresh token for a fresh access token.
 func (s *bedrockServer) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
 	if req.GetRefreshToken() == "" {
 		return nil, status.Error(codes.InvalidArgument, "refresh_token is required")

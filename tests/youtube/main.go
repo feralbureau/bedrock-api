@@ -12,13 +12,13 @@
 //   - Tracks use YouTube video IDs (11 characters).
 //   - Albums/Artists/Playlists use YouTube Music browseIds (UC.../VL.../OLAK...).
 //
-// Run:
+// run the youtube integration client example:
 //
 //	go run ./tests/youtube/main.go
 //	go run ./tests/youtube/main.go -addr=10.0.0.1:50052 -timeout=20s
 //	go run ./tests/youtube/main.go -verbose
 //
-// Integration test (requires running bedrock server):
+// integration test that requires the bedrock gRPC server.
 //	Ensure the bedrock gRPC service is available (no extra env vars required).
 package main
 
@@ -146,7 +146,7 @@ var (
 
 // fallback constants — used only when search returns 0 results.
 const (
-	// Rick Astley - Never Gonna Give You Up
+	// rick astley track used for search samples
 	fallbackTrackID = "youtube:dQw4w9WgXcQ"
 	// cannot reliably fallback for YT Music browse IDs
 	fallbackAlbumID    = ""

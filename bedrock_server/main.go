@@ -1146,14 +1146,14 @@ func main() {
 		log.Fatal("bedrock: DATABASE_URL environment variable is not set")
 	}
 
-	// Initialize the connection pool
+	// initialize the database connection pool
 	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
 		log.Fatalf("bedrock: failed to connect to database: %v", err)
 	}
 	defer dbPool.Close()
 
-	// Verify the connection
+	// verify the connection by pinging the database
 	if err := dbPool.Ping(ctx); err != nil {
 		log.Fatalf("bedrock: failed to ping database: %v", err)
 	}
