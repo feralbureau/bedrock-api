@@ -1,16 +1,3 @@
-// package main is a Spotify-focused integration test client for the bedrock gRPC server.
-//
-//  1. Run Search* RPCs to get real live IDs from Spotify.
-//  2. Feed those IDs directly into GetTrack, GetAlbum, GetPlaylist,
-//     GetStreamURL, GetSimilarTracks вЂ” no hardcoded native IDs.
-//  3. Hardcoded IDs are only used as fallback when search returns 0 results.
-//
-//   - GetStreamURL always returns STATUS_ERROR (Spotify has no public audio stream).
-//     The test validates that this is handled gracefully вЂ” not a test failure.
-//   - GetArtist returns albums (Spotify has a per-artist albums endpoint).
-//   - Tracks carry popularity scores and preview_url fields.
-//
-//
 //	go run ./tests/spotify/main.go
 //	go run ./tests/spotify/main.go -addr=10.0.0.1:50052 -timeout=15s
 //	go run ./tests/spotify/main.go -verbose
@@ -35,7 +22,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// в”Ђв”Ђ cli flags в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+// cli flags
 
 var (
 	addr           = flag.String("addr", "localhost:50052", "bedrock service address")
@@ -44,7 +31,8 @@ var (
 	accessToken    = flag.String("token", "", "JWT access token for authentication")
 )
 
-// в”Ђв”Ђ colour palette в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+// colour palette
+
 
 const (
 	cReset  = "\033[0m"
@@ -56,7 +44,7 @@ const (
 	cGray   = "\033[90m"
 )
 
-// в”Ђв”Ђ result tracking в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+// result tracking
 
 type outcome int
 
@@ -79,7 +67,7 @@ func recordResult(name string, out outcome, detail string, latency time.Duration
 	results = append(results, testResult{name: name, out: out, detail: detail, latency: latency})
 }
 
-// в”Ђв”Ђ log helpers в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+// log helpers
 
 func section(title string) {
 	fmt.Printf("\n%s--- %s ---%s\n", cCyan, title, cReset)
@@ -132,7 +120,7 @@ func trunc(s string, n int) string {
 	return s[:n] + "..."
 }
 
-// в”Ђв”Ђ gRPC call wrapper в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+// gRPC call wrapper
 
 func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), *perCallTimeout)
@@ -147,7 +135,7 @@ func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, erro
 	return v, time.Since(start), err
 }
 
-// в”Ђв”Ђ shared live ID state в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+// shared live ID state
 
 var (
 	liveTrackID    string // spotify:<id>
@@ -168,7 +156,7 @@ const (
 	fallbackArtistID = "spotify:4MzJMcHQBl9SIYSjwWn8QW"
 )
 
-// в”Ђв”Ђ validation helpers в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+// validation helpers 
 
 func checkTrack(t *pb.Track, idx int) bool {
 	if t == nil {
@@ -286,7 +274,7 @@ func checkPlaylist(pl *pb.Playlist, idx int) bool {
 	return ok
 }
 
-// в”Ђв”Ђ search tests (also populate live IDs) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  search tests (also populate live IDs) 
 
 func testSearchTracks(c pb.BedrockServiceClient) {
 	name := `SearchTracks (query: "glittr aldn")`
@@ -512,7 +500,7 @@ func testSearchPlaylists(c pb.BedrockServiceClient) {
 	}
 }
 
-// в”Ђв”Ђ get tests (use live IDs from search) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  get tests (use live IDs from search) 
 
 func testGetTrack(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -801,7 +789,7 @@ func testGetPlaylist(c pb.BedrockServiceClient) {
 	}
 }
 
-// в”Ђв”Ђ stream test в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  stream test 
 
 func testGetStreamURL(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -946,7 +934,7 @@ func testGetStreamURLHLS(c pb.BedrockServiceClient) {
 	recordResult(name, outPass, fmt.Sprintf("SC bridge HLS OK  type=%s  is_fallback=%v", st, r.GetIsFallback()), lat)
 }
 
-// в”Ђв”Ђ similar tracks в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  similar tracks 
 
 func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -1012,7 +1000,7 @@ func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	}
 }
 
-// в”Ђв”Ђ import playlist в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  import playlist 
 
 func testImportPlaylist(c pb.BedrockServiceClient) {
 	const playlistURL = "https://open.spotify.com/playlist/1j9uOH2jcv3yeNjhmPhowD"
@@ -1076,7 +1064,7 @@ func testImportPlaylist(c pb.BedrockServiceClient) {
 	}
 }
 
-// в”Ђв”Ђ edge cases в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  edge cases 
 
 func testEdgeCases(c pb.BedrockServiceClient) {
 	{
@@ -1230,7 +1218,7 @@ func testEdgeCases(c pb.BedrockServiceClient) {
 	}
 }
 
-// в”Ђв”Ђ summary в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  summary 
 
 func printSummary() {
 	fmt.Printf("\n%s--- SPOTIFY TEST SUMMARY ---%s\n\n", cCyan, cReset)
@@ -1287,7 +1275,7 @@ func printSummary() {
 	}
 }
 
-// в”Ђв”Ђ main в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+//  main 
 
 func main() {
 	flag.Parse()

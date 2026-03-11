@@ -5,8 +5,7 @@ param(
 $badPatterns = @(
     "// ===",        # decors
     "/\* ---",       # blocks
-    "// [A-Z]",      # uppercase neuroslop
-    "Ђ"          # idk how it appeared in codebase  
+    "// [A-Z]",      # uppercase neuroslop 
 )
 
 # исключаем сгенерированное говно
@@ -38,23 +37,18 @@ foreach ($file in $files) {
 
         if ($isBadLine) {
             if ($clean) {
-                # Режим чистки: просто не добавляем строку в новый контент
-                # Write-Host "[X] Deleting from $($file.Name): $($line.Trim())" -ForegroundColor DarkGray
                 $isDirty = $true
             } else {
-                # Режим проверки: орем
                 Write-Host "[-] fuckup found in $($file.Name):$($i+1)" -ForegroundColor Red
                 Write-Host "    line: $($line.Trim())" -ForegroundColor DarkRed
                 $errorCount++
                 $newContent += $line # в режиме проверки оставляем как есть
             }
         } else {
-            # Хорошая строка, оставляем
             $newContent += $line
         }
     }
 
-    # Если были изменения и включен режим чистки - перезаписываем файл
     if ($clean -and $isDirty) {
         $newContent | Set-Content -Path $file.FullName -Encoding UTF8
         Write-Host "[+] Cleaned $($file.Name)" -ForegroundColor Cyan

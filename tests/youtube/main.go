@@ -41,7 +41,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// ── cli flags ────────────────────────────────────────────────────────
+// cli flags 
 
 var (
 	addr           = flag.String("addr", "localhost:50052", "bedrock service address")
@@ -50,7 +50,7 @@ var (
 	accessToken    = flag.String("token", "", "JWT access token for authentication")
 )
 
-// ── colour palette ───────────────────────────────────────────────────
+// colour palette 
 
 const (
 	cReset  = "\033[0m"
@@ -62,7 +62,7 @@ const (
 	cGray   = "\033[90m"
 )
 
-// ── result tracking ──────────────────────────────────────────────────
+// result tracking 
 
 type outcome int
 
@@ -85,7 +85,7 @@ func recordResult(name string, out outcome, detail string, latency time.Duration
 	results = append(results, testResult{name: name, out: out, detail: detail, latency: latency})
 }
 
-// ── log helpers ──────────────────────────────────────────────────────
+// log helpers 
 
 func section(title string) {
 	fmt.Printf("\n%s--- %s ---%s\n", cCyan, title, cReset)
@@ -120,7 +120,7 @@ func trunc(s string, n int) string {
 	return s[:n] + "..."
 }
 
-// ── gRPC call wrapper ────────────────────────────────────────────────
+// gRPC call wrapper 
 
 func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), *perCallTimeout)
@@ -135,7 +135,7 @@ func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, erro
 	return v, time.Since(start), err
 }
 
-// ── shared live ID state ─────────────────────────────────────────────
+// shared live ID state 
 
 var (
 	liveTrackID    string // youtube:<videoId>
@@ -146,7 +146,6 @@ var (
 
 // fallback constants — used only when search returns 0 results.
 const (
-	// rick astley track used for search samples
 	fallbackTrackID = "youtube:dQw4w9WgXcQ"
 	// cannot reliably fallback for YT Music browse IDs
 	fallbackAlbumID    = ""
@@ -154,7 +153,7 @@ const (
 	fallbackArtistID   = ""
 )
 
-// ── validation helpers ───────────────────────────────────────────────
+// validation helpers 
 
 func checkTrack(t *pb.Track, idx int) bool {
 	if t == nil {
@@ -272,7 +271,7 @@ func checkPlaylist(pl *pb.Playlist, idx int) bool {
 	return ok
 }
 
-// ── search tests (also populate live IDs) ────────────────────────────
+// search tests (also populate live IDs) 
 
 func testSearchTracks(c pb.BedrockServiceClient) {
 	name := `SearchTracks (query: "never gonna give you up")`
@@ -465,7 +464,7 @@ func testSearchPlaylists(c pb.BedrockServiceClient) {
 	}
 }
 
-// ── get tests (use live IDs from search) ─────────────────────────────
+// get tests (use live IDs from search) 
 
 func testGetTrack(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -710,7 +709,7 @@ func testGetPlaylist(c pb.BedrockServiceClient) {
 	}
 }
 
-// ── stream test ──────────────────────────────────────────────────────
+// stream test
 
 // testGetStreamURL searches lostrushi, gets a native youtube stream, and validates it came from innertube (not a fallback).
 func testGetStreamURL(c pb.BedrockServiceClient) {
@@ -801,7 +800,7 @@ func testGetStreamURL(c pb.BedrockServiceClient) {
 	recordResult(name, outPass, fmt.Sprintf("native Innertube stream OK  source=%v", r.GetSource()), lat)
 }
 
-// ── similar tracks test ──────────────────────────────────────────────
+// similar tracks test 
 
 func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -863,7 +862,7 @@ func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	}
 }
 
-// ── summary ──────────────────────────────────────────────────────────
+// summary 
 
 func printSummary() {
 	fmt.Printf("\n%s%s═══ YOUTUBE TEST SUMMARY ═══%s\n", cBold, cCyan, cReset)
@@ -899,7 +898,7 @@ func printSummary() {
 	}
 }
 
-// ── main ─────────────────────────────────────────────────────────────
+// main 
 
 func main() {
 	flag.Parse()
@@ -917,7 +916,7 @@ func main() {
 
 	client := pb.NewBedrockServiceClient(conn)
 
-	// ── run tests ──
+	// run tests 
 	// 1. searches: populate live IDs
 	testSearchTracks(client)
 	testSearchAlbums(client)
@@ -934,7 +933,7 @@ func main() {
 	testGetStreamURL(client)
 	testGetSimilarTracks(client)
 
-	// ── summary ──
+	// summary 
 	printSummary()
 
 	for _, r := range results {

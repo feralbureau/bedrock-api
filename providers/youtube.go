@@ -24,7 +24,7 @@ import (
 	innertube "github.com/wslyyy/youtube-go"
 )
 
-// ── sentinel errors ──────────────────────────────────────────────────
+// sentinel errors 
 
 var (
 	ErrYTNotFound = errors.New("youtube: resource not found")
@@ -32,7 +32,7 @@ var (
 	ErrYTAPI      = errors.New("youtube: innertube api error")
 )
 
-// ── constants ────────────────────────────────────────────────────────
+// constants 
 
 const (
 	ytHTTPTimeout = 12 * time.Second
@@ -41,7 +41,7 @@ const (
 	ytParamsSongs = "EgWKAQIIAQ%3D%3D"
 )
 
-// ── provider struct ──────────────────────────────────────────────────
+// provider struct 
 
 // ytStreamClient is one entry in the stream fallback pool.
 type ytStreamClient struct {
@@ -72,17 +72,19 @@ func (sc *ytStreamClient) player(videoID string) (map[string]interface{}, error)
 	return sc.client.Call("PLAYER", nil, body)
 }
 
-// buildStreamPool returns the ordered client fallback chain used by GetStreamURL.
-// clients earlier in the list are tried first; formats with signatureCipher are skipped because we cannot run js deobfuscation.
+// buildStreamPool returns the ordered client fallback chain used by GetStreamURL
+// clients earlier in the list are tried first formats with signatureCipher are skipped because we cannot run js deobfuscation
 
-// order mirrors metrolist's stream_fallback_clients approach, adapted for go:
-//  1. TVHTML5_SIMPLY_EMBEDDED_PLAYER – embedded-player bypass for age-restricted content
-//  2. TVHTML5 (v7.20260213)          – TV client with PoToken support
-//  3. ANDROID_VR 1.43.32            – non-adaptive bitrate, avoids audio stuttering
+// order mirrors metrolists stream_fallback_clients approach, adapted for go
+// credits to github.com/MetrolistGroup/Metrolist
+//  1. TVHTML5_SIMPLY_EMBEDDED_PLAYER – embeddedplayer bypass for age restricted content
+//  2. TVHTML5 (v7.20260213)          – tv client with poToken support
+//  3. ANDROID_VR 1.43.32            – non adaptive bitrate, avoids audio stuttering
 //  4. ANDROID_VR 1.61.48            – newer Android VR variant
 //  5. ANDROID 21.03.38              – mobile client, returns direct URLs consistently
 //  6. IOS 21.03.1                   – iPhone client, returns direct URLs consistently
 //  7. WEB 2.20260213                – standard web client, last resort
+
 func buildStreamPool(httpClient *http.Client) []ytStreamClient {
 	mk := func(clientName, clientVersion string, clientID int, apiKey, userAgent, referer string) *innertube.InnerTube {
 		ctx := innertube.ClientContext{
@@ -150,11 +152,11 @@ type YouTubeProvider struct {
 	streamPool []ytStreamClient     // ordered fallback chain for streaming
 }
 
-// new youtube provider creates an innertube client.
+// new youtube provider creates an innertube client
 func NewYouTubeProvider() (*YouTubeProvider, error) {
 	httpClient := &http.Client{Timeout: ytHTTPTimeout}
 
-	// web_remix (id=67, v1.20260213) is the youtube music web client for search and browse.
+	// web_remix (id=67, v1.20260213) is the youtube music web client for search and browse
 	mainCtx := innertube.ClientContext{
 		ClientName:    "WEB_REMIX",
 		ClientVersion: "1.20260213.01.00",
@@ -180,7 +182,7 @@ func (p *YouTubeProvider) Platform() pb.Platform {
 	return pb.Platform_PLATFORM_YOUTUBE
 }
 
-// ── ID helpers ───────────────────────────────────────────────────────
+// ID helpers 
 
 func ytNamespacedID(videoID string) string {
 	return "youtube:" + videoID
@@ -190,12 +192,12 @@ func ytStripPrefix(id string) string {
 	return strings.TrimPrefix(id, "youtube:")
 }
 
-// ── InnerTube response parsing helpers ──────────────────────────────
+// InnerTube response parsing helpers 
 //
-// innertube returns deeply nested map[string]interface{} responses.
-// these helpers safely navigate the structure to extract the fields we need without panicking on missing keys.
+// innertube returns deeply nested map[string]interface{} responses
+// these helpers safely navigate the structure to extract the fields we need without panicking on missing keys
 
-// safeStr extracts a string from a nested map path.
+// safeStr extracts a string from a nested map path
 func safeStr(m map[string]interface{}, keys ...string) string {
 	var current interface{} = m
 	for _, k := range keys {
@@ -211,7 +213,7 @@ func safeStr(m map[string]interface{}, keys ...string) string {
 	return ""
 }
 
-// safeSlice extracts a []interface{} from a nested map path.
+// safeSlice extracts a []interface{} from a nested map path
 func safeSlice(m map[string]interface{}, keys ...string) []interface{} {
 	var current interface{} = m
 	for _, k := range keys {
@@ -227,7 +229,7 @@ func safeSlice(m map[string]interface{}, keys ...string) []interface{} {
 	return nil
 }
 
-// safeMap extracts a map[string]interface{} from a nested map path.
+// safeMap extracts a map[string]interface{} from a nested map path
 func safeMap(m map[string]interface{}, keys ...string) map[string]interface{} {
 	var current interface{} = m
 	for _, k := range keys {
@@ -243,7 +245,7 @@ func safeMap(m map[string]interface{}, keys ...string) map[string]interface{} {
 	return nil
 }
 
-// safeFloat extracts a float64 from a nested map path.
+// safeFloat extracts a float64 from a nested map path
 func safeFloat(m map[string]interface{}, keys ...string) float64 {
 	var current interface{} = m
 	for _, k := range keys {
@@ -429,9 +431,9 @@ func parseDurationText(s string) int32 {
 	return int32(total * 1000)
 }
 
-// ── Search response parsers ─────────────────────────────────────────
+// search response parsers 
 
-// parseSearchTracksFromShelf extracts tracks from YouTube Music search response.
+// parseSearchTracksFromShelf extracts tracks from YouTube Music search response
 // the response structure is:
 // contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content
 //   .sectionListRenderer.contents[].musicShelfRenderer.contents[]
@@ -463,7 +465,7 @@ func (p *YouTubeProvider) parseSearchTracks(data map[string]interface{}, limit i
 	return tracks
 }
 
-// findMusicShelfContents navigates to musicShelfRenderer contents.
+// findMusicShelfContents navigates to musicShelfRenderer contents
 func (p *YouTubeProvider) findMusicShelfContents(data map[string]interface{}) []interface{} {
 	// path 1: tabbedSearchResultsRenderer (youtube music)
 	tabs := safeSlice(data, "contents", "tabbedSearchResultsRenderer", "tabs")
@@ -766,7 +768,7 @@ func (p *YouTubeProvider) parseVideoRenderer(vr map[string]interface{}) *pb.Trac
 	}
 }
 
-// ── Player response parser ──────────────────────────────────────────
+// player response parser 
 
 func (p *YouTubeProvider) parsePlayerTrack(data map[string]interface{}, videoID string) *pb.Track {
 	details := safeMap(data, "videoDetails")
@@ -802,7 +804,7 @@ func (p *YouTubeProvider) parsePlayerTrack(data map[string]interface{}, videoID 
 	}
 }
 
-// ── Provider interface methods ──────────────────────────────────────
+// provider interface methods 
 
 func (p *YouTubeProvider) SearchTracks(ctx context.Context, query string, limit int) ([]*pb.Track, error) {
 	if strings.TrimSpace(query) == "" {
@@ -1106,7 +1108,7 @@ func (p *YouTubeProvider) parseMusicPlaylistItem(item map[string]interface{}) *p
 	}
 }
 
-// ── Get single-item methods ─────────────────────────────────────────
+// get single-item methods 
 
 func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)

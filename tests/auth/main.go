@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// ── cli flags ────────────────────────────────────────────────────────
+// cli flags 
 
 var (
 	addr           = flag.String("addr", "localhost:50052", "bedrock service address")
@@ -26,7 +26,7 @@ var (
 	testPass       = flag.String("pass", "test-pass-123!", "test password")
 )
 
-// ── colour palette ───────────────────────────────────────────────────
+// colour palette 
 
 const (
 	cReset  = "\033[0m"
@@ -38,7 +38,7 @@ const (
 	cGray   = "\033[90m"
 )
 
-// ── result tracking ──────────────────────────────────────────────────
+// result tracking 
 
 type outcome int
 
@@ -60,7 +60,7 @@ func recordResult(name string, out outcome, detail string, latency time.Duration
 	results = append(results, testResult{name: name, out: out, detail: detail, latency: latency})
 }
 
-// ── log helpers ──────────────────────────────────────────────────────
+// log helpers 
 
 func section(title string) {
 	fmt.Printf("\n%s─── %s ───%s\n", cCyan, title, cReset)
@@ -83,7 +83,7 @@ func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, erro
 	return v, time.Since(start), err
 }
 
-// ── main ─────────────────────────────────────────────────────────────
+//  main 
 
 func main() {
 	flag.Parse()
@@ -108,7 +108,7 @@ func main() {
 
 	client := pb.NewBedrockServiceClient(conn)
 
-	// ── Test Sequence ──
+	//  Test Sequence 
 	
 	// 1. Register
 	userID := testRegister(client)
@@ -290,7 +290,7 @@ func testRefreshToken(c pb.BedrockServiceClient, refresh string) string {
 }
 
 func finish() {
-	fmt.Printf("\n%s─── Test Report ───%s\n", cCyan, cReset)
+	fmt.Printf("\n%s Test Report %s\n", cCyan, cReset)
 	
 	allPass := true
 	for _, res := range results {
