@@ -6,7 +6,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -16,27 +15,32 @@ import (
 	pb "example/grpc/bedrock"
 )
 
+var platformServiceMap = map[pb.Platform]string{
+	pb.Platform_PLATFORM_SPOTIFY:    "spotify",
+	pb.Platform_PLATFORM_SOUNDCLOUD: "soundcloud",
+	pb.Platform_PLATFORM_DEEZER:     "deezer",
+	pb.Platform_PLATFORM_YOUTUBE:    "youtube",
+	pb.Platform_PLATFORM_YANDEX:     "yandex",
+	pb.Platform_PLATFORM_VK:         "vk",
+}
+
 // rewriteTrack replaces raw urls in pb.Track with proxy links
 func rewriteTrack(t *pb.Track, host string) {
 	if t == nil {
 		return
 	}
-	// service name for the route: "soundcloud", "spotify", etc.
-	service := strings.ToLower(strings.TrimPrefix(pb.Platform_name[int32(t.Source)], "PLATFORM_"))
-	if service == "unspecified" {
+	service, ok := platformServiceMap[t.Source]
+	if !ok {
 		return
 	}
 
 	if t.CoverUrl != "" {
-		t.CoverUrl = fmt.Sprintf("http://%s/cover/%s/%s", host, service, t.PlatformId)
+		t.CoverUrl = "http://" + host + "/cover/" + service + "/" + t.PlatformId
 	}
 
 	for _, a := range t.Artists {
 		rewriteArtist(a, host)
 	}
-
-	// note: we don't have a direct raw stream url in Track message,
-	// but we can provide a proxy link that GetStreamURL would normally return.
 }
 
 // rewriteAlbum replaces raw urls in pb.Album and its child tracks
@@ -44,9 +48,9 @@ func rewriteAlbum(a *pb.Album, tracks []*pb.Track, host string) {
 	if a == nil {
 		return
 	}
-	service := strings.ToLower(strings.TrimPrefix(pb.Platform_name[int32(a.Source)], "PLATFORM_"))
-	if service != "unspecified" && a.CoverUrl != "" {
-		a.CoverUrl = fmt.Sprintf("http://%s/cover/%s/%s", host, service, a.PlatformId)
+	service, ok := platformServiceMap[a.Source]
+	if ok && a.CoverUrl != "" {
+		a.CoverUrl = "http://" + host + "/cover/" + service + "/" + a.PlatformId
 	}
 	for _, art := range a.Artists {
 		rewriteArtist(art, host)
@@ -61,14 +65,14 @@ func rewriteArtist(a *pb.Artist, host string) {
 	if a == nil {
 		return
 	}
-	service := strings.ToLower(strings.TrimPrefix(pb.Platform_name[int32(a.Source)], "PLATFORM_"))
-	if service == "unspecified" {
+	service, ok := platformServiceMap[a.Source]
+	if !ok {
 		return
 	}
 
 	if a.ImageUrl != "" {
 		_, nativeID := parsePlatformID(a.Id)
-		a.ImageUrl = fmt.Sprintf("http://%s/cover/%s/%s", host, service, nativeID)
+		a.ImageUrl = "http://" + host + "/cover/" + service + "/" + nativeID
 	}
 }
 
@@ -77,9 +81,9 @@ func rewritePlaylist(p *pb.Playlist, tracks []*pb.Track, host string) {
 	if p == nil {
 		return
 	}
-	service := strings.ToLower(strings.TrimPrefix(pb.Platform_name[int32(p.Source)], "PLATFORM_"))
-	if service != "unspecified" && p.CoverUrl != "" {
-		p.CoverUrl = fmt.Sprintf("http://%s/cover/%s/%s", host, service, p.PlatformId)
+	service, ok := platformServiceMap[p.Source]
+	if ok && p.CoverUrl != "" {
+		p.CoverUrl = "http://" + host + "/cover/" + service + "/" + p.PlatformId
 	}
 	for _, t := range tracks {
 		rewriteTrack(t, host)
