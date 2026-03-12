@@ -292,16 +292,69 @@ func resolveYouTubeDirect(ctx context.Context, nativeID, preferredFormat string)
 	log.Printf("[resolver] youtube innertube | video_id=%q format=%q", nativeID, preferredFormat)
 
 	resp, err := p.GetStreamURL(ctx, nativeID, preferredFormat)
-	if err != nil {
-		log.Printf("[resolver] youtube innertube failed | video_id=%q: %v", nativeID, err)
-		return nil, fmt.Errorf("resolver: youtube getstreamurl id=%q: %w", nativeID, err)
-	}
-
-	if resp.GetSource() == pb.Platform_PLATFORM_YOUTUBE {
+	if err == nil && resp != nil && resp.GetStreamUrl() != "" {
 		log.Printf("[resolver] youtube innertube ok | video_id=%q url=%.60s…", nativeID, resp.GetStreamUrl())
+		return resp, nil
+	}
+	if err != nil {
+		log.Printf("[resolver] youtube innertube failed, trying soundcloud fallback | video_id=%q: %v", nativeID, err)
 	} else {
-		log.Printf("[resolver] youtube unexpected fallback | video_id=%q source=%v", nativeID, resp.GetSource())
+		log.Printf("[resolver] youtube innertube returned no direct url, trying soundcloud fallback | video_id=%q", nativeID)
 	}
 
-	return resp, nil
+	// innertube returns only ciphered formats when no poToken is available;
+	// fall back to soundcloud like the spotify/deezer bridge does.
+	track, trackErr := p.GetTrack(ctx, nativeID)
+	if trackErr != nil || track == nil {
+		return nil, fmt.Errorf("resolver: youtube fallback: could not fetch track metadata for id=%q: %v", nativeID, trackErr)
+	}
+
+	artist := strings.TrimSpace(track.GetArtist())
+	title := strings.TrimSpace(track.GetTitle())
+	if artist == "" || title == "" {
+		return nil, fmt.Errorf("resolver: youtube fallback: track id=%q has empty artist or title", nativeID)
+	}
+
+	rawQuery := fmt.Sprintf("%s - %s", artist, title)
+	query := cleanQuery(rawQuery)
+	if query == "" {
+		query = rawQuery
+	}
+
+	log.Printf("[resolver] youtube -> soundcloud search | raw=%q cleaned=%q", rawQuery, query)
+
+	scProvider, err := getSoundCloudProvider()
+	if err != nil {
+		return nil, fmt.Errorf("resolver: youtube fallback: soundcloud unavailable: %w", err)
+	}
+
+	const searchLimit = 3
+	results, err := scProvider.SearchTracks(ctx, query, searchLimit)
+	if err != nil {
+		return nil, fmt.Errorf("resolver: youtube fallback: soundcloud search query=%q: %w", query, err)
+	}
+	if len(results) == 0 {
+		return nil, fmt.Errorf("resolver: youtube fallback: no soundcloud results for query=%q (video_id=%q)", query, nativeID)
+	}
+
+	scNativeID := results[0].GetPlatformId()
+	if scNativeID == "" {
+		return nil, fmt.Errorf("resolver: youtube fallback: soundcloud result missing platform_id (video_id=%q)", nativeID)
+	}
+
+	log.Printf("[resolver] youtube -> soundcloud match | sc_id=%q title=%q", scNativeID, results[0].GetTitle())
+
+	streamResp, err := scProvider.GetStreamURL(ctx, scNativeID, preferredFormat)
+	if err != nil {
+		return nil, fmt.Errorf("resolver: youtube fallback: soundcloud getstreamurl sc_id=%q: %w", scNativeID, err)
+	}
+	if streamResp == nil || streamResp.GetStreamUrl() == "" {
+		return nil, fmt.Errorf("resolver: youtube fallback: soundcloud empty stream url sc_id=%q", scNativeID)
+	}
+
+	log.Printf("[resolver] youtube -> soundcloud ok | video_id=%q -> sc_id=%q", nativeID, scNativeID)
+
+	streamResp.IsFallback = true
+	streamResp.FallbackFrom = pb.Platform_name[int32(pb.Platform_PLATFORM_YOUTUBE)]
+	return streamResp, nil
 }

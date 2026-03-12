@@ -641,8 +641,11 @@ func (s *bedrockServer) GetStreamURL(ctx context.Context, req *pb.GetStreamURLRe
 	plat, _ := parsePlatformID(trackID)
 	switch plat {
 	case pb.Platform_PLATFORM_SOUNDCLOUD, pb.Platform_PLATFORM_SPOTIFY, pb.Platform_PLATFORM_DEEZER, pb.Platform_PLATFORM_YOUTUBE:
-		// resolution may do multiple network calls; give more time
+		// youtube may exhaust a stream pool then fall back to soundcloud; give extra time
 		bridgeTimeout := providerTimeout * 3
+		if plat == pb.Platform_PLATFORM_YOUTUBE {
+			bridgeTimeout = providerTimeout * 6
+		}
 		bCtx, cancel := context.WithTimeout(ctx, bridgeTimeout)
 		defer cancel()
 

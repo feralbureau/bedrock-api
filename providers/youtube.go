@@ -35,7 +35,8 @@ var (
 // constants
 
 const (
-	ytHTTPTimeout = 12 * time.Second
+	ytHTTPTimeout       = 12 * time.Second
+	ytStreamHTTPTimeout = 5 * time.Second // shorter timeout per stream client attempt
 	// youtube music search filter params (base64-encoded protobuf).
 	// egwkaqiiaq== filters to songs only
 	ytParamsSongs = "EgWKAQIIAQ%3D%3D"
@@ -85,7 +86,8 @@ func (sc *ytStreamClient) player(videoID string) (map[string]interface{}, error)
 //  6. IOS 21.03.1                   – iPhone client, returns direct URLs consistently
 //  7. WEB 2.20260213                – standard web client, last resort
 
-func buildStreamPool(httpClient *http.Client) []ytStreamClient {
+func buildStreamPool() []ytStreamClient {
+	streamHTTPClient := &http.Client{Timeout: ytStreamHTTPTimeout}
 	mk := func(clientName, clientVersion string, clientID int, apiKey, userAgent, referer string) *innertube.InnerTube {
 		ctx := innertube.ClientContext{
 			ClientName:    clientName,
@@ -96,7 +98,7 @@ func buildStreamPool(httpClient *http.Client) []ytStreamClient {
 			Referer:       referer,
 		}
 		return &innertube.InnerTube{
-			Adaptor: innertube.NewInnerTubeAdaptor(ctx, httpClient),
+			Adaptor: innertube.NewInnerTubeAdaptor(ctx, streamHTTPClient),
 		}
 	}
 
@@ -169,7 +171,7 @@ func NewYouTubeProvider() (*YouTubeProvider, error) {
 		Adaptor: innertube.NewInnerTubeAdaptor(mainCtx, httpClient),
 	}
 
-	pool := buildStreamPool(httpClient)
+	pool := buildStreamPool()
 	log.Printf("[youtube] initialised WEB_REMIX search client + %d-client stream pool", len(pool))
 
 	return &YouTubeProvider{
@@ -1114,17 +1116,21 @@ func (p *YouTubeProvider) parseMusicPlaylistItem(item map[string]interface{}) *p
 func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)
 
-	data, err := p.client.Player(videoID)
-	if err != nil {
-		log.Printf("[youtube] GetTrack %s error: %v", videoID, err)
-		return nil, fmt.Errorf("youtube: GetTrack %s: %w", videoID, err)
+	// try each stream client in order; WEB_REMIX player doesn't return videoDetails
+	for _, sc := range p.streamPool {
+		data, err := sc.player(videoID)
+		if err != nil {
+			log.Printf("[youtube] GetTrack %s: %s player error: %v", videoID, sc.name, err)
+			continue
+		}
+		track := p.parsePlayerTrack(data, videoID)
+		if track != nil {
+			log.Printf("[youtube] GetTrack %s: resolved via %s", videoID, sc.name)
+			return track, nil
+		}
 	}
 
-	track := p.parsePlayerTrack(data, videoID)
-	if track == nil {
-		return nil, fmt.Errorf("youtube: GetTrack %s: %w", videoID, ErrYTNotFound)
-	}
-	return track, nil
+	return nil, fmt.Errorf("youtube: GetTrack %s: %w", videoID, ErrYTNotFound)
 }
 
 func (p *YouTubeProvider) GetAlbum(_ context.Context, platformID string) (*pb.Album, []*pb.Track, error) {

@@ -90,7 +90,7 @@ func TestSearchTracks(t *testing.T) {
 func TestGetTrack(t *testing.T) {
 	client := getTestClient(t)
 
-	ctx, cancel := ctxWithTimeout(20 * time.Second)
+	ctx, cancel := ctxWithTimeout(40 * time.Second)
 	defer cancel()
 	ctx = getAuthCtx(t, ctx)
 
@@ -130,7 +130,7 @@ func TestGetTrack(t *testing.T) {
 func TestGetStreamURL(t *testing.T) {
 	client := getTestClient(t)
 
-	ctx, cancel := ctxWithTimeout(30 * time.Second)
+	ctx, cancel := ctxWithTimeout(60 * time.Second)
 	defer cancel()
 	ctx = getAuthCtx(t, ctx)
 
