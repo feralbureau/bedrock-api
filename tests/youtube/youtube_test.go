@@ -2,6 +2,7 @@ package youtube
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -9,6 +10,7 @@ import (
 	pb "github.com/feralbureau/bedrock-api/bedrock"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var testConn *grpc.ClientConn
@@ -33,16 +35,38 @@ func ctxWithTimeout(d time.Duration) (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), d)
 }
 
+// getAuthCtx registers a throwaway user, logs in, and returns a context with the bearer token.
+func getAuthCtx(t *testing.T, baseCtx context.Context) context.Context {
+	t.Helper()
+	client := pb.NewBedrockServiceClient(testConn)
+
+	email := fmt.Sprintf("testuser_%d@example.com", time.Now().UnixNano())
+	password := "test-password-123"
+
+	_, err := client.Register(baseCtx, &pb.RegisterRequest{Email: email, Password: password})
+	if err != nil {
+		t.Fatalf("auth setup: Register failed: %v", err)
+	}
+
+	loginResp, err := client.Login(baseCtx, &pb.LoginRequest{Email: email, Password: password})
+	if err != nil {
+		t.Fatalf("auth setup: Login failed: %v", err)
+	}
+
+	return metadata.AppendToOutgoingContext(baseCtx, "authorization", "Bearer "+loginResp.GetAccessToken())
+}
+
 func TestSearchTracks(t *testing.T) {
 	client := getTestClient(t)
 
 	ctx, cancel := ctxWithTimeout(20 * time.Second)
 	defer cancel()
+	ctx = getAuthCtx(t, ctx)
 
 	resp, err := client.SearchTracks(ctx, &pb.SearchRequest{
-		Query:      "billie eilish bad guy",
-		Limit:      10,
-		Platforms:  []pb.Platform{pb.Platform_PLATFORM_YOUTUBE},
+		Query:     "billie eilish bad guy",
+		Limit:     10,
+		Platforms: []pb.Platform{pb.Platform_PLATFORM_YOUTUBE},
 	})
 
 	if err != nil {
@@ -68,11 +92,12 @@ func TestGetTrack(t *testing.T) {
 
 	ctx, cancel := ctxWithTimeout(20 * time.Second)
 	defer cancel()
+	ctx = getAuthCtx(t, ctx)
 
 	searchResp, err := client.SearchTracks(ctx, &pb.SearchRequest{
-		Query:      "billie eilish bad guy",
-		Limit:      1,
-		Platforms:  []pb.Platform{pb.Platform_PLATFORM_YOUTUBE},
+		Query:     "billie eilish bad guy",
+		Limit:     1,
+		Platforms: []pb.Platform{pb.Platform_PLATFORM_YOUTUBE},
 	})
 
 	if err != nil || len(searchResp.GetTracks()) == 0 {
@@ -107,15 +132,16 @@ func TestGetStreamURL(t *testing.T) {
 
 	ctx, cancel := ctxWithTimeout(30 * time.Second)
 	defer cancel()
+	ctx = getAuthCtx(t, ctx)
 
 	searchResp, err := client.SearchTracks(ctx, &pb.SearchRequest{
-		Query:      "billie eilish bad guy",
-		Limit:      1,
-		Platforms:  []pb.Platform{pb.Platform_PLATFORM_YOUTUBE},
+		Query:     "billie eilish bad guy",
+		Limit:     1,
+		Platforms: []pb.Platform{pb.Platform_PLATFORM_YOUTUBE},
 	})
 
 	if err != nil || len(searchResp.GetTracks()) == 0 {
-		t.Skip("could not find test track")
+		t.Fatal("could not find test track")
 	}
 
 	trackID := searchResp.GetTracks()[0].GetId()

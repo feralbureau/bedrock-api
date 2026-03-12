@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -33,18 +34,20 @@ func ctxWithTimeout(d time.Duration) (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), d)
 }
 
+// uniqueEmail generates a unique email using nanosecond precision to avoid collisions.
+func uniqueEmail() string {
+	return fmt.Sprintf("testuser_%d@example.com", time.Now().UnixNano())
+}
+
 func TestAuthRegister(t *testing.T) {
 	client := getTestClient(t)
 
 	ctx, cancel := ctxWithTimeout(10 * time.Second)
 	defer cancel()
 
-	email := "testuser_" + time.Now().Format("20060102150405") + "@example.com"
-	password := "test-password-123"
-
 	resp, err := client.Register(ctx, &pb.RegisterRequest{
-		Email:    email,
-		Password: password,
+		Email:    uniqueEmail(),
+		Password: "test-password-123",
 	})
 
 	if err != nil {
@@ -64,7 +67,7 @@ func TestAuthLogin(t *testing.T) {
 	ctx, cancel := ctxWithTimeout(10 * time.Second)
 	defer cancel()
 
-	email := "testuser_" + time.Now().Format("20060102150405") + "@example.com"
+	email := uniqueEmail()
 	password := "test-password-123"
 
 	_, err := client.Register(ctx, &pb.RegisterRequest{
@@ -101,7 +104,7 @@ func TestAuthRefreshToken(t *testing.T) {
 	ctx, cancel := ctxWithTimeout(10 * time.Second)
 	defer cancel()
 
-	email := "testuser_" + time.Now().Format("20060102150405") + "@example.com"
+	email := uniqueEmail()
 	password := "test-password-123"
 
 	_, err := client.Register(ctx, &pb.RegisterRequest{
@@ -120,10 +123,8 @@ func TestAuthRefreshToken(t *testing.T) {
 		t.Fatalf("Login failed: %v", err)
 	}
 
-	refreshToken := loginResp.GetRefreshToken()
-
 	refreshResp, err := client.RefreshToken(ctx, &pb.RefreshTokenRequest{
-		RefreshToken: refreshToken,
+		RefreshToken: loginResp.GetRefreshToken(),
 	})
 
 	if err != nil {
