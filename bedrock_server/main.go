@@ -20,8 +20,8 @@ import (
 	"time"
 
 	pb "example/grpc/bedrock"
-	"example/grpc/providers"
 	"example/grpc/pkg/token"
+	"example/grpc/providers"
 	"example/grpc/server/middleware"
 	"example/grpc/store"
 
@@ -1300,8 +1300,8 @@ func main() {
 	// public methods bypass JWT check — everything else requires a valid Bearer access token.
 	publicMethods := map[string]bool{
 		"/bedrock.BedrockService/Register":     true,
-		"/bedrock.BedrockService/Login":         true,
-		"/bedrock.BedrockService/RefreshToken":  true,
+		"/bedrock.BedrockService/Login":        true,
+		"/bedrock.BedrockService/RefreshToken": true,
 	}
 
 	authInterceptor := middleware.NewAuthInterceptor(newJWTManager(jwtSecret), publicMethods)

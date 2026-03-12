@@ -54,9 +54,9 @@ type dzError struct {
 }
 
 type dzPage[T any] struct {
-	Data  []T     `json:"data"`
-	Total int     `json:"total"`
-	Next  *string `json:"next"`
+	Data  []T      `json:"data"`
+	Total int      `json:"total"`
+	Next  *string  `json:"next"`
 	Error *dzError `json:"error"`
 }
 
@@ -104,15 +104,15 @@ type dzAlbumFull struct {
 }
 
 type dzArtistFull struct {
-	ID       int64   `json:"id"`
-	Name     string  `json:"name"`
-	PicXL    string  `json:"picture_xl"`
-	PicBig   string  `json:"picture_big"`
-	PicMed   string  `json:"picture_medium"`
-	NbAlbum  int32   `json:"nb_album"`
-	NbFan    int64   `json:"nb_fan"`
-	Link     string  `json:"link"`
-	Error    *dzError `json:"error"`
+	ID      int64    `json:"id"`
+	Name    string   `json:"name"`
+	PicXL   string   `json:"picture_xl"`
+	PicBig  string   `json:"picture_big"`
+	PicMed  string   `json:"picture_medium"`
+	NbAlbum int32    `json:"nb_album"`
+	NbFan   int64    `json:"nb_fan"`
+	Link    string   `json:"link"`
+	Error   *dzError `json:"error"`
 }
 
 type dzAlbumItem struct {

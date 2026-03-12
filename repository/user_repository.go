@@ -35,7 +35,7 @@ func (r *pgxUserRepository) Create(ctx context.Context, user *models.User) error
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, created_at
 	`
-	
+
 	// role is set to 'user' by default in DB if not provided,
 	// but pgx doesn't implicitly skip unless we modify the query dynamically.
 	// assume user struct has defaults set before calling.
@@ -44,7 +44,7 @@ func (r *pgxUserRepository) Create(ctx context.Context, user *models.User) error
 	if role == "" {
 		role = "user"
 	}
-	
+
 	err := r.pool.QueryRow(ctx, query,
 		user.Email,
 		user.PasswordHash,
@@ -66,7 +66,7 @@ func (r *pgxUserRepository) GetByEmail(ctx context.Context, email string) (*mode
 		FROM users
 		WHERE email = $1
 	`
-	
+
 	user := &models.User{}
 	err := r.pool.QueryRow(ctx, query, email).Scan(
 		&user.ID,
@@ -76,14 +76,14 @@ func (r *pgxUserRepository) GetByEmail(ctx context.Context, email string) (*mode
 		&user.IsVerified,
 		&user.CreatedAt,
 	)
-	
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New("user not found")
 		}
 		return nil, err
 	}
-	
+
 	return user, nil
 }
 
@@ -94,7 +94,7 @@ func (r *pgxUserRepository) GetByID(ctx context.Context, id string) (*models.Use
 		FROM users
 		WHERE id = $1
 	`
-	
+
 	user := &models.User{}
 	err := r.pool.QueryRow(ctx, query, id).Scan(
 		&user.ID,
@@ -104,13 +104,13 @@ func (r *pgxUserRepository) GetByID(ctx context.Context, id string) (*models.Use
 		&user.IsVerified,
 		&user.CreatedAt,
 	)
-	
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New("user not found")
 		}
 		return nil, err
 	}
-	
+
 	return user, nil
 }

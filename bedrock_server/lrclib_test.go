@@ -45,8 +45,8 @@ func TestParseLRC(t *testing.T) {
 			},
 		},
 		{
-			name: "garbage line",
-			raw:  "this is not lrc",
+			name:     "garbage line",
+			raw:      "this is not lrc",
 			expected: nil,
 		},
 	}
@@ -111,10 +111,10 @@ func TestMapToResponse(t *testing.T) {
 
 func TestStringSimilarity(t *testing.T) {
 	tests := []struct {
-		name     string
-		a, b     string
-		minSim   float64 // минимальное значение similarity
-		maxSim   float64 // максимальное значение
+		name   string
+		a, b   string
+		minSim float64 // минимальное значение similarity
+		maxSim float64 // максимальное значение
 	}{
 		{
 			name:   "exact match",

@@ -438,7 +438,7 @@ func testSearchPlaylists(c pb.BedrockServiceClient) {
 	}
 }
 
-// get tests (use live IDs from search) 
+// get tests (use live IDs from search)
 
 func testGetTrack(c pb.BedrockServiceClient) {
 	id := liveTrackID

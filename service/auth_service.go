@@ -46,7 +46,7 @@ func (s *AuthService) InitiateRegistration(ctx context.Context, email, password 
 	if err == nil {
 		return false, errors.New("user already exists")
 	}
-	
+
 	// if there's an error not equal to "user not found", we should ideally return it,
 	// but to keep it simple, we assume it's just a simple check.
 

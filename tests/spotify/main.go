@@ -33,7 +33,6 @@ var (
 
 // colour palette
 
-
 const (
 	cReset  = "\033[0m"
 	cBold   = "\033[1m"
@@ -156,7 +155,7 @@ const (
 	fallbackArtistID = "spotify:4MzJMcHQBl9SIYSjwWn8QW"
 )
 
-// validation helpers 
+// validation helpers
 
 func checkTrack(t *pb.Track, idx int) bool {
 	if t == nil {
@@ -274,7 +273,7 @@ func checkPlaylist(pl *pb.Playlist, idx int) bool {
 	return ok
 }
 
-//  search tests (also populate live IDs) 
+//  search tests (also populate live IDs)
 
 func testSearchTracks(c pb.BedrockServiceClient) {
 	name := `SearchTracks (query: "glittr aldn")`
@@ -500,7 +499,7 @@ func testSearchPlaylists(c pb.BedrockServiceClient) {
 	}
 }
 
-//  get tests (use live IDs from search) 
+//  get tests (use live IDs from search)
 
 func testGetTrack(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -789,7 +788,7 @@ func testGetPlaylist(c pb.BedrockServiceClient) {
 	}
 }
 
-//  stream test 
+//  stream test
 
 func testGetStreamURL(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -934,7 +933,7 @@ func testGetStreamURLHLS(c pb.BedrockServiceClient) {
 	recordResult(name, outPass, fmt.Sprintf("SC bridge HLS OK  type=%s  is_fallback=%v", st, r.GetIsFallback()), lat)
 }
 
-//  similar tracks 
+//  similar tracks
 
 func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -1000,7 +999,7 @@ func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	}
 }
 
-//  import playlist 
+//  import playlist
 
 func testImportPlaylist(c pb.BedrockServiceClient) {
 	const playlistURL = "https://open.spotify.com/playlist/1j9uOH2jcv3yeNjhmPhowD"
@@ -1064,7 +1063,7 @@ func testImportPlaylist(c pb.BedrockServiceClient) {
 	}
 }
 
-//  edge cases 
+//  edge cases
 
 func testEdgeCases(c pb.BedrockServiceClient) {
 	{
@@ -1218,7 +1217,7 @@ func testEdgeCases(c pb.BedrockServiceClient) {
 	}
 }
 
-//  summary 
+//  summary
 
 func printSummary() {
 	fmt.Printf("\n%s--- SPOTIFY TEST SUMMARY ---%s\n\n", cCyan, cReset)
@@ -1275,7 +1274,7 @@ func printSummary() {
 	}
 }
 
-//  main 
+//  main
 
 func main() {
 	flag.Parse()

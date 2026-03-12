@@ -245,8 +245,8 @@ func (g *geniusClient) fetchAnnotationDetail(ctx context.Context, annID int) (*g
 
 // geniusReferent is the raw shape from the referents api
 type geniusReferent struct {
-	ID          int                   `json:"id"`
-	Fragment    string                `json:"fragment"`
+	ID          int                    `json:"id"`
+	Fragment    string                 `json:"fragment"`
 	Annotations []geniusAnnotationItem `json:"annotations"`
 }
 

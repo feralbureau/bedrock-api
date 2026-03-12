@@ -24,7 +24,7 @@ import (
 	innertube "github.com/wslyyy/youtube-go"
 )
 
-// sentinel errors 
+// sentinel errors
 
 var (
 	ErrYTNotFound = errors.New("youtube: resource not found")
@@ -32,7 +32,7 @@ var (
 	ErrYTAPI      = errors.New("youtube: innertube api error")
 )
 
-// constants 
+// constants
 
 const (
 	ytHTTPTimeout = 12 * time.Second
@@ -41,7 +41,7 @@ const (
 	ytParamsSongs = "EgWKAQIIAQ%3D%3D"
 )
 
-// provider struct 
+// provider struct
 
 // ytStreamClient is one entry in the stream fallback pool.
 type ytStreamClient struct {
@@ -182,7 +182,7 @@ func (p *YouTubeProvider) Platform() pb.Platform {
 	return pb.Platform_PLATFORM_YOUTUBE
 }
 
-// id helpers 
+// id helpers
 
 func ytNamespacedID(videoID string) string {
 	return "youtube:" + videoID
@@ -192,7 +192,7 @@ func ytStripPrefix(id string) string {
 	return strings.TrimPrefix(id, "youtube:")
 }
 
-// innerTube response parsing helpers 
+// innerTube response parsing helpers
 //
 // innertube returns deeply nested map[string]interface{} responses
 // these helpers safely navigate the structure to extract the fields we need without panicking on missing keys
@@ -431,13 +431,14 @@ func parseDurationText(s string) int32 {
 	return int32(total * 1000)
 }
 
-// search response parsers 
+// search response parsers
 
 // parseSearchTracksFromShelf extracts tracks from YouTube Music search response
 // the response structure is:
 // contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content
-//   .sectionListRenderer.contents[].musicShelfRenderer.contents[]
-//     .musicResponsiveListItemRenderer
+//
+//	.sectionListRenderer.contents[].musicShelfRenderer.contents[]
+//	  .musicResponsiveListItemRenderer
 func (p *YouTubeProvider) parseSearchTracks(data map[string]interface{}, limit int) []*pb.Track {
 	var tracks []*pb.Track
 
@@ -768,7 +769,7 @@ func (p *YouTubeProvider) parseVideoRenderer(vr map[string]interface{}) *pb.Trac
 	}
 }
 
-// player response parser 
+// player response parser
 
 func (p *YouTubeProvider) parsePlayerTrack(data map[string]interface{}, videoID string) *pb.Track {
 	details := safeMap(data, "videoDetails")
@@ -804,7 +805,7 @@ func (p *YouTubeProvider) parsePlayerTrack(data map[string]interface{}, videoID 
 	}
 }
 
-// provider interface methods 
+// provider interface methods
 
 func (p *YouTubeProvider) SearchTracks(ctx context.Context, query string, limit int) ([]*pb.Track, error) {
 	if strings.TrimSpace(query) == "" {
@@ -1108,7 +1109,7 @@ func (p *YouTubeProvider) parseMusicPlaylistItem(item map[string]interface{}) *p
 	}
 }
 
-// get single-item methods 
+// get single-item methods
 
 func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)

@@ -1,4 +1,4 @@
-﻿package providers
+package providers
 
 import (
 	"context"
@@ -67,8 +67,8 @@ type scTrack struct {
 	Title             string  `json:"title"`
 	PermalinkURL      string  `json:"permalink_url"`
 	ArtworkURL        string  `json:"artwork_url"`
-	Duration          int32   `json:"duration"`       // ms, may be preview-clipped
-	FullDuration      int32   `json:"full_duration"`  // ms, always full length
+	Duration          int32   `json:"duration"`      // ms, may be preview-clipped
+	FullDuration      int32   `json:"full_duration"` // ms, always full length
 	Genre             string  `json:"genre"`
 	Streamable        bool    `json:"streamable"`
 	Public            bool    `json:"public"`
@@ -173,7 +173,7 @@ func (m *clientIDManager) get(ctx context.Context, client *http.Client) (string,
 	for _, id := range m.all {
 		if m.probe(ctx, client, id) {
 			m.working = id
-			   log.Printf("[soundcloud] client_id validated: %.8s...", id)
+			log.Printf("[soundcloud] client_id validated: %.8s...", id)
 			return id, nil
 		}
 	}

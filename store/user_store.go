@@ -63,13 +63,13 @@ func (s *pgUserStore) Find(ctx context.Context, email string) (*User, error) {
 		&user.Role,
 		&user.CreatedAt,
 	)
-	
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New("user not found")
 		}
 		return nil, err
 	}
-	
+
 	return user, nil
 }

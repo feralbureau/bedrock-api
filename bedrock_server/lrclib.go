@@ -162,7 +162,7 @@ func (c *lrcClient) doSearchWithQuery(ctx context.Context, query, reqTitle, reqA
 
 	for i := range results {
 		t := &results[i]
-		
+
 		cleanTrack := t.TrackName
 		if t.ArtistName != "" {
 			prefix1 := t.ArtistName + " - "
@@ -182,7 +182,7 @@ func (c *lrcClient) doSearchWithQuery(ctx context.Context, query, reqTitle, reqA
 		if simOrig > simTitle {
 			simTitle = simOrig
 		}
-		
+
 		// if the requested title is fully contained in the track name, bump to 0.8
 		if len(reqTitle) > 3 && strings.Contains(strings.ToLower(t.TrackName), strings.ToLower(reqTitle)) {
 			if simTitle < 0.8 {
@@ -218,7 +218,7 @@ func (c *lrcClient) doSearchWithQuery(ctx context.Context, query, reqTitle, reqA
 
 		if sim > bestSim {
 			if isFullSearch {
-				// regular search: need decent text match. 
+				// regular search: need decent text match.
 				// if duration matches, text match can be slightly lower.
 				if sim >= 0.85 || (sim >= 0.65 && durationMatch) {
 					bestSim = sim

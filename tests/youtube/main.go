@@ -1,16 +1,18 @@
 // package main is a YouTube Music-focused integration test client for the bedrock gRPC server.
 //
 //  1. Run Search* RPCs to get real live IDs from YouTube Music.
+//
 //  2. Feed those IDs directly into GetTrack, GetAlbum, GetPlaylist,
 //     GetStreamURL, GetSimilarTracks — no hardcoded native IDs.
+//
 //  3. Hardcoded IDs are only used as fallback when search returns 0 results.
 //
-//   - No auth required for public data — InnerTube is unauthenticated.
-//   - GetStreamURL bridges to SoundCloud (YouTube has DRM-protected audio).
+//     - No auth required for public data — InnerTube is unauthenticated.
+//     - GetStreamURL bridges to SoundCloud (YouTube has DRM-protected audio).
 //     The test expects STATUS_OK + a real stream_url, with is_fallback=true and
 //     source=PLATFORM_SOUNDCLOUD, matching the Spotify/Deezer bridge pattern.
-//   - Tracks use YouTube video IDs (11 characters).
-//   - Albums/Artists/Playlists use YouTube Music browseIds (UC.../VL.../OLAK...).
+//     - Tracks use YouTube video IDs (11 characters).
+//     - Albums/Artists/Playlists use YouTube Music browseIds (UC.../VL.../OLAK...).
 //
 // run the youtube integration client example:
 //
@@ -19,6 +21,7 @@
 //	go run ./tests/youtube/main.go -verbose
 //
 // integration test that requires the bedrock gRPC server.
+//
 //	Ensure the bedrock gRPC service is available (no extra env vars required).
 package main
 
@@ -41,7 +44,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// cli flags 
+// cli flags
 
 var (
 	addr           = flag.String("addr", "localhost:50052", "bedrock service address")
@@ -50,7 +53,7 @@ var (
 	accessToken    = flag.String("token", "", "JWT access token for authentication")
 )
 
-// colour palette 
+// colour palette
 
 const (
 	cReset  = "\033[0m"
@@ -62,7 +65,7 @@ const (
 	cGray   = "\033[90m"
 )
 
-// result tracking 
+// result tracking
 
 type outcome int
 
@@ -85,7 +88,7 @@ func recordResult(name string, out outcome, detail string, latency time.Duration
 	results = append(results, testResult{name: name, out: out, detail: detail, latency: latency})
 }
 
-// log helpers 
+// log helpers
 
 func section(title string) {
 	fmt.Printf("\n%s--- %s ---%s\n", cCyan, title, cReset)
@@ -120,7 +123,7 @@ func trunc(s string, n int) string {
 	return s[:n] + "..."
 }
 
-// gRPC call wrapper 
+// gRPC call wrapper
 
 func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), *perCallTimeout)
@@ -135,7 +138,7 @@ func invoke(fn func(ctx context.Context) (any, error)) (any, time.Duration, erro
 	return v, time.Since(start), err
 }
 
-// shared live ID state 
+// shared live ID state
 
 var (
 	liveTrackID    string // youtube:<videoId>
@@ -153,7 +156,7 @@ const (
 	fallbackArtistID   = ""
 )
 
-// validation helpers 
+// validation helpers
 
 func checkTrack(t *pb.Track, idx int) bool {
 	if t == nil {
@@ -271,7 +274,7 @@ func checkPlaylist(pl *pb.Playlist, idx int) bool {
 	return ok
 }
 
-// search tests (also populate live IDs) 
+// search tests (also populate live IDs)
 
 func testSearchTracks(c pb.BedrockServiceClient) {
 	name := `SearchTracks (query: "never gonna give you up")`
@@ -464,7 +467,7 @@ func testSearchPlaylists(c pb.BedrockServiceClient) {
 	}
 }
 
-// get tests (use live IDs from search) 
+// get tests (use live IDs from search)
 
 func testGetTrack(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -800,7 +803,7 @@ func testGetStreamURL(c pb.BedrockServiceClient) {
 	recordResult(name, outPass, fmt.Sprintf("native Innertube stream OK  source=%v", r.GetSource()), lat)
 }
 
-// similar tracks test 
+// similar tracks test
 
 func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	id := liveTrackID
@@ -862,7 +865,7 @@ func testGetSimilarTracks(c pb.BedrockServiceClient) {
 	}
 }
 
-// summary 
+// summary
 
 func printSummary() {
 	fmt.Printf("\n%s%s═══ YOUTUBE TEST SUMMARY ═══%s\n", cBold, cCyan, cReset)
@@ -898,7 +901,7 @@ func printSummary() {
 	}
 }
 
-// main 
+// main
 
 func main() {
 	flag.Parse()
@@ -916,7 +919,7 @@ func main() {
 
 	client := pb.NewBedrockServiceClient(conn)
 
-	// run tests 
+	// run tests
 	// 1. searches: populate live IDs
 	testSearchTracks(client)
 	testSearchAlbums(client)
@@ -933,7 +936,7 @@ func main() {
 	testGetStreamURL(client)
 	testGetSimilarTracks(client)
 
-	// summary 
+	// summary
 	printSummary()
 
 	for _, r := range results {
