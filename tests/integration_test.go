@@ -42,9 +42,8 @@ func TestIntegrationRunner(t *testing.T) {
 
 	select {
 	case err := <-done:
-		if out, _ := os.ReadFile("."); err != nil {
-			// log combined output via test log if the command failed
-			// (we intentionally do not capture stdout/stderr to keep code simple)
+		if err != nil {
+			// the integration runner process exited with a non-zero status
 			t.Fatalf("integration runner failed: %v", err)
 		}
 	case <-time.After(20 * time.Minute):
