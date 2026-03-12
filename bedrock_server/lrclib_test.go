@@ -109,6 +109,61 @@ func TestMapToResponse(t *testing.T) {
 	})
 }
 
+func TestStringSimilarity(t *testing.T) {
+	tests := []struct {
+		name     string
+		a, b     string
+		minSim   float64 // минимальное значение similarity
+		maxSim   float64 // максимальное значение
+	}{
+		{
+			name:   "exact match",
+			a:      "hello world",
+			b:      "hello world",
+			minSim: 1.0,
+			maxSim: 1.0,
+		},
+		{
+			name:   "one char different",
+			a:      "hello",
+			b:      "hallo",
+			minSim: 0.7,
+			maxSim: 1.0,
+		},
+		{
+			name:   "completely different",
+			a:      "abc",
+			b:      "xyz",
+			minSim: 0.0,
+			maxSim: 0.5,
+		},
+		{
+			name:   "case insensitive",
+			a:      "Hello World",
+			b:      "hello world",
+			minSim: 1.0,
+			maxSim: 1.0,
+		},
+		{
+			name:   "empty strings",
+			a:      "",
+			b:      "",
+			minSim: 1.0,
+			maxSim: 1.0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := stringSimilarity(tt.a, tt.b)
+			if got < tt.minSim || got > tt.maxSim {
+				t.Errorf("stringSimilarity(%q, %q) = %f, want in [%f, %f]",
+					tt.a, tt.b, got, tt.minSim, tt.maxSim)
+			}
+		})
+	}
+}
+
 func BenchmarkStringSimilarity(b *testing.B) {
 	s1 := "The Quick Brown Fox Jumps Over The Lazy Dog"
 	s2 := "The Quirk Brown Fox Jumps Over The Lazy Log"

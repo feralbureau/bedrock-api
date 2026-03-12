@@ -1,0 +1,45 @@
+name: test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: unit tests + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: go mod tidy check
+        run: |
+          go mod tidy
+          git diff --exit-code
+
+      - name: go fmt check
+        run: |
+          go fmt ./...
+          git diff --exit-code
+
+      - name: run tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: check coverage
+        run: |
+          coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "coverage: ${coverage}%"
+          awk -v cov="$coverage" 'BEGIN {if (cov < 50) {print "coverage too low (" cov "% < 50%)"; exit 1}}'
+
+      - name: build server
+        run: go build -o /tmp/bedrock-server ./bedrock_server
+
+      - name: build check — no errors
+        run: test -f /tmp/bedrock-server && echo "build ok"
