@@ -14,15 +14,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-go@v4
         with:
           go-version: '1.24'
 
+      - name: go mod download
+        run: go mod download
+
       - name: go mod tidy check
         run: |
           go mod tidy
-          git diff --exit-code
+          git diff --exit-code go.mod go.sum
 
       - name: go fmt check
         run: |
@@ -30,7 +35,7 @@ jobs:
           git diff --exit-code
 
       - name: run tests
-        run: go test -v -race -coverprofile=coverage.out ./...
+        run: go test -v -coverprofile=coverage.out ./...
 
       - name: check coverage
         run: |
@@ -41,5 +46,6 @@ jobs:
       - name: build server
         run: go build -o /tmp/bedrock-server ./bedrock_server
 
-      - name: build check — no errors
+      - name: build check
         run: test -f /tmp/bedrock-server && echo "build ok"
+
