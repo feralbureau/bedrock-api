@@ -12,7 +12,8 @@
       "Bash(cd \"C:\\\\Users\\\\hkamori\\\\Documents\\\\bedrock\\\\bedrock-api\" && go list -m golang.org/x/net 2>&1)",
       "Bash(cd \"C:\\\\Users\\\\hkamori\\\\Documents\\\\bedrock\\\\bedrock-api\" && go build ./bedrock_server/... 2>&1)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(*)"
+      "Bash(*)",
+      "WebFetch(domain:api.github.com)"
     ]
   }
 }

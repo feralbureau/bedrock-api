@@ -775,8 +775,32 @@ func (p *YouTubeProvider) parseVideoRenderer(vr map[string]interface{}) *pb.Trac
 
 func (p *YouTubeProvider) parsePlayerTrack(data map[string]interface{}, videoID string) *pb.Track {
 	details := safeMap(data, "videoDetails")
+
+	// if videoDetails is missing try microformat as a last-resort metadata source
 	if details == nil {
-		return nil
+		mf := safeMap(data, "microformat", "playerMicroformatRenderer")
+		if mf == nil {
+			return nil
+		}
+		title := p.extractText(mf["title"])
+		owner := safeStr(mf, "ownerChannelName")
+		thumbnail := extractThumbnailURL(mf, "thumbnail")
+		lengthSec := safeStr(mf, "lengthSeconds")
+		dur, _ := strconv.Atoi(lengthSec)
+		if title == "" {
+			return nil
+		}
+		return &pb.Track{
+			Id:           ytNamespacedID(videoID),
+			PlatformId:   videoID,
+			Title:        title,
+			Artist:       owner,
+			CoverUrl:     thumbnail,
+			DurationMs:   int32(dur * 1000),
+			ExternalUrl:  "https://music.youtube.com/watch?v=" + videoID,
+			IsStreamable: false,
+			Source:       pb.Platform_PLATFORM_YOUTUBE,
+		}
 	}
 
 	title := safeStr(details, "title")
@@ -1116,7 +1140,24 @@ func (p *YouTubeProvider) parseMusicPlaylistItem(item map[string]interface{}) *p
 func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)
 
-	// try each stream client in order; WEB_REMIX player doesn't return videoDetails
+	// WEB_REMIX returns full videoDetails for metadata; try it first.
+	data, err := p.client.Player(videoID)
+	if err != nil {
+		log.Printf("[youtube] GetTrack %s: WEB_REMIX player error: %v", videoID, err)
+	} else {
+		playability := safeStr(safeMap(data, "playabilityStatus"), "status")
+		hasDetails := safeMap(data, "videoDetails") != nil
+		hasMicroformat := safeMap(data, "microformat", "playerMicroformatRenderer") != nil
+		log.Printf("[youtube] GetTrack %s: WEB_REMIX playability=%s videoDetails=%v microformat=%v",
+			videoID, playability, hasDetails, hasMicroformat)
+		track := p.parsePlayerTrack(data, videoID)
+		if track != nil {
+			return track, nil
+		}
+		log.Printf("[youtube] GetTrack %s: WEB_REMIX parsePlayerTrack returned nil, trying stream clients", videoID)
+	}
+
+	// fallback: try stream pool clients which use different auth contexts
 	for _, sc := range p.streamPool {
 		data, err := sc.player(videoID)
 		if err != nil {
@@ -1128,6 +1169,8 @@ func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.
 			log.Printf("[youtube] GetTrack %s: resolved via %s", videoID, sc.name)
 			return track, nil
 		}
+		log.Printf("[youtube] GetTrack %s: %s returned no videoDetails (playability=%s)",
+			videoID, sc.name, safeStr(safeMap(data, "playabilityStatus"), "status"))
 	}
 
 	return nil, fmt.Errorf("youtube: GetTrack %s: %w", videoID, ErrYTNotFound)
@@ -1522,6 +1565,23 @@ func (p *YouTubeProvider) GetStreamURL(ctx context.Context, platformID string, _
 			log.Printf("[youtube] GetStreamURL %s: %s player error: %v", videoID, sc.name, err)
 			continue
 		}
+
+		sd := safeMap(data, "streamingData")
+		adaptive := safeSlice(data, "streamingData", "adaptiveFormats")
+		muxed := safeSlice(data, "streamingData", "formats")
+		directCount := 0
+		cipherCount := 0
+		for _, f := range append(adaptive, muxed...) {
+			if fm, ok := f.(map[string]interface{}); ok {
+				if safeStr(fm, "url") != "" {
+					directCount++
+				} else if safeStr(fm, "signatureCipher") != "" || safeStr(fm, "cipher") != "" {
+					cipherCount++
+				}
+			}
+		}
+		log.Printf("[youtube] GetStreamURL %s: %s streamingData=%v adaptiveFormats=%d formats=%d direct=%d cipher=%d",
+			videoID, sc.name, sd != nil, len(adaptive), len(muxed), directCount, cipherCount)
 
 		u, itag := extractBestAudioURL(data)
 		if u != "" {

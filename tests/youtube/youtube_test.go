@@ -116,8 +116,7 @@ func TestGetTrack(t *testing.T) {
 
 	track := resp.GetTrack()
 	if track == nil {
-		t.Errorf("GetTrack returned nil track")
-		return
+		t.Fatalf("GetTrack returned nil track (status=%v error=%q)", resp.GetStatus(), resp.GetError())
 	}
 
 	if track.GetTitle() == "" {
@@ -156,8 +155,7 @@ func TestGetStreamURL(t *testing.T) {
 	}
 
 	if resp.GetStreamUrl() == "" {
-		t.Errorf("GetStreamURL returned empty stream_url")
-		return
+		t.Fatalf("GetStreamURL returned empty stream_url (status=%v error=%q)", resp.GetStatus(), resp.GetError())
 	}
 
 	t.Logf("GetStreamURL OK: stream_url length=%d", len(resp.GetStreamUrl()))
