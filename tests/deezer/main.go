@@ -1,22 +1,23 @@
 // package main is a Deezer-focused integration test client for the bedrock gRPC server.
 //
 //  1. Run Search* RPCs to get real live IDs from Deezer.
+//
 //  2. Feed those IDs directly into GetTrack, GetAlbum, GetArtist, GetPlaylist,
 //     GetStreamURL, GetSimilarTracks — no hardcoded native IDs.
+//
 //  3. Hardcoded IDs are only used as fallback when search returns 0 results.
 //
-//   - No auth required for public data — all search/get endpoints are open.
-//   - GetStreamURL bridges to SoundCloud (Deezer public API = 30s previews only).
+//     - No auth required for public data — all search/get endpoints are open.
+//     - GetStreamURL bridges to SoundCloud (Deezer public API = 30s previews only).
 //     The test expects STATUS_OK + a real stream_url, with is_fallback=true and
 //     source=PLATFORM_SOUNDCLOUD, exactly like the Spotify bridge.
-//   - GetArtist returns albums (Deezer has /artist/{id}/albums endpoint).
-//   - Tracks carry a "rank" field mapped to Popularity.
-//   - release_date is always present on albums.
+//     - GetArtist returns albums (Deezer has /artist/{id}/albums endpoint).
+//     - Tracks carry a "rank" field mapped to Popularity.
+//     - release_date is always present on albums.
 //
-//
-//	go run ./tests/deezer/main.go
-//	go run ./tests/deezer/main.go -addr=10.0.0.1:50052 -timeout=20s
-//	go run ./tests/deezer/main.go -verbose
+//     go run ./tests/deezer/main.go
+//     go run ./tests/deezer/main.go -addr=10.0.0.1:50052 -timeout=20s
+//     go run ./tests/deezer/main.go -verbose
 package main
 
 import (

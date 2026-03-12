@@ -323,7 +323,6 @@ func (p *SoundCloudProvider) doRequest(ctx context.Context, endpoint string, ext
 // resolveTranscoding fetches a SoundCloud transcoding URL and returns the
 // final playable stream URL inside it.
 //
-//
 //  1. Transcoding URLs come pre-signed with a Track-Authorization token in
 //     their query string.  doRequest always appends app_version & app_locale
 //     which can invalidate that signature on some CDN configurations.

@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	pb "example/grpc/bedrock"
+
 	spotapi "github.com/spotapi/spotapi-go/pkg/spotapi"
 )
 

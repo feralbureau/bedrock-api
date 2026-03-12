@@ -1,6 +1,6 @@
-//	go run ./tests/spotify/main.go
-//	go run ./tests/spotify/main.go -addr=10.0.0.1:50052 -timeout=15s
-//	go run ./tests/spotify/main.go -verbose
+// go run ./tests/spotify/main.go
+// go run ./tests/spotify/main.go -addr=10.0.0.1:50052 -timeout=15s
+// go run ./tests/spotify/main.go -verbose
 package main
 
 import (

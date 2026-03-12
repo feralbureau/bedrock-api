@@ -1,11 +1,11 @@
 // package main is the top-level integration test runner for the bedrock gRPC server.
 //
 // it:
-//   1. auto-authenticates (register + login) against the running server to obtain a JWT,
-//      unless -token is passed directly.
-//   2. runs every platform test suite (youtube, spotify, deezer, soundcloud) as a subprocess,
-//      forwarding the token via -token so each suite can attach it to RPC calls.
-//   3. prints an aggregated pass/fail summary across all suites.
+//  1. auto-authenticates (register + login) against the running server to obtain a JWT,
+//     unless -token is passed directly.
+//  2. runs every platform test suite (youtube, spotify, deezer, soundcloud) as a subprocess,
+//     forwarding the token via -token so each suite can attach it to RPC calls.
+//  3. prints an aggregated pass/fail summary across all suites.
 //
 // usage:
 //

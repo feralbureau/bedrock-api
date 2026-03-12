@@ -1,14 +1,15 @@
 // package main is a SoundCloud-focused integration test client for the bedrock gRPC server.
 //
-//   1. Run Search* RPCs to get real live IDs from SoundCloud.
-//   2. Feed those IDs directly into GetTrack, GetAlbum, GetPlaylist,
-//      GetStreamURL, GetSimilarTracks — no hardcoded native IDs.
-//   3. Hardcoded IDs are only used as fallback when search returns 0 results.
+//  1. Run Search* RPCs to get real live IDs from SoundCloud.
 //
+//  2. Feed those IDs directly into GetTrack, GetAlbum, GetPlaylist,
+//     GetStreamURL, GetSimilarTracks — no hardcoded native IDs.
 //
-//	go run ./client/soundcloud_test/main.go
-//	go run ./client/soundcloud_test/main.go -addr=10.0.0.1:50052 -timeout=15s
-//	go run ./client/soundcloud_test/main.go -verbose
+//  3. Hardcoded IDs are only used as fallback when search returns 0 results.
+//
+//     go run ./client/soundcloud_test/main.go
+//     go run ./client/soundcloud_test/main.go -addr=10.0.0.1:50052 -timeout=15s
+//     go run ./client/soundcloud_test/main.go -verbose
 package main
 
 import (
