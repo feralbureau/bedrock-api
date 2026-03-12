@@ -13,7 +13,10 @@
       "Bash(cd \"C:\\\\Users\\\\hkamori\\\\Documents\\\\bedrock\\\\bedrock-api\" && go build ./bedrock_server/... 2>&1)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(*)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:ytmusicapi.readthedocs.io)",
+      "WebFetch(domain:tyrrrz.me)"
     ]
   }
 }

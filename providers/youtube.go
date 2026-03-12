@@ -1140,37 +1140,75 @@ func (p *YouTubeProvider) parseMusicPlaylistItem(item map[string]interface{}) *p
 func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)
 
-	// WEB_REMIX returns full videoDetails for metadata; try it first.
-	data, err := p.client.Player(videoID)
-	if err != nil {
-		log.Printf("[youtube] GetTrack %s: WEB_REMIX player error: %v", videoID, err)
-	} else {
-		playability := safeStr(safeMap(data, "playabilityStatus"), "status")
-		hasDetails := safeMap(data, "videoDetails") != nil
-		hasMicroformat := safeMap(data, "microformat", "playerMicroformatRenderer") != nil
-		log.Printf("[youtube] GetTrack %s: WEB_REMIX playability=%s videoDetails=%v microformat=%v",
-			videoID, playability, hasDetails, hasMicroformat)
-		track := p.parsePlayerTrack(data, videoID)
-		if track != nil {
-			return track, nil
+	// MusicGetQueue is the reliable metadata path for YTM audio-only tracks;
+	// the player API does not return videoDetails for privately-owned music tracks.
+	ids := []string{videoID}
+	queueData, err := p.client.MusicGetQueue(&ids, nil)
+	if err == nil {
+		for _, entry := range safeSlice(queueData, "queueDatas") {
+			em, ok := entry.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			renderer := safeMap(em, "content", "playlistPanelVideoRenderer")
+			if renderer == nil {
+				continue
+			}
+			vid := safeStr(renderer, "videoId")
+			if vid != videoID {
+				continue
+			}
+			title := extractRunsText(renderer, "title")
+			if title == "" {
+				title = safeStr(renderer, "title", "simpleText")
+			}
+			if title == "" {
+				break
+			}
+			// artist is in the first run of longBylineText or shortBylineText
+			artist := ""
+			for _, key := range []string{"longBylineText", "shortBylineText"} {
+				runs := safeSlice(renderer, key, "runs")
+				if len(runs) > 0 {
+					if rm, ok := runs[0].(map[string]interface{}); ok {
+						artist = safeStr(rm, "text")
+					}
+					break
+				}
+			}
+			durText := extractRunsText(renderer, "lengthText")
+			if durText == "" {
+				durText = safeStr(renderer, "lengthText", "simpleText")
+			}
+			thumbnail := extractThumbnailURL(renderer, "thumbnail")
+			return &pb.Track{
+				Id:          ytNamespacedID(videoID),
+				PlatformId:  videoID,
+				Title:       title,
+				Artist:      artist,
+				CoverUrl:    thumbnail,
+				DurationMs:  parseDurationText(durText),
+				ExternalUrl: "https://music.youtube.com/watch?v=" + videoID,
+				Source:      pb.Platform_PLATFORM_YOUTUBE,
+			}, nil
 		}
-		log.Printf("[youtube] GetTrack %s: WEB_REMIX parsePlayerTrack returned nil, trying stream clients", videoID)
 	}
 
-	// fallback: try stream pool clients which use different auth contexts
+	// fallback: player API (works for regular YouTube videos)
+	data, playerErr := p.client.Player(videoID)
+	if playerErr == nil {
+		if track := p.parsePlayerTrack(data, videoID); track != nil {
+			return track, nil
+		}
+	}
 	for _, sc := range p.streamPool {
 		data, err := sc.player(videoID)
 		if err != nil {
-			log.Printf("[youtube] GetTrack %s: %s player error: %v", videoID, sc.name, err)
 			continue
 		}
-		track := p.parsePlayerTrack(data, videoID)
-		if track != nil {
-			log.Printf("[youtube] GetTrack %s: resolved via %s", videoID, sc.name)
+		if track := p.parsePlayerTrack(data, videoID); track != nil {
 			return track, nil
 		}
-		log.Printf("[youtube] GetTrack %s: %s returned no videoDetails (playability=%s)",
-			videoID, sc.name, safeStr(safeMap(data, "playabilityStatus"), "status"))
 	}
 
 	return nil, fmt.Errorf("youtube: GetTrack %s: %w", videoID, ErrYTNotFound)
@@ -1566,23 +1604,6 @@ func (p *YouTubeProvider) GetStreamURL(ctx context.Context, platformID string, _
 			continue
 		}
 
-		sd := safeMap(data, "streamingData")
-		adaptive := safeSlice(data, "streamingData", "adaptiveFormats")
-		muxed := safeSlice(data, "streamingData", "formats")
-		directCount := 0
-		cipherCount := 0
-		for _, f := range append(adaptive, muxed...) {
-			if fm, ok := f.(map[string]interface{}); ok {
-				if safeStr(fm, "url") != "" {
-					directCount++
-				} else if safeStr(fm, "signatureCipher") != "" || safeStr(fm, "cipher") != "" {
-					cipherCount++
-				}
-			}
-		}
-		log.Printf("[youtube] GetStreamURL %s: %s streamingData=%v adaptiveFormats=%d formats=%d direct=%d cipher=%d",
-			videoID, sc.name, sd != nil, len(adaptive), len(muxed), directCount, cipherCount)
-
 		u, itag := extractBestAudioURL(data)
 		if u != "" {
 			log.Printf("[youtube] GetStreamURL %s: resolved via %s (itag %d)", videoID, sc.name, itag)
@@ -1592,7 +1613,13 @@ func (p *YouTubeProvider) GetStreamURL(ctx context.Context, platformID string, _
 				Status:    pb.ResponseStatus_STATUS_OK,
 			}, nil
 		}
-		log.Printf("[youtube] GetStreamURL %s: %s returned no direct URL, trying next client", videoID, sc.name)
+
+		// if this client returned streamingData but only cipher formats,
+		// the remaining clients will too — bail early and let resolver fall back to soundcloud.
+		if safeMap(data, "streamingData") != nil {
+			log.Printf("[youtube] GetStreamURL %s: %s has streamingData but all formats are ciphered, skipping pool", videoID, sc.name)
+			break
+		}
 	}
 
 	return nil, ErrYTNoStream
