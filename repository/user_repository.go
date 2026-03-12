@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"example/grpc/models"
+	"github.com/feralbureau/bedrock-api/models"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

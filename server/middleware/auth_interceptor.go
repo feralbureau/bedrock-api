@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"example/grpc/pkg/token"
+	"github.com/feralbureau/bedrock-api/pkg/token"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

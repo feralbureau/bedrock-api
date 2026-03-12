@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"example/grpc/models"
-	"example/grpc/pkg/hasher"
-	"example/grpc/pkg/token"
-	"example/grpc/repository"
+	"github.com/feralbureau/bedrock-api/models"
+	"github.com/feralbureau/bedrock-api/pkg/hasher"
+	"github.com/feralbureau/bedrock-api/pkg/token"
+	"github.com/feralbureau/bedrock-api/repository"
 )
 
 // auth_service provides the logic for user authentication and registration.

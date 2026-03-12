@@ -17,7 +17,7 @@ import (
 	genius "github.com/tsirysndr/go-genius"
 	"golang.org/x/net/html"
 
-	pb "example/grpc/bedrock"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
 )
 
 const geniusBrowserUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"

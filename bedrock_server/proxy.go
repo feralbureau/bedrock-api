@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	pb "example/grpc/bedrock"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
 )
 
 // rewriteTrack replaces raw urls in pb.Track with proxy links

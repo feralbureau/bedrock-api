@@ -8,9 +8,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"example/grpc/pkg/token" // assuming this from previous steps
-	"example/grpc/store"
-	"example/grpc/util"
+	"github.com/feralbureau/bedrock-api/pkg/token"
+	"github.com/feralbureau/bedrock-api/store"
+	"github.com/feralbureau/bedrock-api/util"
 )
 
 // assume pb exists with these types in the actual project

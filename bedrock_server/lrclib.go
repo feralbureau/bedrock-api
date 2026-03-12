@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	pb "example/grpc/bedrock"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
 )
 
 // lrclib track metadata from api

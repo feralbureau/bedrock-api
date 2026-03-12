@@ -19,7 +19,7 @@ import (
 	"log"
 	"strings"
 
-	pb "example/grpc/bedrock"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
 
 	spotapi "github.com/spotapi/spotapi-go/pkg/spotapi"
 )

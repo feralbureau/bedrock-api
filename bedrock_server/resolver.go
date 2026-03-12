@@ -12,7 +12,7 @@ import (
 	"strings"
 	"unicode"
 
-	pb "example/grpc/bedrock"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
 )
 
 // query cleaning

@@ -19,11 +19,11 @@ import (
 	"sync"
 	"time"
 
-	pb "example/grpc/bedrock"
-	"example/grpc/pkg/token"
-	"example/grpc/providers"
-	"example/grpc/server/middleware"
-	"example/grpc/store"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
+	"github.com/feralbureau/bedrock-api/pkg/token"
+	"github.com/feralbureau/bedrock-api/providers"
+	"github.com/feralbureau/bedrock-api/server/middleware"
+	"github.com/feralbureau/bedrock-api/store"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"

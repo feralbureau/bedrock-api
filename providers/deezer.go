@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	pb "example/grpc/bedrock"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
 )
 
 // sentinel errors

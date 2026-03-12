@@ -9,10 +9,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "example/grpc/bedrock"
-	"example/grpc/pkg/token"
-	"example/grpc/store"
-	"example/grpc/util"
+	pb "github.com/feralbureau/bedrock-api/bedrock"
+	"github.com/feralbureau/bedrock-api/pkg/token"
+	"github.com/feralbureau/bedrock-api/store"
+	"github.com/feralbureau/bedrock-api/util"
 )
 
 // register adds a user and returns the user id.
