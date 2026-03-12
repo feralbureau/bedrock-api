@@ -8,8 +8,10 @@ require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
 	github.com/spotapi/spotapi-go v0.0.0-00010101000000-000000000000
+	github.com/tsirysndr/go-genius v0.0.0-20200104091113-b7f36c050e32
 	github.com/wslyyy/youtube-go v0.0.0-20250305022328-7151a0ea0887
 	golang.org/x/crypto v0.48.0
+	golang.org/x/net v0.49.0
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11
 )
@@ -31,8 +33,6 @@ require (
 	github.com/klauspost/compress v1.18.2 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/tam7t/hpkp v0.0.0-20160821193359-2b70b4024ed5 // indirect
-	github.com/tsirysndr/go-genius v0.0.0-20200104091113-b7f36c050e32 // indirect
-	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
