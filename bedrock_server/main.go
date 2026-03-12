@@ -221,6 +221,7 @@ func withProviderTimeout(parent context.Context) (context.Context, context.Cance
 type bedrockServer struct {
 	pb.UnimplementedBedrockServiceServer
 	lyrics         *lrcClient
+	geniusLyrics   *geniusClient
 	userStore      store.UserStore
 	jwtManager     *token.JWTManager
 	refreshManager *token.JWTManager
@@ -814,6 +815,7 @@ func (s *bedrockServer) GetSimilarTracks(ctx context.Context, req *pb.GetSimilar
 
 // get lyrics: need either track_id or title+artist.
 // if track_id is given, fetches metadata first to get duration for better matching.
+// fans out to lrclib and genius in parallel; lrclib (synced) wins unless preferred_source is genius.
 func (s *bedrockServer) GetLyrics(ctx context.Context, req *pb.LyricsRequest) (*pb.LyricsResponse, error) {
 	title := strings.TrimSpace(req.GetTitle())
 	artist := strings.TrimSpace(req.GetArtist())
@@ -840,18 +842,137 @@ func (s *bedrockServer) GetLyrics(ctx context.Context, req *pb.LyricsRequest) (*
 		return nil, status.Error(codes.InvalidArgument, "could not resolve title/artist for lyrics")
 	}
 
-	log.Printf("GetLyrics: title=%q artist=%q duration=%ds", title, artist, durationS)
+	log.Printf("GetLyrics: title=%q artist=%q duration=%ds preferred=%s", title, artist, durationS, req.GetPreferredSource())
 
-	resp, err := s.lyrics.getLyrics(ctx, title, artist, durationS)
-	if err != nil {
-		log.Printf("GetLyrics error: %v", err)
+	preferred := req.GetPreferredSource()
+
+	// if client wants genius only, skip lrclib
+	if preferred == pb.LyricsSource_LYRICS_SOURCE_GENIUS {
+		if s.geniusLyrics == nil {
+			return &pb.LyricsResponse{
+				Status: pb.ResponseStatus_STATUS_ERROR,
+				Error:  "genius not configured (missing GENIUS_ACCESS_TOKEN)",
+				Type:   pb.LyricsType_LYRICS_TYPE_NONE,
+			}, nil
+		}
+		resp, err := s.geniusLyrics.getLyrics(ctx, title, artist)
+		if err != nil {
+			log.Printf("GetLyrics genius error: %v", err)
+			return &pb.LyricsResponse{
+				Status: pb.ResponseStatus_STATUS_ERROR,
+				Error:  err.Error(),
+				Type:   pb.LyricsType_LYRICS_TYPE_NONE,
+			}, nil
+		}
+		return resp, nil
+	}
+
+	// fan out to both sources in parallel; lrclib result is preferred when synced
+	type result struct {
+		resp *pb.LyricsResponse
+		err  error
+	}
+
+	lrcCh := make(chan result, 1)
+	go func() {
+		r, err := s.lyrics.getLyrics(ctx, title, artist, durationS)
+		lrcCh <- result{r, err}
+	}()
+
+	// genius is optional — only fan out if client is configured
+	var geniusCh chan result
+	if s.geniusLyrics != nil {
+		geniusCh = make(chan result, 1)
+		go func() {
+			r, err := s.geniusLyrics.getLyrics(ctx, title, artist)
+			geniusCh <- result{r, err}
+		}()
+	}
+
+	lrcRes := <-lrcCh
+
+	var geniusRes result
+	if geniusCh != nil {
+		geniusRes = <-geniusCh
+	}
+
+	// lrclib wins when it returns synced lyrics
+	if lrcRes.err == nil && lrcRes.resp != nil && lrcRes.resp.GetType() == pb.LyricsType_LYRICS_TYPE_SYNCED {
+		return lrcRes.resp, nil
+	}
+
+	// if genius has lyrics and lrclib didn't find anything useful, return genius
+	if geniusRes.err == nil && geniusRes.resp != nil && geniusRes.resp.GetType() == pb.LyricsType_LYRICS_TYPE_PLAIN {
+		// still attach lrclib plain as fallback if genius has nothing but lrclib does
+		return geniusRes.resp, nil
+	}
+
+	// fall back to whatever lrclib returned (plain or none)
+	if lrcRes.err != nil {
+		log.Printf("GetLyrics lrclib error: %v", lrcRes.err)
 		return &pb.LyricsResponse{
 			Status: pb.ResponseStatus_STATUS_ERROR,
-			Error:  err.Error(),
+			Error:  lrcRes.err.Error(),
 			Type:   pb.LyricsType_LYRICS_TYPE_NONE,
 		}, nil
 	}
 
+	return lrcRes.resp, nil
+}
+
+// get annotations: fetches genius community annotations for a song.
+// requires genius to be configured (GENIUS_ACCESS_TOKEN env var).
+func (s *bedrockServer) GetAnnotations(ctx context.Context, req *pb.AnnotationsRequest) (*pb.AnnotationsResponse, error) {
+	if s.geniusLyrics == nil {
+		return &pb.AnnotationsResponse{
+			Status: pb.ResponseStatus_STATUS_ERROR,
+			Error:  "genius not configured (missing GENIUS_ACCESS_TOKEN)",
+		}, nil
+	}
+
+	title := strings.TrimSpace(req.GetTitle())
+	artist := strings.TrimSpace(req.GetArtist())
+
+	// resolve metadata from track_id if supplied
+	if req.GetTrackId() != "" {
+		tResp, err := s.GetTrack(ctx, &pb.GetTrackRequest{TrackId: req.GetTrackId()})
+		if err == nil && tResp.GetStatus() == pb.ResponseStatus_STATUS_OK {
+			tr := tResp.GetTrack()
+			if title == "" {
+				title = tr.GetTitle()
+			}
+			if artist == "" {
+				artist = tr.GetArtist()
+			}
+		}
+	}
+
+	if title == "" || artist == "" {
+		return nil, status.Error(codes.InvalidArgument, "could not resolve title/artist for annotations")
+	}
+
+	limit := int(req.GetLimit())
+	if limit <= 0 {
+		limit = 20
+	}
+	if limit > 50 {
+		limit = 50
+	}
+
+	log.Printf("GetAnnotations: title=%q artist=%q limit=%d", title, artist, limit)
+
+	// give extra time — this does search + referents api + page scrape
+	aCtx, cancel := context.WithTimeout(ctx, 20*time.Second)
+	defer cancel()
+
+	resp, err := s.geniusLyrics.getAnnotations(aCtx, title, artist, limit)
+	if err != nil {
+		log.Printf("GetAnnotations error: %v", err)
+		return &pb.AnnotationsResponse{
+			Status: pb.ResponseStatus_STATUS_ERROR,
+			Error:  err.Error(),
+		}, nil
+	}
 	return resp, nil
 }
 
@@ -1192,6 +1313,7 @@ func main() {
 
 	pb.RegisterBedrockServiceServer(grpcServer, &bedrockServer{
 		lyrics:         newLrcClient(),
+		geniusLyrics:   newGeniusClient(),
 		userStore:      store.NewUserStore(dbPool),
 		jwtManager:     newJWTManager(jwtSecret),
 		refreshManager: newRefreshManager(jwtSecret),

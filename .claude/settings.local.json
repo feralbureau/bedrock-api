@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(cd \"C:\\\\Users\\\\hkamori\\\\Documents\\\\bedrock\\\\bedrock-api\" && ls -lah GENIUS*.md && wc -l GENIUS*.md)",
+      "Bash(ls -lh GENIUS*.md)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/hkamori/Documents/bedrock/bedrock-api/**)",
+      "Bash(done)",
+      "WebFetch(domain:genius.com)",
+      "Bash(cd \"C:\\\\Users\\\\hkamori\\\\Documents\\\\bedrock\\\\bedrock-api\" && go list -m golang.org/x/net 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\hkamori\\\\Documents\\\\bedrock\\\\bedrock-api\" && go build ./bedrock_server/... 2>&1)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(*)"
+    ]
+  }
+}

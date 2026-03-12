@@ -217,6 +217,64 @@ message LyricsResponse {
   LyricsType type = 10;
 }
 
+// genius contributor who wrote or edited an annotation
+message AnnotationContributor {
+  string login      = 1; // genius username
+  string url        = 2; // profile url on genius.com
+  string avatar_url = 3; // small avatar image
+  string role       = 4; // e.g. "editor", "staff", "contributor"
+  int32  iq         = 5; // genius iq score
+}
+
+// a single genius annotation anchored to a lyric fragment
+message LyricAnnotation {
+  int64  id      = 1; // genius annotation id
+  string url     = 2; // direct link to annotation on genius.com
+
+  // the exact lyric fragment this annotation is attached to.
+  // clients match this against the lyrics text to highlight the span.
+  string fragment = 3;
+
+  // annotation body in plain text
+  string body = 4;
+
+  int32  votes_total   = 5;
+  bool   verified      = 6;
+  bool   pinned        = 7;
+  int32  comment_count = 8;
+
+  // primary contributor (highest attribution)
+  AnnotationContributor contributor = 9;
+
+  // iso-8601 utc creation timestamp scraped from the genius page
+  string created_at    = 10;
+  // human-readable relative time, e.g. "3 years ago"
+  string created_ago   = 11;
+}
+
+message AnnotationsRequest {
+  // resolve by namespaced track id (e.g. "spotify:xxx") — genius song is looked up by title+artist
+  string track_id = 1;
+
+  // or supply metadata directly
+  string title  = 2;
+  string artist = 3;
+
+  // cap number of annotations returned; default 20, max 50
+  int32 limit = 4;
+}
+
+message AnnotationsResponse {
+  repeated LyricAnnotation annotations = 1;
+
+  // genius song id and page url used to fetch annotations
+  int64  genius_song_id  = 2;
+  string genius_song_url = 3;
+
+  ResponseStatus status = 4;
+  string         error  = 5;
+}
+
 // listening statistics
 message ListeningEvent {
   string id        = 1; // uuid assigned at write time
@@ -509,6 +567,9 @@ service BedrockService {
 
   // lyrics: fetches from lrclib (synced) and/or genius (plain-text) in parallel, returns best match. mirrors python get_track_lyrics() fan-out.
   rpc GetLyrics (LyricsRequest) returns (LyricsResponse);
+
+  // annotations: returns genius community annotations for a song, each anchored to a lyric fragment.
+  rpc GetAnnotations (AnnotationsRequest) returns (AnnotationsResponse);
 
   // listening statistics: record play event (call after user has streamed track). uses redis dedup (5 min window) to avoid double-counting.
   rpc RecordPlay (RecordPlayRequest) returns (RecordPlayResponse);

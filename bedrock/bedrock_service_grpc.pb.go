@@ -33,6 +33,7 @@ const (
 	BedrockService_GetStreamURL_FullMethodName        = "/bedrock.BedrockService/GetStreamURL"
 	BedrockService_GetSimilarTracks_FullMethodName    = "/bedrock.BedrockService/GetSimilarTracks"
 	BedrockService_GetLyrics_FullMethodName           = "/bedrock.BedrockService/GetLyrics"
+	BedrockService_GetAnnotations_FullMethodName      = "/bedrock.BedrockService/GetAnnotations"
 	BedrockService_RecordPlay_FullMethodName          = "/bedrock.BedrockService/RecordPlay"
 	BedrockService_GetListeningHistory_FullMethodName = "/bedrock.BedrockService/GetListeningHistory"
 	BedrockService_GetPopularTracks_FullMethodName    = "/bedrock.BedrockService/GetPopularTracks"
@@ -67,6 +68,8 @@ type BedrockServiceClient interface {
 	GetSimilarTracks(ctx context.Context, in *GetSimilarTracksRequest, opts ...grpc.CallOption) (*GetSimilarTracksResponse, error)
 	// lyrics: fetches from lrclib (synced) and/or genius (plain-text) in parallel, returns best match. mirrors python get_track_lyrics() fan-out.
 	GetLyrics(ctx context.Context, in *LyricsRequest, opts ...grpc.CallOption) (*LyricsResponse, error)
+	// annotations: returns genius community annotations for a song, each anchored to a lyric fragment.
+	GetAnnotations(ctx context.Context, in *AnnotationsRequest, opts ...grpc.CallOption) (*AnnotationsResponse, error)
 	// listening statistics: record play event (call after user has streamed track). uses redis dedup (5 min window) to avoid double-counting.
 	RecordPlay(ctx context.Context, in *RecordPlayRequest, opts ...grpc.CallOption) (*RecordPlayResponse, error)
 	// retrieve personal listening history for authenticated user.
@@ -202,6 +205,16 @@ func (c *bedrockServiceClient) GetLyrics(ctx context.Context, in *LyricsRequest,
 	return out, nil
 }
 
+func (c *bedrockServiceClient) GetAnnotations(ctx context.Context, in *AnnotationsRequest, opts ...grpc.CallOption) (*AnnotationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AnnotationsResponse)
+	err := c.cc.Invoke(ctx, BedrockService_GetAnnotations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bedrockServiceClient) RecordPlay(ctx context.Context, in *RecordPlayRequest, opts ...grpc.CallOption) (*RecordPlayResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RecordPlayResponse)
@@ -315,6 +328,8 @@ type BedrockServiceServer interface {
 	GetSimilarTracks(context.Context, *GetSimilarTracksRequest) (*GetSimilarTracksResponse, error)
 	// lyrics: fetches from lrclib (synced) and/or genius (plain-text) in parallel, returns best match. mirrors python get_track_lyrics() fan-out.
 	GetLyrics(context.Context, *LyricsRequest) (*LyricsResponse, error)
+	// annotations: returns genius community annotations for a song, each anchored to a lyric fragment.
+	GetAnnotations(context.Context, *AnnotationsRequest) (*AnnotationsResponse, error)
 	// listening statistics: record play event (call after user has streamed track). uses redis dedup (5 min window) to avoid double-counting.
 	RecordPlay(context.Context, *RecordPlayRequest) (*RecordPlayResponse, error)
 	// retrieve personal listening history for authenticated user.
@@ -372,6 +387,9 @@ func (UnimplementedBedrockServiceServer) GetSimilarTracks(context.Context, *GetS
 }
 func (UnimplementedBedrockServiceServer) GetLyrics(context.Context, *LyricsRequest) (*LyricsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetLyrics not implemented")
+}
+func (UnimplementedBedrockServiceServer) GetAnnotations(context.Context, *AnnotationsRequest) (*AnnotationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAnnotations not implemented")
 }
 func (UnimplementedBedrockServiceServer) RecordPlay(context.Context, *RecordPlayRequest) (*RecordPlayResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RecordPlay not implemented")
@@ -619,6 +637,24 @@ func _BedrockService_GetLyrics_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BedrockService_GetAnnotations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AnnotationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BedrockServiceServer).GetAnnotations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BedrockService_GetAnnotations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BedrockServiceServer).GetAnnotations(ctx, req.(*AnnotationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BedrockService_RecordPlay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RecordPlayRequest)
 	if err := dec(in); err != nil {
@@ -831,6 +867,10 @@ var BedrockService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetLyrics",
 			Handler:    _BedrockService_GetLyrics_Handler,
+		},
+		{
+			MethodName: "GetAnnotations",
+			Handler:    _BedrockService_GetAnnotations_Handler,
 		},
 		{
 			MethodName: "RecordPlay",
