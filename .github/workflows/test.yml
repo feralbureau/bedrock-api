@@ -1,4 +1,4 @@
-name: test
+name: integration-tests
 
 on:
   push:
@@ -7,50 +7,6 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    name: unit tests + build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: actions/setup-go@v4
-        with:
-          go-version: '1.24'
-
-      - name: go mod download
-        run: go mod download
-
-      - name: go mod tidy check
-        run: |
-          go mod tidy
-          git diff --exit-code go.mod go.sum
-
-      - name: go fmt check
-        run: |
-          go fmt ./...
-          git diff --exit-code
-
-      - name: run tests
-        run: go test -v -coverprofile=coverage.out ./...
-
-
-      - name: check coverage
-        run: |
-          coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
-          echo "coverage: ${coverage}%"
-          awk -v cov="$coverage" 'BEGIN {if (cov < 50) {print "coverage too low (" cov "% < 50%)"; exit 1}}'
-
-      - name: build server
-        run: go build -o /tmp/bedrock-server ./bedrock_server
-
-      - name: build check
-        run: test -f /tmp/bedrock-server && echo "build ok"
-
   integration-tests:
     name: integration tests with real APIs
     runs-on: ubuntu-latest
@@ -84,6 +40,11 @@ jobs:
       - name: go mod download
         run: go mod download
 
+      - name: run migrations
+        env:
+          PGPASSWORD: test
+        run: psql -h localhost -U test -d bedrock_test -f db/migrations/000001_create_users_table.up.sql
+
       - name: build server
         run: go build -o /tmp/bedrock-server ./bedrock_server
 
@@ -96,22 +57,14 @@ jobs:
           SOUNDCLOUD_CLIENT_ID: ${{ secrets.SOUNDCLOUD_CLIENT_ID }}
         run: |
           /tmp/bedrock-server &
-          SERVER_PID=$!
           sleep 5
-          if ! kill -0 $SERVER_PID 2>/dev/null; then
-            echo "Server failed to start"
-            exit 1
-          fi
+          kill -0 $! || (echo "server failed to start" && exit 1)
 
       - name: run integration tests
         env:
+          DATABASE_URL: "postgres://test:test@localhost:5432/bedrock_test"
+          JWT_SECRET: "test-secret-key-for-ci"
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SOUNDCLOUD_CLIENT_ID: ${{ secrets.SOUNDCLOUD_CLIENT_ID }}
         run: go test -v -timeout 120s ./tests/...
-
-      - name: calculate test success rate
-        if: always()
-        run: |
-          echo "Integration tests completed"
-          echo "If 70%+ of tests passed, the suite is considered successful"

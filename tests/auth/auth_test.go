@@ -48,7 +48,7 @@ func TestAuthRegister(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("Register failed: %v", err)
+		t.Fatalf("Register failed: %v", err)
 	}
 
 	if resp.GetUserId() == "" {
@@ -72,7 +72,7 @@ func TestAuthLogin(t *testing.T) {
 		Password: password,
 	})
 	if err != nil {
-		t.Skipf("Register failed: %v", err)
+		t.Fatalf("Register failed: %v", err)
 	}
 
 	loginResp, err := client.Login(ctx, &pb.LoginRequest{
@@ -81,7 +81,7 @@ func TestAuthLogin(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("Login failed: %v", err)
+		t.Fatalf("Login failed: %v", err)
 	}
 
 	if loginResp.GetAccessToken() == "" {
@@ -109,7 +109,7 @@ func TestAuthRefreshToken(t *testing.T) {
 		Password: password,
 	})
 	if err != nil {
-		t.Skipf("Register failed: %v", err)
+		t.Fatalf("Register failed: %v", err)
 	}
 
 	loginResp, err := client.Login(ctx, &pb.LoginRequest{
@@ -117,7 +117,7 @@ func TestAuthRefreshToken(t *testing.T) {
 		Password: password,
 	})
 	if err != nil {
-		t.Skipf("Login failed: %v", err)
+		t.Fatalf("Login failed: %v", err)
 	}
 
 	refreshToken := loginResp.GetRefreshToken()
@@ -127,7 +127,7 @@ func TestAuthRefreshToken(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("RefreshToken failed: %v", err)
+		t.Fatalf("RefreshToken failed: %v", err)
 	}
 
 	if refreshResp.GetAccessToken() == "" {

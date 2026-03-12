@@ -53,7 +53,7 @@ func TestSearchTracks(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("SearchTracks failed: %v", err)
+		t.Fatalf("SearchTracks failed: %v", err)
 	}
 
 	tracks := resp.GetTracks()
@@ -84,7 +84,7 @@ func TestGetTrack(t *testing.T) {
 	})
 
 	if err != nil || len(searchResp.GetTracks()) == 0 {
-		t.Skip("could not find test track")
+		t.Fatal("could not find test track")
 	}
 
 	trackID := searchResp.GetTracks()[0].GetId()
@@ -94,7 +94,7 @@ func TestGetTrack(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("GetTrack failed: %v", err)
+		t.Fatalf("GetTrack failed: %v", err)
 	}
 
 	track := resp.GetTrack()
@@ -124,7 +124,7 @@ func TestSearchAlbums(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("SearchAlbums failed: %v", err)
+		t.Fatalf("SearchAlbums failed: %v", err)
 	}
 
 	albums := resp.GetAlbums()
@@ -155,7 +155,7 @@ func TestGetAlbum(t *testing.T) {
 	})
 
 	if err != nil || len(searchResp.GetAlbums()) == 0 {
-		t.Skip("could not find test album")
+		t.Fatal("could not find test album")
 	}
 
 	albumID := searchResp.GetAlbums()[0].GetId()
@@ -165,7 +165,7 @@ func TestGetAlbum(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("GetAlbum failed: %v", err)
+		t.Fatalf("GetAlbum failed: %v", err)
 	}
 
 	album := resp.GetAlbum()
@@ -195,7 +195,7 @@ func TestSearchArtists(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("SearchArtists failed: %v", err)
+		t.Fatalf("SearchArtists failed: %v", err)
 	}
 
 	artists := resp.GetArtists()
@@ -226,7 +226,7 @@ func TestGetArtist(t *testing.T) {
 	})
 
 	if err != nil || len(searchResp.GetArtists()) == 0 {
-		t.Skip("could not find test artist")
+		t.Fatal("could not find test artist")
 	}
 
 	artistID := searchResp.GetArtists()[0].GetId()
@@ -236,7 +236,7 @@ func TestGetArtist(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("GetArtist failed: %v", err)
+		t.Fatalf("GetArtist failed: %v", err)
 	}
 
 	artist := resp.GetArtist()
@@ -266,7 +266,7 @@ func TestSearchPlaylists(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("SearchPlaylists failed: %v", err)
+		t.Fatalf("SearchPlaylists failed: %v", err)
 	}
 
 	playlists := resp.GetPlaylists()
@@ -297,7 +297,7 @@ func TestGetPlaylist(t *testing.T) {
 	})
 
 	if err != nil || len(searchResp.GetPlaylists()) == 0 {
-		t.Skip("could not find test playlist")
+		t.Fatal("could not find test playlist")
 	}
 
 	playlistID := searchResp.GetPlaylists()[0].GetId()
@@ -307,7 +307,7 @@ func TestGetPlaylist(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("GetPlaylist failed: %v", err)
+		t.Fatalf("GetPlaylist failed: %v", err)
 	}
 
 	playlist := resp.GetPlaylist()

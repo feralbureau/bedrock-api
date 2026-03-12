@@ -53,7 +53,7 @@ func TestSearchTracks(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("SearchTracks failed: %v", err)
+		t.Fatalf("SearchTracks failed: %v", err)
 	}
 
 	tracks := resp.GetTracks()
@@ -84,7 +84,7 @@ func TestGetTrack(t *testing.T) {
 	})
 
 	if err != nil || len(searchResp.GetTracks()) == 0 {
-		t.Skip("could not find test track")
+		t.Fatal("could not find test track")
 	}
 
 	trackID := searchResp.GetTracks()[0].GetId()
@@ -94,7 +94,7 @@ func TestGetTrack(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("GetTrack failed: %v", err)
+		t.Fatalf("GetTrack failed: %v", err)
 	}
 
 	track := resp.GetTrack()
@@ -124,7 +124,7 @@ func TestGetStreamURL(t *testing.T) {
 	})
 
 	if err != nil || len(searchResp.GetTracks()) == 0 {
-		t.Skip("could not find test track")
+		t.Fatal("could not find test track")
 	}
 
 	trackID := searchResp.GetTracks()[0].GetId()
@@ -134,7 +134,7 @@ func TestGetStreamURL(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Skipf("GetStreamURL failed: %v", err)
+		t.Fatalf("GetStreamURL failed: %v", err)
 	}
 
 	if resp.GetStreamUrl() == "" {
