@@ -19,7 +19,7 @@ func init() {
 	if addr == "" {
 		addr = "localhost:50052"
 	}
-	conn, _ := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, _ := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	testConn = conn
 }
 
