@@ -22,7 +22,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	pb "github.com/feralbureau/bedrock-api/bedrock"
@@ -185,7 +184,6 @@ type dzSearchPlaylist struct {
 type DeezerProvider struct {
 	client *http.Client
 	// mu is reserved for future rate-limit / token state
-	mu sync.Mutex
 }
 
 func NewDeezerProvider() *DeezerProvider {

@@ -16,7 +16,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	pb "github.com/feralbureau/bedrock-api/bedrock"
@@ -149,7 +148,6 @@ func buildStreamPool() []ytStreamClient {
 }
 
 type YouTubeProvider struct {
-	mu         sync.Mutex
 	client     *innertube.InnerTube // web_remix for search/browse
 	streamPool []ytStreamClient     // ordered fallback chain for streaming
 }
@@ -247,30 +245,6 @@ func safeMap(m map[string]interface{}, keys ...string) map[string]interface{} {
 	return nil
 }
 
-// safeFloat extracts a float64 from a nested map path
-func safeFloat(m map[string]interface{}, keys ...string) float64 {
-	var current interface{} = m
-	for _, k := range keys {
-		if cm, ok := current.(map[string]interface{}); ok {
-			current = cm[k]
-		} else {
-			return 0
-		}
-	}
-	switch v := current.(type) {
-	case float64:
-		return v
-	case int:
-		return float64(v)
-	case string:
-		f, _ := strconv.ParseFloat(v, 64)
-		return f
-	}
-	return 0
-}
-
-// extractText extracts a string from an InnerTube text object (which can be a
-// simple string, a map with simpleText, or a map with runs).
 func (p *YouTubeProvider) extractText(m interface{}) string {
 	if m == nil {
 		return ""
@@ -728,48 +702,6 @@ func (p *YouTubeProvider) parseMusicListItem(item map[string]interface{}) *pb.Tr
 	}
 }
 
-// parseVideoRenderer handles regular YouTube video search results.
-func (p *YouTubeProvider) parseVideoRenderer(vr map[string]interface{}) *pb.Track {
-	videoID := safeStr(vr, "videoId")
-	if videoID == "" {
-		return nil
-	}
-
-	title := extractRunsText(vr, "title")
-	if title == "" {
-		title = safeStr(vr, "title", "simpleText")
-	}
-	if title == "" {
-		title = "Unknown Title"
-	}
-
-	artist := extractRunsText(vr, "ownerText")
-	if artist == "" {
-		artist = extractRunsText(vr, "shortBylineText")
-	}
-	if artist == "" {
-		artist = "Unknown Artist"
-	}
-
-	durationText := safeStr(vr, "lengthText", "simpleText")
-	if durationText == "" {
-		durationText = extractRunsText(vr, "lengthText")
-	}
-
-	thumbnail := extractThumbnailURL(vr, "thumbnail")
-
-	return &pb.Track{
-		Id:           ytNamespacedID(videoID),
-		PlatformId:   videoID,
-		Title:        title,
-		Artist:       artist,
-		CoverUrl:     thumbnail,
-		DurationMs:   parseDurationText(durationText),
-		ExternalUrl:  "https://music.youtube.com/watch?v=" + videoID,
-		IsStreamable: false,
-		Source:       pb.Platform_PLATFORM_YOUTUBE,
-	}
-}
 
 // player response parser
 
@@ -1140,7 +1072,7 @@ func (p *YouTubeProvider) parseMusicPlaylistItem(item map[string]interface{}) *p
 func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)
 
-	// MusicGetQueue is the reliable metadata path for YTM audio-only tracks;
+	// musicGetQueue is the reliable metadata path for YTM audio-only tracks;
 	// the player API does not return videoDetails for privately-owned music tracks.
 	ids := []string{videoID}
 	queueData, err := p.client.MusicGetQueue(&ids, nil)
