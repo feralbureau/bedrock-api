@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// TestRelativeTime tests the relative time formatting for Genius lyrics
+// testRelativeTime tests the relative time formatting for Genius lyrics
 func TestRelativeTime(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -36,15 +36,15 @@ func TestRelativeTime(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Note: Testing the relative time formatting function
-			// This would require the actual relativeTime function to be exported
-			// For now, we're documenting the expected behavior
+			// note: testing the relative time formatting function
+			// this would require the actual relativeTime function to be exported
+			// for now, we're documenting the expected behavior
 			t.Logf("Testing relative time for ISO: %s, should contain: %s", tt.iso, tt.contains)
 		})
 	}
 }
 
-// TestPlainBodyExtraction tests plain text extraction from Genius lyrics
+// testPlainBodyExtraction tests plain text extraction from Genius lyrics
 func TestPlainBodyExtraction(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -80,27 +80,25 @@ func TestPlainBodyExtraction(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Note: Testing plain body extraction from Genius API responses
-			// This would require the actual plainBody function to be exported
+			// note: testing plain body extraction from Genius API responses
+			// this would require the actual plainBody function to be exported
 			t.Logf("Testing body extraction: %v, expected: %s", tt.body, tt.expected)
 		})
 	}
 }
 
-// TestPrimaryContributorSelection tests contributor ranking for annotations
+// testPrimaryContributorSelection tests contributor ranking for annotations
 func TestPrimaryContributorSelection(t *testing.T) {
 	t.Run("empty authors returns nil", func(t *testing.T) {
-		// Note: Testing that pickPrimaryContributor returns nil for empty list
-		// This would require the actual function to be exported
+		// note: testing that pickPrimaryContributor returns nil for empty list
+		// this would require the actual function to be exported
 		t.Log("Testing primary contributor selection with empty authors list")
 	})
 }
 
-// ============================================================================
-// LRClib Tests
-// ============================================================================
+// lrclib tests
 
-// TestParseLRC tests LRC format parsing for synced lyrics
+// testParseLRC tests LRC format parsing for synced lyrics
 func TestParseLRC(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -147,20 +145,20 @@ func TestParseLRC(t *testing.T) {
 	}
 }
 
-// TestLRCMapToResponse tests conversion of LRClib track data to response format
+// testLRCMapToResponse tests conversion of LRClib track data to response format
 func TestLRCMapToResponse(t *testing.T) {
 	t.Run("synced lyrics", func(t *testing.T) {
 		t.Log("Testing LRClib mapToResponse with synced lyrics")
-		// Expected behavior: Synced=true, SyncedLines populated from LRC format
+		// expected behavior: Synced=true, SyncedLines populated from LRC format
 	})
 
 	t.Run("plain lyrics fallback", func(t *testing.T) {
 		t.Log("Testing LRClib mapToResponse with plain lyrics fallback")
-		// Expected behavior: Synced=false, SyncedLines from plain text split by newlines
+		// expected behavior: Synced=false, SyncedLines from plain text split by newlines
 	})
 }
 
-// TestStringSimilarity tests the string similarity algorithm for matching lyrics
+// testStringSimilarity tests the string similarity algorithm for matching lyrics
 func TestStringSimilarity(t *testing.T) {
 	tests := []struct {
 		name   string

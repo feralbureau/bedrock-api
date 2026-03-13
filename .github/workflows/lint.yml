@@ -1,0 +1,48 @@
+name: lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: false
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+      - name: Comment Linter
+        run: |
+          ERRORS=0
+          FILES=$(find . -name "*.go" ! -name "*_grpc.pb.go" ! -name "*.pb.go" -not -path "./spotify-wrapper/*")
+          for file in $FILES; do
+            DECOR=$(grep -nE "// ===|/\* ---" "$file" || true)
+            if [ -n "$DECOR" ]; then
+              echo "[-] Decorative comment found in $file:"
+              echo "$DECOR"
+              ERRORS=$((ERRORS + 1))
+            fi
+            UPPER=$(grep -n "// [A-Z]" "$file" | grep -vE "// (TODO|go:)" || true)
+            if [ -n "$UPPER" ]; then
+              echo "[-] Uppercase comment found in $file:"
+              echo "$UPPER"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "[!] lint failed with $ERRORS errors"
+            exit 1
+          fi
+          echo "[+] all checks passed!"

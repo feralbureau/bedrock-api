@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-// TestSpotifyPlaylistCreation tests creating a playlist object with Spotify API
+// testSpotifyPlaylistCreation tests creating a playlist object with Spotify API
 func TestSpotifyPlaylistCreation(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -21,14 +21,14 @@ func TestSpotifyPlaylistCreation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Logf("Testing Spotify playlist creation: %s", tt.playlistID)
-			// Note: Actual integration testing would require live Spotify API access
-			// See live_integration_test.go for full live tests
+			// note: actual integration testing would require live Spotify API access
+			// see live_integration_test.go for full live tests
 		})
 	}
 }
 
-// TestSpotifyLiveIntegration documents live integration tests for Spotify API
-// These tests require actual Spotify API access and are run separately with build tags
+// testSpotifyLiveIntegration documents live integration tests for Spotify API
+// these tests require actual Spotify API access and are run separately with build tags
 func TestSpotifyLiveIntegrationNotes(t *testing.T) {
 	t.Run("live session diagnostics", func(t *testing.T) {
 		t.Log("Live test: Diagnoses session initialization and JS link extraction from Spotify web")

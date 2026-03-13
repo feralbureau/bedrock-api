@@ -1140,7 +1140,7 @@ func (p *YouTubeProvider) parseMusicPlaylistItem(item map[string]interface{}) *p
 func (p *YouTubeProvider) GetTrack(ctx context.Context, platformID string) (*pb.Track, error) {
 	videoID := ytStripPrefix(platformID)
 
-	// MusicGetQueue is the reliable metadata path for YTM audio-only tracks;
+	// musicGetQueue is the reliable metadata path for YTM audio-only tracks;
 	// the player API does not return videoDetails for privately-owned music tracks.
 	ids := []string{videoID}
 	queueData, err := p.client.MusicGetQueue(&ids, nil)
