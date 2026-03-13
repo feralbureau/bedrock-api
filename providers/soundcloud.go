@@ -430,6 +430,16 @@ func mapTrack(t *scTrack) *pb.Track {
 	if artist == "" {
 		artist = "Unknown Artist"
 	}
+	artists := []*pb.Artist{
+		{
+			Id:          namespacedID(t.ID),
+			Name:        artist,
+			ImageUrl:    artworkURL(t.User.AvatarURL, "t500x500"),
+			Followers:   t.User.FollowersCount,
+			ExternalUrl: t.User.PermalinkURL,
+			Source:      pb.Platform_PLATFORM_SOUNDCLOUD,
+		},
+	}
 	title := t.Title
 	if title == "" {
 		title = "Unknown Title"
@@ -448,6 +458,7 @@ func mapTrack(t *scTrack) *pb.Track {
 		PlatformId:   strconv.FormatInt(t.ID, 10),
 		Title:        title,
 		Artist:       artist,
+		Artists:      artists,
 		CoverUrl:     coverFromTrack(t),
 		DurationMs:   t.Duration,
 		ExternalUrl:  t.PermalinkURL,

@@ -277,6 +277,15 @@ func mapDzTrack(t *dzTrack) *pb.Track {
 	if artist == "" {
 		artist = "Unknown Artist"
 	}
+	artists := []*pb.Artist{
+		{
+			Id:          dzNamespacedID(t.Artist.ID),
+			Name:        artist,
+			ImageUrl:    dzBestPicture(t.Artist.Picture, "", ""),
+			ExternalUrl: t.Artist.Link,
+			Source:      pb.Platform_PLATFORM_DEEZER,
+		},
+	}
 	cover := dzBestCover(t.Album.CoverXL, t.Album.CoverBig, t.Album.CoverMed)
 
 	return &pb.Track{
@@ -284,6 +293,7 @@ func mapDzTrack(t *dzTrack) *pb.Track {
 		PlatformId:   strconv.FormatInt(t.ID, 10),
 		Title:        title,
 		Artist:       artist,
+		Artists:      artists,
 		AlbumTitle:   t.Album.Title,
 		CoverUrl:     cover,
 		DurationMs:   t.Duration * 1000, // deezer stores seconds

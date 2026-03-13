@@ -68,10 +68,21 @@ func spBare(id string) string {
 
 func mapWrapperTrack(t spotapi.Track) *pb.Track {
 	artists := make([]*pb.Artist, 0, len(t.Artists))
-	for _, name := range t.Artists {
-		if name != "" {
-			artists = append(artists, &pb.Artist{Name: name, Source: pb.Platform_PLATFORM_SPOTIFY})
+	for i, name := range t.Artists {
+		if name == "" {
+			continue
 		}
+		var id string
+		if i < len(t.ArtistIDs) {
+			if bare := t.ArtistIDs[i]; bare != "" {
+				id = spNS("artist", bare)
+			}
+		}
+		artists = append(artists, &pb.Artist{
+			Id:     id,
+			Name:   name,
+			Source: pb.Platform_PLATFORM_SPOTIFY,
+		})
 	}
 	return &pb.Track{
 		Id:          spNS("track", t.ID),
