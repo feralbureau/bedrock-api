@@ -16,7 +16,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	pb "github.com/feralbureau/bedrock-api/bedrock"

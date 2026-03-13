@@ -22,7 +22,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	pb "github.com/feralbureau/bedrock-api/bedrock"
