@@ -209,7 +209,11 @@ func (m *clientIDManager) probe(ctx context.Context, client *http.Client, id str
 	if err != nil {
 		return false
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[soundcloud] close body after probe: %v", err)
+		}
+	}()
 	io.Copy(io.Discard, resp.Body) //nolint:errcheck
 	return resp.StatusCode == http.StatusOK
 }
@@ -289,11 +293,15 @@ func (p *SoundCloudProvider) doRequest(ctx context.Context, endpoint string, ext
 			return resp, nil
 
 		case resp.StatusCode == http.StatusNotFound:
-			resp.Body.Close()
+			if err := resp.Body.Close(); err != nil {
+				log.Printf("[soundcloud] close body after 404: %v", err)
+			}
 			return nil, ErrSCNotFound
 
 		case resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden:
-			resp.Body.Close()
+			if err := resp.Body.Close(); err != nil {
+				log.Printf("[soundcloud] close body after auth error: %v", err)
+			}
 			p.ids.invalidate()
 			if attempt < maxAttempts-1 {
 				continue
@@ -302,7 +310,9 @@ func (p *SoundCloudProvider) doRequest(ctx context.Context, endpoint string, ext
 
 		case resp.StatusCode >= 300 && resp.StatusCode < 400:
 			location := resp.Header.Get("Location")
-			resp.Body.Close()
+			if err := resp.Body.Close(); err != nil {
+				log.Printf("[soundcloud] close body after redirect: %v", err)
+			}
 			if location == "" {
 				return nil, fmt.Errorf("soundcloud: HTTP %d with no Location header", resp.StatusCode)
 			}
@@ -312,7 +322,9 @@ func (p *SoundCloudProvider) doRequest(ctx context.Context, endpoint string, ext
 
 		default:
 			body, _ := io.ReadAll(io.LimitReader(resp.Body, 512))
-			resp.Body.Close()
+			if err := resp.Body.Close(); err != nil {
+				log.Printf("[soundcloud] close body after http %d: %v", resp.StatusCode, err)
+			}
 			return nil, fmt.Errorf("soundcloud: HTTP %d: %s", resp.StatusCode, strings.TrimSpace(string(body)))
 		}
 	}
@@ -364,15 +376,21 @@ func (p *SoundCloudProvider) resolveTranscoding(ctx context.Context, transcoding
 	case http.StatusOK, http.StatusCreated:
 		// expected, fall through to decode
 	case http.StatusNotFound:
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[soundcloud] close body after 404: %v", err)
+		}
 		return "", ErrSCNotFound
 	case http.StatusUnauthorized, http.StatusForbidden:
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[soundcloud] close body after auth error: %v", err)
+		}
 		p.ids.invalidate()
 		return "", ErrSCAuth
 	default:
 		body, _ := io.ReadAll(io.LimitReader(resp.Body, 256))
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[soundcloud] close body after http %d: %v", resp.StatusCode, err)
+		}
 		return "", fmt.Errorf("soundcloud: resolveTranscoding HTTP %d: %s", resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 
@@ -387,7 +405,11 @@ func (p *SoundCloudProvider) resolveTranscoding(ctx context.Context, transcoding
 }
 
 func decodeJSON(resp *http.Response, dst any) error {
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[soundcloud] close body after decode: %v", err)
+		}
+	}()
 	if err := json.NewDecoder(resp.Body).Decode(dst); err != nil {
 		return fmt.Errorf("soundcloud: json decode: %w", err)
 	}
