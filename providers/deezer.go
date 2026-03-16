@@ -218,12 +218,16 @@ func (p *DeezerProvider) doRequest(ctx context.Context, endpoint string, params 
 	}
 
 	if resp.StatusCode == http.StatusNotFound {
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("deezer: close body after 404: %v", err)
+		}
 		return nil, fmt.Errorf("deezer: %s: %w", endpoint, ErrDeezerNotFound)
 	}
 	if resp.StatusCode >= 400 {
 		body, _ := io.ReadAll(io.LimitReader(resp.Body, 512))
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("deezer: close body after http %d: %v", resp.StatusCode, err)
+		}
 		return nil, fmt.Errorf("deezer: %s: http %d: %s", endpoint, resp.StatusCode, string(body))
 	}
 
@@ -231,7 +235,11 @@ func (p *DeezerProvider) doRequest(ctx context.Context, endpoint string, params 
 }
 
 func decodeDeezer(resp *http.Response, dst any) error {
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("deezer: close body after decode: %v", err)
+		}
+	}()
 	if err := json.NewDecoder(resp.Body).Decode(dst); err != nil {
 		return fmt.Errorf("deezer: json decode: %w", err)
 	}

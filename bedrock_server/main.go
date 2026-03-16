@@ -1075,18 +1075,18 @@ func importPlatformFromURL(raw string) (pb.Platform, error) {
 	host := strings.ToLower(u.Host)
 	host = strings.TrimPrefix(host, "www.")
 
-	switch {
-	case host == "open.spotify.com":
+	switch host {
+	case "open.spotify.com":
 		return pb.Platform_PLATFORM_SPOTIFY, nil
-	case host == "music.yandex.ru" || host == "music.yandex.com":
+	case "music.yandex.ru", "music.yandex.com":
 		return pb.Platform_PLATFORM_YANDEX, nil
-	case host == "vk.com" || host == "m.vk.com":
+	case "vk.com", "m.vk.com":
 		return pb.Platform_PLATFORM_VK, nil
-	case host == "deezer.com":
+	case "deezer.com":
 		return pb.Platform_PLATFORM_DEEZER, nil
-	case host == "soundcloud.com":
+	case "soundcloud.com":
 		return pb.Platform_PLATFORM_SOUNDCLOUD, nil
-	case host == "youtube.com" || host == "music.youtube.com" || host == "youtu.be":
+	case "youtube.com", "music.youtube.com", "youtu.be":
 		return pb.Platform_PLATFORM_YOUTUBE, nil
 	default:
 		return pb.Platform_PLATFORM_UNSPECIFIED, fmt.Errorf("unsupported platform host: %q", host)

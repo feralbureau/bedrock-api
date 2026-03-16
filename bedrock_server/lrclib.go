@@ -52,7 +52,7 @@ func (c *lrcClient) getLyrics(ctx context.Context, title, artist string, duratio
 		return nil, err
 	}
 
-	var sim float64 = 1.0
+	sim := 1.0
 
 	// fallback to search if not found
 	if track == nil {

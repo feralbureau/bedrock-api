@@ -60,3 +60,4 @@ It checks comment patterns and automatically skips generated `*pb.go` files.
 - **Fan-out behavior:** searches call all requested providers in parallel and may respond with `ResponseStatus_PARTIAL` when one or more providers fail — handle partial responses gracefully rather than treating them as total failures.
 - **Database:** migrations live in `db/migrations/000001_create_users_table.{up,down}.sql`. Keep migrations in sync with the PostgreSQL-backed user store in `store/user_store.go`.
 - Refer to the README for installation steps, environment variables, and architectural diagrams before adding new services or helpers.
+- **Do NOT create summary/documentation files** (no unnecessary .md, .txt, or bloat)—just tell the user what was done in chat, concisely

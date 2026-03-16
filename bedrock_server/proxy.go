@@ -111,7 +111,8 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	var targetURL string
 	var err error
 
-	if action == "stream" {
+	switch action {
+	case "stream":
 		// resolveStreamURL expects namespaced id: "service:id"
 		resp, err := resolveStreamURL(resCtx, service+":"+id, "")
 		if err != nil {
@@ -120,14 +121,14 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		targetURL = resp.GetStreamUrl()
-	} else if action == "cover" {
+	case "cover":
 		targetURL, err = resolveCoverURL(resCtx, service, id)
 		if err != nil {
 			log.Printf("[proxy] cover resolve error: %v", err)
 			http.Error(w, "failed to resolve cover", http.StatusNotFound)
 			return
 		}
-	} else {
+	default:
 		http.Error(w, "unknown action", http.StatusNotFound)
 		return
 	}
@@ -169,14 +170,15 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// handle content length and status
-	if resp.StatusCode == http.StatusPartialContent {
+	switch resp.StatusCode {
+	case http.StatusPartialContent:
 		w.Header().Set("Content-Range", resp.Header.Get("Content-Range"))
 		w.Header().Set("Content-Length", resp.Header.Get("Content-Length"))
 		w.WriteHeader(http.StatusPartialContent)
-	} else if resp.StatusCode == http.StatusOK {
+	case http.StatusOK:
 		w.Header().Set("Content-Length", resp.Header.Get("Content-Length"))
 		w.WriteHeader(http.StatusOK)
-	} else {
+	default:
 		w.WriteHeader(resp.StatusCode)
 	}
 
