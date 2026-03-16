@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -226,7 +227,11 @@ func (g *geniusClient) fetchAnnotationDetail(ctx context.Context, annID int) (*g
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[genius] close body after annotation detail: %v", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("annotation detail returned %d", resp.StatusCode)
@@ -294,7 +299,11 @@ func (g *geniusClient) fetchReferents(ctx context.Context, songID int, limit int
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[genius] close body after referents: %v", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("referents api returned %d", resp.StatusCode)
@@ -446,7 +455,11 @@ func (g *geniusClient) scrapeLyrics(ctx context.Context, pageURL string) (string
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[genius] close body after scrape lyrics: %v", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("genius page returned %d", resp.StatusCode)
