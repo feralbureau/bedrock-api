@@ -160,7 +160,11 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to fetch source", http.StatusBadGateway)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[proxy] close body after fetch: %v", err)
+		}
+	}()
 
 	// forward essential headers
 	w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))

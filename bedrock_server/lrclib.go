@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"net/url"
@@ -90,7 +91,11 @@ func (c *lrcClient) fetchExact(ctx context.Context, title, artist string, durati
 	if err != nil {
 		return nil, nil
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[lrclib] close body after fetchExact: %v", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, nil // if not 200 (like 404 or 400), just return nil to fallback to search
@@ -142,7 +147,11 @@ func (c *lrcClient) doSearchWithQuery(ctx context.Context, query, reqTitle, reqA
 	if err != nil {
 		return nil, 0, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("[lrclib] close body after search: %v", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, 0, fmt.Errorf("lrclib search returned %d", resp.StatusCode)
