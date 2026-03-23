@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.8.0
+	github.com/jackc/pgx/v5 v5.9.1
 	github.com/joho/godotenv v1.5.1
 	github.com/spotapi/spotapi-go v0.0.0-00010101000000-000000000000
 	github.com/tsirysndr/go-genius v0.0.0-20200104091113-b7f36c050e32
