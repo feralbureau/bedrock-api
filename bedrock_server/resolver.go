@@ -208,7 +208,7 @@ func resolveCoverURL(ctx context.Context, service, nativeID string) (string, err
 	}
 
 	// then try as an artist (image_url on artist counts as cover)
-	artist, err := p.GetArtist(ctx, nativeID)
+	artist, _, _, err := p.GetArtist(ctx, nativeID)
 	if err == nil && artist != nil && artist.GetImageUrl() != "" {
 		return artist.GetImageUrl(), nil
 	}
