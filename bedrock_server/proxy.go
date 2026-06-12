@@ -67,7 +67,12 @@ func rewriteArtist(a *pb.Artist, host string) {
 	}
 
 	if a.ImageUrl != "" {
-		_, nativeID := parsePlatformID(a.Id)
+		// a.Id may be "spotify:artist:xxx" or "spotify:xxx"
+		// use the last colon segment to get the bare native id
+		nativeID := a.Id
+		if idx := strings.LastIndexByte(nativeID, ':'); idx >= 0 {
+			nativeID = nativeID[idx+1:]
+		}
 		a.ImageUrl = fmt.Sprintf("http://%s/cover/%s/%s", host, service, nativeID)
 	}
 }

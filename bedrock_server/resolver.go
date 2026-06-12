@@ -207,6 +207,12 @@ func resolveCoverURL(ctx context.Context, service, nativeID string) (string, err
 		return album.GetCoverUrl(), nil
 	}
 
+	// then try as an artist (image_url on artist counts as cover)
+	artist, err := p.GetArtist(ctx, nativeID)
+	if err == nil && artist != nil && artist.GetImageUrl() != "" {
+		return artist.GetImageUrl(), nil
+	}
+
 	return "", fmt.Errorf("resolver: could not resolve cover for %s:%s", service, nativeID)
 }
 

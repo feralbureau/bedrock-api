@@ -194,24 +194,24 @@ Run integration tests to verify provider functionality:
 
 ```bash
 # Full integration test suite
-go run ./tests/
+go test ./tests/...
 
-# Per-platform entrypoints
-go run ./tests/spotify
-go run ./tests/youtube
-go run ./tests/auth
-go run ./tests/soundcloud
+# Per-platform tests
+go test ./tests/spotify
+go test ./tests/youtube
+go test ./tests/auth
+go test ./tests/soundcloud
+go test ./tests/deezer
+go test ./tests/lyrics
 ```
 
 ### Code Quality
 
-Run the linter (PowerShell) before committing:
+Check for common issues with `go vet` before committing:
 
-```powershell
-.\linter.ps1
+```bash
+go vet ./...
 ```
-
-It checks comment patterns and automatically skips generated protobuf files (`*pb.go`).
 
 ## License
 
