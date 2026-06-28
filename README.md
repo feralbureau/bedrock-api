@@ -49,7 +49,7 @@ It includes a built-in **HTTP Streaming Proxy** that handles seeking and caching
 
 ### Prerequisites
 
-- [Go 1.24+](https://go.dev/dl/)
+- [Go 1.25+](https://go.dev/dl/)
 - [PostgreSQL 13+](https://www.postgresql.org/download/)
 - [Docker](https://www.docker.com/get-started) (optional)
 - Git (for submodule initialization)

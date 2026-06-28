@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Code Style
 
-- Keep Go code formatted with `gofmt`/`goimports`; target **Go 1.23** modules.
+- Keep Go code formatted with `gofmt`/`goimports`; target **Go 1.25** modules.
 - The repository is intentionally small — follow the existing single-package layout when adding files.
 - Avoid decorated comment blocks (`// ===`, `/* ---`) and uppercase-leading comments; `// TODO` and `//go:` directives are allowed.
 - Prefer lowercase, concise inline comments that explain **intent**, especially around concurrency and stream resolution logic.

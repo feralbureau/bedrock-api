@@ -124,7 +124,7 @@ type clientIDManager struct {
 	working string   // "" means needs re-probe
 }
 
-// scFallbackClientIDs is a compile-time seed list used when
+// scFallbackClientIDs is a compile-time seed list used when no env-var client IDs are configured.
 var scFallbackClientIDs = []string{
 	"1IzwHiVxAHeYKAMqN0IIGD3ZARgJy2kl",
 }
