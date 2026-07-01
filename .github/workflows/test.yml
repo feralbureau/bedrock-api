@@ -54,7 +54,7 @@ jobs:
           JWT_SECRET: "test-secret-key-for-ci"
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          SOUNDCLOUD_CLIENT_ID: ${{ secrets.SOUNDCLOUD_CLIENT_ID }}
+          SOUNDCLOUD_CLIENT_IDS: ${{ secrets.SOUNDCLOUD_CLIENT_ID }}
         run: |
           /tmp/bedrock-server &
           sleep 5
@@ -62,9 +62,9 @@ jobs:
 
       - name: run integration tests
         env:
-          DATABASE_URL: "postgres://test:test@localhost:5432/bedrock_test"
+          DATABASE_URL: "postgres://test:***@localhost:5432/bedrock_test"
           JWT_SECRET: "test-secret-key-for-ci"
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          SOUNDCLOUD_CLIENT_ID: ${{ secrets.SOUNDCLOUD_CLIENT_ID }}
+          SOUNDCLOUD_CLIENT_IDS: ${{ secrets.SOUNDCLOUD_CLIENT_ID }}
         run: go test -v -timeout 120s ./tests/...
