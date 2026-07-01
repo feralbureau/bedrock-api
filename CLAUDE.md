@@ -36,12 +36,12 @@ See the README for required `.env` variables (Spotify, SoundCloud credentials, e
 
 ```powershell
 # Run full integration suite
-go run ./tests/
+go test ./tests/...
 
 # Per-platform entrypoints
-go run ./tests/spotify
-go run ./tests/youtube
-go run ./tests/auth
+go test ./tests/spotify
+go test ./tests/youtube
+go test ./tests/auth
 ```
 
 ## Linting
