@@ -28,7 +28,7 @@ It includes a built-in **HTTP Streaming Proxy** that handles seeking and caching
 - **Multi-Provider Aggregation**: Search and fetch tracks, albums, artists, and playlists from Spotify, SoundCloud, Deezer, and more.
 - **Cross-Platform Bridge**: Automatically resolve non-streamable tracks (Spotify/Deezer) to playable SoundCloud streams.
 - **Built-in Streaming Proxy**: High-performance HTTP proxy with support for range requests and true `io.Copy` streaming.
-- **Lyrics Integration**: Synced and plain-text lyrics via LrcLib (Genius support in progress).
+- **Lyrics Integration**: Synced and plain-text lyrics via LrcLib; plain lyrics + annotated lyrics via Genius.
 - **Concurrent Performance**: Fans out requests to providers in parallel using Go's high-concurrency primitives.
 - **Normalized Schema**: Unified gRPC/Protobuf models for all music entities, regardless of source.
 
@@ -175,7 +175,7 @@ git submodule update --recursive --remote
 After updating the submodule, test the changes:
 
 ```bash
-go run ./tests/spotify
+go test ./tests/spotify
 ```
 
 ### Module Resolution
