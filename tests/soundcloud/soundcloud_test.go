@@ -36,8 +36,8 @@ func ctxWithTimeout(d time.Duration) (context.Context, context.CancelFunc) {
 }
 
 func skipIfNoCredentials(t *testing.T) {
-	if os.Getenv("SOUNDCLOUD_CLIENT_ID") == "" {
-		t.Skip("SOUNDCLOUD_CLIENT_ID not set")
+	if os.Getenv("SOUNDCLOUD_CLIENT_IDS") == "" {
+		t.Skip("SOUNDCLOUD_CLIENT_IDS not set")
 	}
 }
 
