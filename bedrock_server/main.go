@@ -10,13 +10,14 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math/rand"
 	"net"
 	"net/url"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	pb "github.com/feralbureau/bedrock-api/bedrock"
@@ -25,6 +26,7 @@ import (
 	"github.com/feralbureau/bedrock-api/server/middleware"
 	"github.com/feralbureau/bedrock-api/store"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
@@ -986,8 +988,7 @@ func (s *bedrockServer) RecordPlay(ctx context.Context, req *pb.RecordPlayReques
 		return nil, status.Error(codes.InvalidArgument, "track_id must not be empty")
 	}
 
-	// simple random event id for now
-	eventID := fmt.Sprintf("%016x-%016x", rand.Int63(), rand.Int63())
+	eventID := uuid.New().String()
 
 	log.Printf("RecordPlay: event_id=%s track_id=%q title=%q artist=%q duration_s=%d public=%v",
 		eventID, req.GetTrackId(), req.GetTitle(), req.GetArtist(), req.GetDurationS(), req.GetIsPublic())
@@ -1323,6 +1324,16 @@ func main() {
 	})
 
 	log.Printf("bedrock: grpc server listening on %s", addr)
+
+	// graceful shutdown on SIGINT/SIGTERM
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigCh
+		log.Printf("bedrock: received signal %v, shutting down gracefully...", sig)
+		grpcServer.GracefulStop()
+	}()
+
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("bedrock: server exited with error: %v", err)
 	}
