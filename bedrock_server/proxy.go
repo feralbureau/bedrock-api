@@ -97,6 +97,16 @@ var proxyClient = &http.Client{
 
 // proxyHandler handles both /stream and /cover routes
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
+	// cors headers for browser-based clients
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Range, Authorization")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	path := strings.TrimPrefix(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
 
@@ -202,6 +212,17 @@ func startProxyServer(addr string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/stream/", proxyHandler)
 	mux.HandleFunc("/cover/", proxyHandler)
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"status":"ok"}`)
+	})
+	mux.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		// simplest readiness: the proxy itself is running
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"status":"ready"}`)
+	})
 
 	log.Printf("[proxy] server listening on %s", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {
