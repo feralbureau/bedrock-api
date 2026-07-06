@@ -10,11 +10,18 @@ RUN go mod download
 # copy source code
 COPY . .
 
+# embed build info
+ARG VERSION=0.0.0-dev
+ARG COMMIT=unknown
+ARG BUILDTIME=unknown
+
 # build the application
-RUN go build -o bedrock-server ./bedrock_server
+RUN go build -ldflags="-X main.buildVersion=${VERSION} -X main.buildCommit=${COMMIT} -X main.buildTime=${BUILDTIME}" -o bedrock-server ./bedrock_server
 
 # final stage
-FROM alpine:latest
+FROM alpine:3.21
+
+RUN apk add --no-cache ca-certificates
 
 WORKDIR /app
 
