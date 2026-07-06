@@ -38,6 +38,13 @@ var port = flag.Int("port", 50052, "bedrock grpc port")
 var proxyAddr = flag.String("proxy-addr", ":8080", "bedrock proxy addr")
 var proxyHost = flag.String("proxy-host", "localhost:8080", "bedrock proxy host for rewriting")
 
+// build info, set via ldflags during docker build or ci
+var (
+	buildVersion = "0.0.0-dev"
+	buildCommit  = "unknown"
+	buildTime    = "unknown"
+)
+
 // trackProvider is the provider interface for a platform
 type trackProvider interface {
 	Platform() pb.Platform

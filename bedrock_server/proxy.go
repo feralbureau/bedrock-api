@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"runtime"
 	"strings"
 	"time"
 
@@ -222,6 +223,11 @@ func startProxyServer(addr string) {
 		// simplest readiness: the proxy itself is running
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"status":"ready"}`)
+	})
+	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{"version":"%s","commit":"%s","built_at":"%s","go_version":"%s"}`, buildVersion, buildCommit, buildTime, runtime.Version())
 	})
 
 	log.Printf("[proxy] server listening on %s", addr)
