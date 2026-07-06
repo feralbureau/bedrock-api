@@ -1,0 +1,15 @@
+.git
+.gitmodules
+.gitignore
+.env
+.env.*
+*.md
+*.log
+pgdata/
+tests/
+Dockerfile
+docker-compose.yml
+assets/
+.github/
+.vscode/
+.idea/
