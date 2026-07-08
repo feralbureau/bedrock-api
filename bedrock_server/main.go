@@ -1197,9 +1197,9 @@ func (s *bedrockServer) GetServiceStatus(ctx context.Context, req *pb.ServiceSta
 
 	for i, t := range targets {
 		i, t := i, t
+		start := time.Now()
 		go func() {
 			defer wg.Done()
-			start := time.Now()
 
 			// todo: replace with real lightweight probe per dependency
 			health := pb.ServiceHealth_HEALTH_OK
