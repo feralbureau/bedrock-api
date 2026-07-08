@@ -230,6 +230,41 @@ func startProxyServer(addr string) {
 		fmt.Fprintf(w, `{"version":"%s","commit":"%s","built_at":"%s","go_version":"%s"}`, buildVersion, buildCommit, buildTime, runtime.Version())
 	})
 
+	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		var m runtime.MemStats
+		runtime.ReadMemStats(&m)
+
+		fmt.Fprintf(w, `{
+  "go_version": %q,
+  "goroutines": %d,
+  "cpus":       %d,
+  "cgo_calls":  %d,
+  "memory": {
+    "alloc_mb":     %.1f,
+    "total_alloc_mb": %.1f,
+    "sys_mb":       %.1f,
+    "heap_inuse_mb": %.1f,
+    "gc_cycles":    %d,
+    "gc_pause_ns":  %d
+  }
+}
+`,
+			runtime.Version(),
+			runtime.NumGoroutine(),
+			runtime.NumCPU(),
+			runtime.NumCgoCall(),
+			float64(m.Alloc)/1024/1024,
+			float64(m.TotalAlloc)/1024/1024,
+			float64(m.Sys)/1024/1024,
+			float64(m.HeapInuse)/1024/1024,
+			m.NumGC,
+			m.PauseTotalNs,
+		)
+	})
+
 	log.Printf("[proxy] server listening on %s", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("[proxy] server failed: %v", err)
