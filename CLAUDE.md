@@ -46,13 +46,12 @@ go test ./tests/auth
 
 ## Linting
 
-Run the PowerShell linter before committing:
+Comment style is enforced by CI (see `.github/workflows/lint.yml`). Generated `*pb.go` files are automatically excluded.
+Check locally before pushing:
 
-```powershell
-.\linter.ps1
+```bash
+go vet ./...
 ```
-
-It checks comment patterns and automatically skips generated `*pb.go` files.
 
 ## Conventions
 
