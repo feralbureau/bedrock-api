@@ -5,13 +5,13 @@ go 1.25.0
 require (
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.8.0
+	github.com/jackc/pgx/v5 v5.10.0
 	github.com/joho/godotenv v1.5.1
 	github.com/spotapi/spotapi-go v0.0.0-00010101000000-000000000000
 	github.com/tsirysndr/go-genius v0.0.0-20200104091113-b7f36c050e32
 	github.com/wslyyy/youtube-go v0.0.0-20250305022328-7151a0ea0887
-	golang.org/x/crypto v0.53.0
-	golang.org/x/net v0.56.0
+	golang.org/x/crypto v0.54.0
+	golang.org/x/net v0.57.0
 	google.golang.org/grpc v1.82.0
 	google.golang.org/protobuf v1.36.11
 )
@@ -34,9 +34,9 @@ require (
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/tam7t/hpkp v0.0.0-20160821193359-2b70b4024ed5 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
-	golang.org/x/sync v0.21.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260414002931-afd174a4e478 // indirect
 )
 
