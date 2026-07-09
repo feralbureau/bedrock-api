@@ -1,8 +1,8 @@
 # Project Guidelines
 
 ## Code Style
-- Keep Go code formatted with `gofmt`/`goimports` and target Go 1.23 modules; the repository is purposefully small, so follow the existing single-package layout when adding files.
-- Follow the linter.ps1 expectations: avoid decorated comment blocks (`// ===`, `/* ---`) and uppercase-leading comments; `// TODO` and `//go:` directives remain allowed.
+- Keep Go code formatted with `gofmt`/`goimports` and target Go 1.25 modules; the repository is purposefully small, so follow the existing single-package layout when adding files.
+- Follow the lint workflow (.github/workflows/lint.yml) expectations: avoid decorated comment blocks (`// ===`, `/* ---`) and uppercase-leading comments; `// TODO` and `//go:` directives remain allowed.
 - Preference for lowercase, concise inline comments that explain intent, especially around concurrency and stream resolution logic.
 
 ## Architecture
@@ -12,7 +12,7 @@
 
 ## Build and Test
 - Install deps and run locally with `go mod download` followed by `go run ./bedrock_server` (see README for `.env` variables for Spotify/ SoundCloud credentials). Production builds rely on `docker build -t bedrock-api .` plus `docker run -p 50052:50052 -p 8080:8080 --env-file .env bedrock-api`.
-- Linting is enforced via `.\\linter.ps1` (PowerShell); it checks comment patterns and skips generated `*pb.go` files.
+- Linting is enforced via `.github/workflows/lint.yml`; it checks comment patterns and skips generated `*pb.go` files (and the spotify-wrapper submodule).
 - Integration suites live in `tests/`; run `go run ./tests/` (and per-platform entrypoints such as `tests/spotify`, `tests/youtube`, `tests/auth`)
 
 ## Conventions
