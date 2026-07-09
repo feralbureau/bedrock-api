@@ -120,6 +120,14 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	service := parts[1] // "soundcloud", "spotify", etc.
 	id := parts[2]      // native id
 
+	// cache headers: covers are static, streams are dynamic
+	switch action {
+	case "cover":
+		w.Header().Set("Cache-Control", "public, max-age=604800, immutable")
+	case "stream":
+		w.Header().Set("Cache-Control", "no-store, must-revalidate")
+	}
+
 	// resolution timeout - don't hang if provider is slow
 	resCtx, resCancel := context.WithTimeout(r.Context(), 15*time.Second)
 	defer resCancel()
