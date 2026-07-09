@@ -187,8 +187,7 @@ func (m *clientIDManager) invalidate() {
 	log.Printf("[soundcloud] client_id invalidated, will re-probe")
 }
 
-// probe fires a cheap /search/tracks?q=a&limit=1 to validate a key.
-// inside get()).
+// probe fires a cheap /search/tracks?q=a&limit=1 to validate a key (called from get()).
 func (m *clientIDManager) probe(ctx context.Context, client *http.Client, id string) bool {
 	params := url.Values{
 		"q":           {"a"},
