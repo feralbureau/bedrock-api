@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ ARG BUILDTIME=unknown
 RUN go build -ldflags="-X main.buildVersion=${VERSION} -X main.buildCommit=${COMMIT} -X main.buildTime=${BUILDTIME}" -o bedrock-server ./bedrock_server
 
 # final stage
-FROM alpine:3.21
+FROM alpine:3.24
 
 RUN apk add --no-cache ca-certificates
 
