@@ -121,7 +121,7 @@ func (g *geniusClient) getAnnotations(ctx context.Context, title, artist string,
 			continue
 		}
 		ann := ref.Annotations[0]
-		if plainBody(ann.Body) == "" {
+		if PlainBody(ann.Body) == "" {
 			continue
 		}
 		candidates = append(candidates, pending{ref: ref, ann: ann})
@@ -146,17 +146,17 @@ func (g *geniusClient) getAnnotations(ctx context.Context, title, artist string,
 
 	annotations := make([]*pb.LyricAnnotation, 0, len(candidates))
 	for i, c := range candidates {
-		body := plainBody(c.ann.Body)
+		body := PlainBody(c.ann.Body)
 
 		createdAt := ""
 		createdAgo := ""
-		contributor := pickPrimaryContributor(c.ann.Authors)
+		contributor := PickPrimaryContributor(c.ann.Authors)
 
 		if d := details[i]; d != nil {
 			if d.CreatedAt > 0 {
 				t := time.Unix(d.CreatedAt, 0).UTC()
 				createdAt = t.Format(time.RFC3339)
-				createdAgo = relativeTime(createdAt)
+				createdAgo = RelativeTime(createdAt)
 			}
 			// prefer created_by (the original author) over authors attribution list
 			if d.CreatedBy != nil {
@@ -320,8 +320,8 @@ func (g *geniusClient) fetchReferents(ctx context.Context, songID int, limit int
 	return out.Response.Referents, nil
 }
 
-// plainBody extracts plain text from the genius body interface ({"plain": "..."} map)
-func plainBody(body interface{}) string {
+// PlainBody extracts plain text from the genius body interface ({"plain": "..."} map)
+func PlainBody(body interface{}) string {
 	if body == nil {
 		return ""
 	}
@@ -333,8 +333,8 @@ func plainBody(body interface{}) string {
 	return ""
 }
 
-// pickPrimaryContributor selects the author with the highest attribution score
-func pickPrimaryContributor(authors []struct {
+// PickPrimaryContributor selects the author with the highest attribution score
+func PickPrimaryContributor(authors []struct {
 	Attribution float64 `json:"attribution"`
 	User        *struct {
 		Login                       string `json:"login"`
@@ -373,8 +373,8 @@ func pickPrimaryContributor(authors []struct {
 	}
 }
 
-// relativeTime converts an iso8601 utc string to a human-readable "N ago" string.
-func relativeTime(iso string) string {
+// RelativeTime converts an iso8601 utc string to a human-readable "N ago" string.
+func RelativeTime(iso string) string {
 	t, err := time.Parse(time.RFC3339, iso)
 	if err != nil {
 		return ""
