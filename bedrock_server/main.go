@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
@@ -1191,23 +1192,82 @@ func (s *bedrockServer) GetServiceStatus(ctx context.Context, req *pb.ServiceSta
 		probeTarget{name: "genius", platform: pb.Platform_PLATFORM_UNSPECIFIED},
 	)
 
-	deps := make([]*pb.DependencyStatus, len(targets))
-	var wg sync.WaitGroup
-	wg.Add(len(targets))
+	// probeURLs defines lightweight health-check endpoints per dependency.
+	type probeInfo struct {
+		name     string
+		platform pb.Platform
+		url      string
+	}
+	probes := make([]probeInfo, 0, len(allProviders)+2)
+	for _, t := range targets {
+		info := probeInfo{name: t.name, platform: t.platform}
+		switch t.name {
+		case "spotify":
+			info.url = "https://api.spotify.com/v1/search?q=a&type=track&limit=1"
+		case "yandex":
+			info.url = "https://music.yandex.ru/"
+		case "vk":
+			info.url = "https://vk.com/"
+		case "deezer":
+			info.url = "https://api.deezer.com/"
+		case "soundcloud":
+			info.url = "https://api-v2.soundcloud.com/"
+		case "youtube":
+			info.url = "https://www.youtube.com/"
+		case "lrclib":
+			info.url = "https://lrclib.net/"
+		case "genius":
+			info.url = "https://api.genius.com/"
+		default:
+			info.url = ""
+		}
+		probes = append(probes, info)
+	}
 
-	for i, t := range targets {
-		i, t := i, t
+	deps := make([]*pb.DependencyStatus, len(probes))
+	var wg sync.WaitGroup
+	wg.Add(len(probes))
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	for i, p := range probes {
+		i, p := i, p
 		start := time.Now()
 		go func() {
 			defer wg.Done()
 
-			// todo: replace with real lightweight probe per dependency
 			health := pb.ServiceHealth_HEALTH_OK
-			detail := "ok (stub - no real probe implemented)"
-			latencyMs := int32(time.Since(start).Milliseconds())
+			detail := "reachable"
 
+			if p.url == "" {
+				health = pb.ServiceHealth_HEALTH_UNKNOWN
+				detail = "no probe configured"
+			} else {
+				req, err := http.NewRequestWithContext(ctx, http.MethodHead, p.url, nil)
+				if err != nil {
+					health = pb.ServiceHealth_HEALTH_DOWN
+					detail = fmt.Sprintf("probe failed: %v", err)
+				} else {
+					req.Header.Set("User-Agent", "BedrockProbe/1.0")
+					resp, err := client.Do(req)
+					if err != nil {
+						health = pb.ServiceHealth_HEALTH_DOWN
+						detail = fmt.Sprintf("unreachable: %v", err)
+					} else {
+						resp.Body.Close()
+						if resp.StatusCode >= 200 && resp.StatusCode < 500 {
+							health = pb.ServiceHealth_HEALTH_OK
+							detail = fmt.Sprintf("HTTP %d", resp.StatusCode)
+						} else {
+							health = pb.ServiceHealth_HEALTH_DEGRADED
+							detail = fmt.Sprintf("unexpected status: %d", resp.StatusCode)
+						}
+					}
+				}
+			}
+
+			latencyMs := int32(time.Since(start).Milliseconds())
 			deps[i] = &pb.DependencyStatus{
-				Name:      t.name,
+				Name:      p.name,
 				Health:    health,
 				Detail:    detail,
 				LatencyMs: latencyMs,
