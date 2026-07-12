@@ -273,8 +273,16 @@ func startProxyServer(addr string) {
 		)
 	})
 
+	srv := &http.Server{
+		Addr:              addr,
+		Handler:           mux,
+		ReadTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		WriteTimeout:      0, // 0 = no timeout — needed for streaming audio
+		IdleTimeout:       60 * time.Second,
+	}
 	log.Printf("[proxy] server listening on %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("[proxy] server failed: %v", err)
 	}
 }
