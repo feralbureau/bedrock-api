@@ -3,8 +3,10 @@ FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
-# install dependencies
+# copy dependency files first for layer caching
+# spotify-wrapper must be present before go mod download due to local replace directive
 COPY go.mod go.sum ./
+COPY spotify-wrapper/go.mod ./spotify-wrapper/
 RUN go mod download
 
 # copy source code
