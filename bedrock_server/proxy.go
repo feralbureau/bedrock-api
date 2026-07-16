@@ -96,6 +96,28 @@ var proxyClient = &http.Client{
 	Timeout: 0, // no timeout for streaming
 }
 
+// logResponseWriter wraps http.ResponseWriter to capture the status code
+type logResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (w *logResponseWriter) WriteHeader(code int) {
+	w.statusCode = code
+	w.ResponseWriter.WriteHeader(code)
+}
+
+// loggingMiddleware logs each request with method, path, status, and duration
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		lw := &logResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+		next.ServeHTTP(lw, r)
+		log.Printf("[proxy] %s %s -> %d (%s)",
+			r.Method, r.URL.Path, lw.statusCode, time.Since(start).Round(time.Millisecond))
+	})
+}
+
 // proxyHandler handles both /stream and /cover routes
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	// cors headers for browser-based clients
@@ -275,7 +297,7 @@ func startProxyServer(addr string) {
 
 	srv := &http.Server{
 		Addr:              addr,
-		Handler:           mux,
+		Handler:           loggingMiddleware(mux),
 		ReadTimeout:       30 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		WriteTimeout:      0, // 0 = no timeout — needed for streaming audio
