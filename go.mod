@@ -12,7 +12,7 @@ require (
 	github.com/wslyyy/youtube-go v0.0.0-20250305022328-7151a0ea0887
 	golang.org/x/crypto v0.54.0
 	golang.org/x/net v0.57.0
-	google.golang.org/grpc v1.82.0
+	google.golang.org/grpc v1.82.1
 	google.golang.org/protobuf v1.36.11
 )
 
