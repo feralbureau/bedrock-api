@@ -861,7 +861,7 @@ func (p *SoundCloudProvider) GetStreamURL(ctx context.Context, platformID string
 		return nil, fmt.Errorf("GetStreamURL %s: %w (no transcodings in metadata)", nativeID, ErrSCNoStream)
 	}
 
-	// then other HLS codecs.  Caller can force HLS by passing "hls".
+	// prefer progressive mp3, then hls opus/aac/mp3. caller can force hls by passing "hls".
 	useHLS := strings.EqualFold(preferredFormat, "hls")
 	transcodingURL, streamType, contentType := selectTranscoding(t.Media.Transcodings, useHLS)
 	if transcodingURL == "" {
